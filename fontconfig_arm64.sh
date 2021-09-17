@@ -1,91 +1,107 @@
 #!/bin/bash
 
-libname=fontconfig
-archname=arm64v8
+lib='fontconfig'
+dsc=''
+lic=''
+src='https://gitlab.freedesktop.org/fontconfig/fontconfig.git'
+sty='git'
+cfg='ac'
+tls='gperf gettext autopoint'
+dep='libiconv freetype expat libxml2 json-c'
+eta=''
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+	
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
+
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
+
+OPT_SHARED=
+OPT_BIN=
+update=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make clean && cd ..
-			exit 
-                        ;;
-	--clearall ) 	rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-      			exit
-			;;
-	* )  		echo --clean|--clearall
-		        exit 1
-		        ;;
-    esac
-    shift
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
 done
 
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
 
-[ ! -f ${LIBDIR}/freetype/lib/libfreetype.a ] && ./freetype_arm64.sh
-[ ! -f ${LIBDIR}/libexpat/lib/libexpat.a ] && ./expat_arm64.sh
-[ ! -f ${LIBDIR}/libxml2/lib/libxml2.a ] && ./libxml2_arm64.sh
-[ ! -f ${LIBDIR}/json-c/lib/libjson-c.a ] && ./jsonc_arm64.sh
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
 
-logstart ${libname}
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	echo -ne "\e[32m[tools:gperf" && sudo apt -qq install gperf -y >/dev/null 2>&1
-	echo -ne "|gettext" && sudo apt -qq install gettext -y >/dev/null 2>&1
-	echo -ne "|autopoint]\e[0m " && sudo apt -qq install autopoint -y >/dev/null 2>&1
+logstart $lib
 
-	log clone
-	logthis git clone https://gitlab.freedesktop.org/fontconfig/fontconfig.git
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
 	cd ${libname}
-	log autoconf
-	logthis autoreconf -fi
+	log autoreconf
+	logme autoreconf -fi
 	cd ..	
 fi
 
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir ${INSTALL_DIR}
-
-cd ${libname}
-
-export FREETYPE_LIBS="-L${LIBDIR}/freetype/lib"
-export FREETYPE_CFLAGS="-I${LIBDIR}/freetype/include/freetype2 -I${LIBDIR}/freetype/include/freetype2/freetype -I${LIBDIR}/freetype/include/freetype2/freetype/config"
-export JSONC_LIBS="-L${LIBDIR}/json-c/lib"
-export JSONC_CFLAGS="-I${LIBDIR}/json-c/include"
-export EXPAT_LIBS="-L${LIBDIR}/libexpat/lib"
-export EXPAT_CFLAGS="-I${LIBDIR}/libexpat/include"
+pushd $BUILDDIR >/dev/null
 
 log configure
-logthis ./configure \
+logme ./configure \
     --prefix=${INSTALL_DIR} \
     --host=aarch64-linux-android \
     --with-arch=aarch64 \
     --with-sysroot=${SYSROOT} \
     --with-pic \
-    --with-libiconv-prefix=${LIBDIR}/libiconv \
-    --with-expat=${LIBDIR}/libexpat \
     --without-libintl-prefix \
-    --enable-static \
-    --disable-shared \
+    --enable-static $OPT_SHARED \
     --disable-fast-install \
     --disable-rpath \
     --disable-docs
-
+	
+# --with-libiconv-prefix=${LIBDIR}/libiconv \
+# --with-expat=${LIBDIR}/libexpat \
+# export FREETYPE_LIBS="-L${LIBDIR}/freetype/lib"
+# export FREETYPE_CFLAGS="-I${LIBDIR}/freetype/include/freetype2 -I${LIBDIR}/freetype/include/freetype2/freetype -I${LIBDIR}/freetype/include/freetype2/freetype/config"
+# export JSONC_LIBS="-L${LIBDIR}/json-c/lib"
+# export JSONC_CFLAGS="-I${LIBDIR}/json-c/include"
+# export EXPAT_LIBS="-L${LIBDIR}/libexpat/lib"
+# export EXPAT_CFLAGS="-I${LIBDIR}/libexpat/include"
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ../..
+logme ${MAKE_EXECUTABLE} install
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

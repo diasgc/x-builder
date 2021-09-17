@@ -1,58 +1,91 @@
-#!/bin/bash
+lib='zlib'
+dsc='zlib compression library'
+lic=''
+src='https://github.com/madler/zlib.git'
+sty='git'
+cfg='cm'
+tls=''
+dep=''
+eta='22'
 
-libname=zlib
-archname=arm64v8
+arch=arm64
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
-
-while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make clean && cd ..
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_cmakeopts
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
-done
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-logstart ${libname}
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
+XCFG="-DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+ -DCMAKE_SYSTEM_NAME=Android \
+ -DANDROID_ABI=$ANDROID_ABI \
+ -DANDROID_PLATFORM=$API \
+ -DCMAKE_SYSTEM_PROCESSOR=aarch64"
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	log "download "
-	wget -O- https://zlib.net/zlib-1.2.11.tar.gz 2> /dev/null | tar xz
-	mv ${libname}-* ${libname}
-	echo -ne " ok "
+OPT_SHARED=
+OPT_BIN=
+update=
+
+while [ "$1" != "" ]; do
+  case $1 in
+    --clean )		cmakeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_cmakeopts $lib && exit;;
+	--shared )		OPT_SHARED=;;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
+done
+
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/libz.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
+
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
 fi
 
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir ${INSTALL_DIR}
-
-cd ${libname}
+pushd $BUILDDIR >/dev/null
 
 log cmake
-logthis ${CMAKE_EXECUTABLE} . -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}
-log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
-log install
-logthis ${MAKE_EXECUTABLE} install
-mv ${INSTALL_DIR}/share/pkgconfig ${INSTALL_DIR}/lib
-cd ..
+logme ${CMAKE_EXECUTABLE} $SRCDIR -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR $XCFG
 
+log make
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
+log install
+logme ${MAKE_EXECUTABLE} install
+
+log pkgconfig
+logme mv ${INSTALL_DIR}/share/pkgconfig ${INSTALL_DIR}/lib
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

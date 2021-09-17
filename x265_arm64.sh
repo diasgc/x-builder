@@ -1,20 +1,28 @@
 #!/bin/bash
 
-libname=x265
-archname=arm64v8
-eta=111
+lib='x265'
+dsc='x265 is an open source HEVC encoder'
+lic='GPL-2.0'
+src='https://github.com/videolan/x265.git'
+sty='git'
+cfg='cm'
+tls=''
+dep=''
+eta='111'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. tcutils.sh arm64 29
+. tcutils.sh $arch 29
 
-export LIBSDIR=$(pwd)/${archname}
-export SRCDIR=$(pwd)/${libname}
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
 export BUILDDIR=$SRCDIR/source
-export INSTALL_DIR=$LIBSDIR/${libname}
+export INSTALL_DIR=$LIBSDIR/$lib
 export PKGDIR=$INSTALL_DIR/lib/pkgconfig
+
 
 OPT_SHARED=OFF
 OPT_BIN=OFF
@@ -22,28 +30,45 @@ OPT_ADV=
 OPT_HBD=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	makeClean $SRCDIR && exit;;
-	--clearall )    rm -rf ${libname} && exit;;
-	--opts )	show_cmakeopts ${libname} && exit;;
-	--shared )	OPT_SHARED=ON;;
-	--bin )		OPT_BIN=ON;;
-	--hdr10 )	OPT_ADV="-DENABLE_HDR10_PLUS=ON ${OPT_ADV}";;
+  case $1 in
+    --clean )		cmakeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_cmakeopts $lib && exit;;
+	--shared )		OPT_SHARED=ON;;
+	--bin )			OPT_BIN=ON;;
+	--hdr10 )		OPT_ADV="-DENABLE_HDR10_PLUS=ON ${OPT_ADV}";;
 	--highbitdep )	OPT_ADV="-DHIGH_BIT_DEPTH=ON ${OPT_ADV}";;
 	--allbitdeps )	OPT_HBD=1;;
-	* )  		echo -e "\n\n\t${libname} builder for aarch64-linux-android - 2020 gcdias 1.0.200608\n\n\t\e[97musage: $0 \e[35m[--clean|--clearall|--opts]\e[36m[--shared][--bin]\e[90m\n\n\tTools:make\n\n\e[0m"
-		        exit;;
-    esac
-    shift
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
 done
 
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
 
-
+# Reset INSTALL_DIR
 [ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
 mkdir -p $PKGDIR
 export PKG_CONFIG_PATH=$PKGDIR
 
-logstart ${libname}
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
 
 patchSrc(){
 	lpthread="$SYSROOT/usr/lib/$TARGET/libpthread.a"
@@ -52,7 +77,7 @@ patchSrc(){
 }
 
 if [ ! -d $SRCDIR ];then
-	gitClone https://github.com/videolan/x265.git ${libname}
+	gitClone $src $lib
 	log patch
 	# Patch: create missing libpthread in NDK and replace march opt on HDR10
 	logme patchSrc
@@ -60,7 +85,7 @@ fi
 
 pushd $BUILDDIR >/dev/null
 
-export CMAKE_OPTS="-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
+CMAKE_OPTS="-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
  -DCROSS_COMPILE_ARM=ON \
  -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
  -DCMAKE_SYSTEM_NAME=Android \
@@ -130,5 +155,5 @@ else
 fi
 
 popd >/dev/null
-logver $PKGDIR/x265.pc
+logver $PKGDIR/$lib.pc
 logend

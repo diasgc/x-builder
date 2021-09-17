@@ -1,46 +1,72 @@
 #!/bin/bash
 
-libname=frei0r
-archname=arm64v8
-eta=275
+lib='frei0r'
+dsc='A large collection of free and portable video plugins'
+lic='GPL-2.0'
+cfg='ac cm'
+src='https://github.com/dyne/frei0r.git'
+sty='git'
+tls=''
+dep=''
+xdp='gavl opencv libcairo'
+eta='275'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. tcutils.sh arm64 29
+. tcutils.sh $arch 29
 
-export LIBSDIR=$(pwd)/${archname}
-export SRCDIR=$(pwd)/${libname}
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
 export BUILDDIR=$SRCDIR
-export INSTALL_DIR=$LIBSDIR/${libname}
+export INSTALL_DIR=$LIBSDIR/$lib
 export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
 OPT_SHARED=
 OPT_BIN=
+update=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	makeClean $SRCDIR && exit;;
-	--clearall )    rm -rf ${libname} && exit;;
-	--opts )	show_autoconfopts ${libname} && exit;;
-	--shared )	OPT_SHARED="--enable-shared";;
-	* )  		echo -e "\n\n\t${libname} builder for aarch64-linux-android - 2020 gcdias 1.0.200608\n\n\t\e[97musage: $0 \e[35m[--clean|--clearall]\e[90m\n\n\tTools:make\n\n\e[0m"
-		        exit
-    esac
-    shift
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+    --clearall )	rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+    --opts )		show_acopts $lib && exit;;
+    --shared )		OPT_SHARED="--enable-shared";;
+    --update )		update=1;;
+    * )			usage && exit;;
+  esac
+  shift
 done
 
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
 [ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
 mkdir -p $PKGDIR
 export PKG_CONFIG_PATH=$PKGDIR
 
-#chkDeps libs...
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
 
-logstart ${libname}
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
 
 if [ ! -d $SRCDIR ];then
-	gitClone https://github.com/dyne/frei0r.git $libname
+	gitClone $src $lib
 	log autogen
 	cd $SRCDIR
 	logme ./autogen.sh
@@ -62,5 +88,5 @@ log install
 logme ${MAKE_EXECUTABLE} install
 
 popd >/dev/null
-logver $PKGDIR/${libname}.pc
+logver $PKGDIR/$lib.pc
 logend

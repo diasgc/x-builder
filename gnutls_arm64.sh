@@ -1,83 +1,89 @@
 #!/bin/bash
 
-libname=gnutls
-archname=arm64v8
+lib='gnutls'
+dsc='Secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them'
+lic='LGPL-2.1'
+src='https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/gnutls-3.6.14.tar.xz'
+sty='txz'
+cfg='ac'
+tls='gettext texinfo gperf'
+dep='nettle gmp'
+eta=''
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-export LIBDIR=$(pwd)/${archname}
-export SRCDIR=$(pwd)/${libname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
-
-OPT_SHARED="--disable-shared"
-
-while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	makeClean $SRCDIR
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-			exit
-			;;
-	--shared )	OPT_SHARED="--enable-shared"
-			;;
-	* )  		echo -e "\n\n\t${libname} builder for aarch64-linux-android - 2020 gcdias 1.0.200608\n\n\t\e[97musage: $0 \e[35m[--clean|--clearall|--opts]\e[36m[--shared][--bin]\e[90m\n\n\tTools:make automake autoconf autogen libtool gettext texinfo tar gzip git perl nettle guile p11-kit gperf\n\n\e[0m"
-		        exit
-    esac
-    shift
-done
-
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
 export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
+OPT_SHARED=
+OPT_BIN=
+update=
+
+while [ "$1" != "" ]; do
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
+done
+
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
 [ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
 mkdir -p $PKGDIR
 export PKG_CONFIG_PATH=$PKGDIR
 
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
 
-checkTools make automake autoconf autogen libtool gettext texinfo tar gzip git gperf # perl nettle guile p11-kit gperf
+logstart $lib
 
-# [ ! -d $LIBDIR/nettle/lib/pkgconfig ] && ./nettle_arm64.sh
-cp -f $LIBDIR/nettle/lib/pkgconfig/*.pc $PKGDIR
-cp -f $LIBDIR/gmp/lib/pkgconfig/*.pc $PKGDIR
-
-logstart ${libname}
+[ -n "$update" ] && rm -rf $SRCDIR
 
 if [ ! -d $SRCDIR ];then
-
-	# ERROR can't gen configure from logthis git clone https://gitlab.com/gnutls/gnutls.git
+	getTarXZ $src $lib
+	# ERROR can't gen configure from logme git clone https://gitlab.com/gnutls/gnutls.git
 	# log clone
-	# log autoconf
+	# log bootstrap
 	# cd $SRCDIR
-	# logthis autoreconf -fi
+	# logme ./bootstrap
 	# cd ..
-
-	log download
-	wget -O- https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/gnutls-3.6.14.tar.xz 2>/dev/null | tar -xJ
-	mv ${libname}-* ${libname}
-	echo -ne " ok "
 fi
 
-pushd $SRCDIR >/dev/null
+pushd $BUILDDIR >/dev/null
 
-#log 'clean '
-#${MAKE_EXECUTABLE} clean >/dev/null 2>&1
 export LDFLAGS="-L$LIBDIR/gmp/lib -lgmp"
 export CFLAGS="-I$LIBDIR/gmp/include"
 log configure
-logthis ./configure \
+logme ./configure \
     --prefix=${INSTALL_DIR} \
     --host=aarch64-linux-android \
     --enable-pic \
-    --enable-static \
-    $OPT_SHARED \
+    --enable-static $OPT_SHARED \
     --enable-hardware-acceleration \
     --with-included-libtasn1 \
     --with-included-unistring \
@@ -94,13 +100,11 @@ logthis ./configure \
     --disable-maintainer-mode
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
-
-# log check
-# logthis ${MAKE_EXECUTABLE} ckeck
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
 
 log install
-logthis ${MAKE_EXECUTABLE} install
+logme ${MAKE_EXECUTABLE} install
 
 popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

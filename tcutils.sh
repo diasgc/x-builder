@@ -9,6 +9,18 @@ PROC=$1
 if [ "$2" != "" ];then
 	(($2 >= 21 && $2 <= 29)) && API=$2
 fi
+
+usage(){
+echo -e "$(
+cat << EOM
+\n\n\t$lib builder for linux-android ndk toolchain - $vsh
+\t\e[90m$dsc Licence $lic
+\n\t\e[97musage: $0 \e[96marm|arm64|x86|x86_64 api \e[36m[--update|--clean|--clearall|--opts][--shared][--bin]\e[90m
+\n\tTools:$tls\t\e[35mDependencies: $dep\e[0m\n\n
+EOM
+)"
+}
+
 STARTTIME=
 ENDTIME=
 
@@ -105,13 +117,22 @@ makeClean(){
 }
 
 # usage: chkTools tools...
+chkAutotools(){
+	if [ -z $(which automake) ];then
+		tput sc
+		sudo apt -qq install automake autogen autoconf m4 libtool -y >/dev/null 2>&1 
+		tput rc
+	fi
+}
+
 chkTools(){
   while [ "$1" != "" ]; do
     toolname=$1
     toolpkg=$1
     case $1 in
-      libtool )  toolname=libtoolize;;
-            * )  ;;
+      libtool )  	toolname=libtoolize;;
+	  autotools )	chkAutotools && exit 0;;
+            * )  	;;
     esac
     if [ -z $(which $toolname) ];then		
       echo -ne "\e[36mneed $toolpkg\e[0m "
@@ -154,7 +175,7 @@ show_cmakeopts(){
   fi
 }
 
-show_autoconfopts(){
+show_acopts(){
   if [ -f $(pwd)/$1/configure ];then
     cd $1
     ./configure -h >../$1_opts.txt

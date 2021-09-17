@@ -1,72 +1,98 @@
 #!/bin/bash
 
-libname=aom
-archname=arm64v8
+lib='aom'
+dsc='Alliance for Open Media AV1 codec'
+lic='BSD 2-clause'
+src='https://aomedia.googlesource.com/aom'
+sty='git'
+cfg='cm'
+tls='pearl'
+dep='cpu_features'
+eta='424'
 
+arch='arm64'
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$(pwd)/${lib}_build_${arch}
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
+[ "$SRCDIR" != "$BUILDDIR" ] && mkdir -p $BUILDDIR
 
-export LIBDIR=$(pwd)/${archname}
-export SRCDIR=$(pwd)/${libname}
-export BUILD_DIR=$(pwd)/${libname}_${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
-
-while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	rm -rf ${libname}/CMakeCache.txt ${libname}/CMakeFiles ${SRCDIR}
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname} ${BUILD_DIR}
-			exit
-			;;
-	--opts )	show_cmakeopts ${libname}
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
-done
-
-checkDependencies $LIBDIR $PKGDIR cpu_features
-
-logstart ${libname}
-
-if [ ! -d "$(pwd)/${libname}" ];then
-	log clone
-	logthis git clone https://aomedia.googlesource.com/aom
-fi
-
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir -p ${BUILD_DIR}
-
-cd ${BUILD_DIR}
-
-log cmake
-logthis ${CMAKE_EXECUTABLE} ../${libname} \
- -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
- -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
+XCFG="-DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
  -DCMAKE_SYSTEM_NAME=Android \
- -DANDROID_ABI=${ANDROID_ABI} \
- -DANDROID_PLATFORM=${API} \
- -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+ -DANDROID_ABI=$ANDROID_ABI \
+ -DANDROID_PLATFORM=$API \
+ -DCMAKE_SYSTEM_PROCESSOR=aarch64
  -DARCH_ARM=1 \
  -DCONFIG_RUNTIME_CPU_DETECT=0 \
- -DCONFIG_PIC=1 \
+ -DCONFIG_PIC=1"
+
+OPT_SHARED=OFF
+OPT_BIN=
+
+update=
+
+while [ "$1" != "" ]; do
+  case $1 in
+    --clean )		cmakeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_cmakeopts $lib && exit;;
+	--shared )		OPT_SHARED=ON;;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
+done
+
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	log $lib
+	logver $PKGDIR/$lib.pc
+	log 'done'
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
+
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
+fi
+
+pushd $BUILDDIR >/dev/null
+
+log cmake
+logme ${CMAKE_EXECUTABLE} $SRCDIR -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR $XCFG \
  -DENABLE_TESTS=0 \
  -DENABLE_EXAMPLES=OFF \
  -DENABLE_DOCS=OFF
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ..
+logme ${MAKE_EXECUTABLE} install
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

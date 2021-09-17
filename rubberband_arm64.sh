@@ -1,44 +1,71 @@
 #!/bin/bash
 
-libname=rubberband
-archname=arm64v8
-eta=172
+lib='librubberband'
+dsc='An audio time-stretching and pitch-shifting library and utility program.'
+lic='GPL-2.0'
+cfg='ac'
+src='https://github.com/breakfastquay/rubberband.git'
+sty='git'
+tls=''
+dep='libsndfile libsamplerate'
+eta='172'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. tcutils.sh arm64 29
+. tcutils.sh $arch 29
 
-export LIBSDIR=$(pwd)/${archname}
-export SRCDIR=$(pwd)/${libname}
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
 export BUILDDIR=$SRCDIR
-export INSTALL_DIR=$LIBSDIR/${libname}
+export INSTALL_DIR=$LIBSDIR/$lib
 export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
-OPT_SHARED="--disable-shared"
-OPT_BIN="--disable-apps"
+
+OPT_SHARED=
+OPT_BIN=
+update=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	makeClean $SRCDIR && exit;;
-	--clearall )    rm -rf ${libname} && exit;;
-	* )  		echo -e "\n\n\t${libname} builder for aarch64-linux-android - 2020 gcdias 1.0.200608\n\n\t\e[97musage: $0 \e[35m[--clean|--clearall]\e[90m\n\n\tTools:make\n\n\e[0m"
-		        exit
-    esac
-    shift
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
 done
 
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
 [ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
 mkdir -p $PKGDIR
 export PKG_CONFIG_PATH=$PKGDIR
 
-chkDeps libsndfile libsamplerate
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
 
-logstart ${libname}
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
 
 if [ ! -d $SRCDIR ];then
-	gitClone https://github.com/breakfastquay/rubberband.git $libname
+	gitClone $src $lib
 	log patch
 	cd $SRCDIR
 	rm -f configure.ac && cp ../rubberband.ac configure.ac
@@ -57,9 +84,10 @@ logme ${MAKE_EXECUTABLE} -j${HOST_NPROC}
 
 log install
 logme ${MAKE_EXECUTABLE} install
+
 cp rubberband.pc $PKGDIR
 echo -e "\nRequires: sndfile, samplerate" >>$PKGDIR/rubberband.pc
 
 popd >/dev/null
-logver $PKGDIR/${libname}.pc
+logver $PKGDIR/$lib.pc
 logend

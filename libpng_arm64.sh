@@ -1,61 +1,88 @@
 #!/bin/bash
 
-libname=libpng
-archname=arm64v8
+lib='libpng'
+dsc='Portable Network Graphics support'
+lic=''
+src='https://git.code.sf.net/p/libpng/code'
+sty='git'
+cfg='ac'
+tls=''
+dep=''
+eta='192'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
+
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
+
+OPT_SHARED=
+OPT_BIN=
+update=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make clean && cd ..
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
 done
 
-check_autotools
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
 
-logstart ${libname}
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	log clone
-	logthis git clone https://git.code.sf.net/p/libpng/code libpng
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
 	log autoreconf
-	cd ${libname}
-	logthis autoreconf -f -i
+	cd $lib
+	logme autoreconf -fi
 	cd ..
 fi
 
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir ${INSTALL_DIR}
-
-cd ${libname}
+pushd $BUILDDIR >/dev/null
 
 log configure
-logthis ./configure --host=$TARGET --prefix=${INSTALL_DIR} --enable-arm-neon=off
+logme ./configure --host=$TARGET --prefix=$INSTALL_DIR $OPT_SHARED --enable-arm-neon=off
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ..
+logme ${MAKE_EXECUTABLE} install
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

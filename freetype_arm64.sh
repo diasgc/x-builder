@@ -1,75 +1,86 @@
 #!/bin/bash
 
-libname=freetype
-archname=arm64v8
+lib='freetype'
+dsc='XML parser and markup toolkit'
+lic='MIT'
+src='https://git.sv.nongnu.org/r/freetype/freetype2.git'
+sty='git'
+cfg='ac'
+tls=''
+dep='libpng'
+eta=''
 
+arch=arm64
+
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
+
+OPT_SHARED="--disable-shared"
+OPT_BIN=
+update=
 
 while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make clean && cd ..
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
 done
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
-export LIBPNG=${LIBDIR}/libpng
-export ZLIB=${LIBDIR}/zlib
-export PKGDIR=$INSTALL_DIR/pkgconfig
-
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
 fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
 mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
 
-checkDependencies $LIBDIR $PKGDIR libpng
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
 
-# [ ! -f $LIBPNG/lib/libpng.a ] && ./libpng_arm64.sh
-# [ ! -f $ZLIB/lib/libz.a ] && ./zlib_arm64.sh
+logstart $lib
 
-logstart ${libname}
+[ -n "$update" ] && rm -rf $SRCDIR
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	log clone
-	logthis git clone https://git.sv.nongnu.org/r/freetype/freetype2.git freetype
-	cd ${libname}
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
+	pushd $BUILDDIR >/dev/null
 	log autogen
-	logthis ./autogen.sh
-	cd ..
+	logme ./autogen.sh
+	popd >/dev/null
 fi
 
-cd ${libname}
-
+pushd $BUILDDIR >/dev/null
 
 export LIBPNG_CFLAGS="-I${LIBPNG}/include"
 export LIBPNG_LIBS="-L${LIBPNG}/lib"
 export LIBS="-lz"
 
 log configure
-logthis ./configure \
-  --prefix=${INSTALL_DIR} \
-  --host=${TARGET} \
-  --with-sysroot=${SYSROOT} \
-  --with-pic \
-  --enable-static \
-  --disable-shared \
+logme ./configure --prefix=$INSTALL_DIR --host=${TARGET} --with-sysroot=${SYSROOT} --with-pic=1 \
+  --enable-static $OPT_SHARED \
   --disable-fast-install \
   --disable-mmap \
   --without-harfbuzz \
@@ -82,8 +93,11 @@ logthis ./configure \
   --with-png
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ..
+logme ${MAKE_EXECUTABLE} install
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

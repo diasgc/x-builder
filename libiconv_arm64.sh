@@ -1,66 +1,105 @@
 #!/bin/bash
 
-libname=libiconv
-archname=arm64v8
+lib='libiconv'
+vrs='1.16'
+dsc='Character set conversion library '
+lic='GPL'
+src='https://ftp.gnu.org/gnu/libiconv/libiconv-'$vrs'.tar.gz'
+sty='tgz'
+cfg='ac'
+tls=''
+dep=''
+eta='300'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
 
-while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make clean && cd ..
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
-done
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-check_autotools
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
-logstart ${libname}
+OPT_SHARED=
+OPT_BIN=
+update=
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
+while [ "$1" != "" ]; do
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
+done
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	log download
-	# todo: unable to compile from git logthis git clone https://git.savannah.gnu.org/git/libiconv.git
-	wget -O- https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz 2>/dev/null | tar xz
-	mv ${libname}-* ${libname}
-	echo -ne " ok "
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
+
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
+
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
+
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	# todo: unable to compile from git logme git clone https://git.savannah.gnu.org/git/libiconv.git
+	getTarGZ $src $lib
 fi
 
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir ${INSTALL_DIR}
-
-cd ${libname}
+pushd $BUILDDIR >/dev/null
 
 log configure
-logthis ./configure \
-    --prefix=${INSTALL_DIR} \
-    --host=${TARGET} \
-    --with-sysroot=${SYSROOT} \
-    --enable-static \
-    --disable-shared \
-    --with-pic=1
+logme ./configure --prefix=$INSTALL_DIR --host=${TARGET} --with-sysroot=${SYSROOT} --enable-static $OPT_SHARED --with-pic=1
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ..
+logme ${MAKE_EXECUTABLE} install
+
+installPkgconfig(){
+cat <<EOF >>$PKGDIR/${lib}.pc
+prefix=$INSTALL_DIR
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: iconv
+Description: libiconv
+URL: https://www.gnu.org/software/libiconv/
+Version: $vrs
+Libs: -L\${libdir} -liconv
+Cflags: -I\${includedir}
+EOF
+}
+
+log pkgcfg
+logme installPkgconfig
+
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

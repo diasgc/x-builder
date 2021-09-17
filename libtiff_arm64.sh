@@ -1,86 +1,94 @@
 #!/bin/bash
 
-libname=libtiff
-archname=arm64v8
+lib='libtiff'
+dsc='TIFF Library and Utilities'
+lic=''
+src='https://gitlab.com/libtiff/libtiff.git'
+sty='git'
+cfg='ac cm'
+tls=''
+dep='libzstd liblzma libjbig libjpeg'
+eta='382'
 
-LOGFILE="$(pwd)/${libname}_arm64.log"
-[ -f $LOGFILE ] && rm -f $LOGFILE
+arch=arm64
 
-while [ "$1" != "" ]; do
-    case $1 in
-        --clean )	cd ${libname} && make distclean && cd ..
-			exit 
-                        ;;
-	--clearall )    rm -rf ${libname}
-			exit
-			;;
-	--opts )	show_autoconfopts ${libname}
-			exit
-			;;
-        * )             echo --clean|--clearall
-                        exit 1
-    esac
-    shift
-done
+LOGFILE=$(pwd)/${lib}_${arch}.log
 
 # enable ndk toolchain for arm64
-. $(pwd)/tc_aarch64-linux-android.sh
+. tcutils.sh $arch 29
 
-check_autotools
+export LIBSDIR=$(pwd)/${arch}
+export SRCDIR=$(pwd)/$lib
+export BUILDDIR=$SRCDIR
+export INSTALL_DIR=$LIBSDIR/$lib
+export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
-logstart ${libname}
+OPT_SHARED=
+OPT_BIN=
+update=
 
-export LIBDIR=$(pwd)/${archname}
-export INSTALL_DIR=$LIBDIR/${libname}
-export PATH="$(pwd)/${archname}":$PATH
+while [ "$1" != "" ]; do
+  case $1 in
+    --clean )		makeClean $SRCDIR && exit;;
+	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
+	--opts )		show_acopts $lib && exit;;
+	--shared )		OPT_SHARED="--enable-shared";;
+	--update )		update=1;;
+	* )  			usage && exit;;
+  esac
+  shift
+done
 
+if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+	logstart $lib
+	logver $PKGDIR/$lib.pc
+	logend
+	exit 0
+fi
+	
+# Reset LOGFILE
+[ -f $LOGFILE ] && rm -f $LOGFILE
 
-# download deps TODO
-[ ! -f $LIBDIR/libjbig/lib/libjbig.a ] && ./libjbig_arm64.sh
+# Reset INSTALL_DIR
+[ -d $INSTALL_DIR ] && rm -rf $INSTALL_DIR
 
-cd ${archname}
-[ ! -d libzstd ] && log libzstd && logthis dl_deb libzstd http://ftp.de.debian.org/debian/pool/main/libz/libzstd/libzstd-dev_1.4.4+dfsg-3_arm64.deb
-[ ! -d liblzma ] && log liblzma && logthis dl_deb liblzma http://ftp.de.debian.org/debian/pool/main/x/xz-utils/liblzma-dev_5.2.4-1+b1_arm64.deb
-cd ..
+# Create INSTALL_DIR and PKGCONFIG DIR
+mkdir -p $PKGDIR
+export PKG_CONFIG_PATH=$PKGDIR
 
-if [ ! -d "$(pwd)/${libname}" ];then
-	log clone
-	logthis git clone https://gitlab.com/libtiff/libtiff.git
-	log autogen
-	cd ${libname}
-	logthis ./autogen.sh
+# Check Tools and Dependencies
+chkTools $tls
+chkDeps $dep
+
+logstart $lib
+
+[ -n "$update" ] && rm -rf $SRCDIR
+
+if [ ! -d $SRCDIR ];then
+	gitClone $src $lib
+	log autoreconf
+	cd $SRCDIR
+	logme autoreconf -fi
 	cd ..
 fi
 
-if [ -d "${INSTALL_DIR}" ];then
-	rm -rf ${INSTALL_DIR}
-fi
-mkdir ${INSTALL_DIR}
-
-cd ${libname}
+pushd $BUILDDIR >/dev/null
 
 log configure
-logthis ./configure --prefix=${INSTALL_DIR} \
+logme ./configure --prefix=$INSTALL_DIR \
     --host=${TARGET} \
     --with-sysroot=${SYSROOT} \
     --with-pic \
     --disable-fast-install \
     --disable-win32-io \
-    --with-jpeg-include-dir=${LIBDIR}/libjpeg/include \
-    --with-jpeg-lib-dir=${LIBDIR}/libjpeg/lib \
-    --with-zstd-include-dir=${LIBDIR}/libzstd/include \
-    --with-zstd-lib-dir=${LIBDIR}/libzstd/lib/aarch64-linux-gnu \
-    --with-lzma-include-dir=${LIBDIR}/liblzma/include \
-    --with-lzma-lib-dir=${LIBDIR}/liblzma/lib/aarch64-linux-gnu \
-    --with-jbig-include-dir=${LIBDIR}/libjbig/include \
-    --with-jbig-lib-dir=${LIBDIR}/libjbig/lib/ \
-    --enable-static \
-    --disable-shared
-#   --disable-cxx \
+    --enable-static $OPT_SHARED
 
 log make
-logthis ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
+
 log install
-logthis ${MAKE_EXECUTABLE} install
-cd ..
+logme ${MAKE_EXECUTABLE} install
+mv $PKGDIR/$lib-*.pc $PKGDIR/$lib.pc
+popd >/dev/null
+logver $PKGDIR/$lib.pc
 logend

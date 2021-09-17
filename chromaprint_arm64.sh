@@ -1,14 +1,14 @@
 #!/bin/bash
 
-lib='json-c'
-dsc=''
-lic=''
-src='https://github.com/json-c/json-c.git'
+lib='chromaprint'
+dsc='C library for generating audio fingerprints used by AcoustID'
+lic='LGPL-2.1'
+src='https://github.com/acoustid/chromaprint.git'
 sty='git'
 cfg='cm'
 tls=''
-dep=''
-eta='80'
+dep='cpu_features'
+eta=''
 
 arch=arm64
 
@@ -24,7 +24,6 @@ export INSTALL_DIR=$LIBSDIR/$lib
 export PKGDIR=$INSTALL_DIR/lib/pkgconfig
 
 OPT_SHARED=OFF
-OPT_BIN=
 update=
 
 while [ "$1" != "" ]; do
@@ -39,7 +38,7 @@ while [ "$1" != "" ]; do
   shift
 done
 
-if [ -z "$update" ] && [ -f $PKGDIR/$lib.pc ] && [ -f $INSTALL_DIR/lib/$lib.a ]; then
+if [ -z "$update" ] && [ -f $PKGDIR/libchromaprint.pc ] && [ -f $INSTALL_DIR/lib/libchromaprint.a ]; then
 	logstart $lib
 	logver $PKGDIR/$lib.pc
 	logend
@@ -66,13 +65,26 @@ logstart $lib
 
 if [ ! -d $SRCDIR ];then
 	gitClone $src $lib
+	cd $SRCDIR
+	log kissfft
+	logme git clone https://github.com/mborgerding/kissfft.git
+	cd ..
 fi
 
 pushd $BUILDDIR >/dev/null
 
 log cmake
-logme ${CMAKE_EXECUTABLE} $SRCDIR -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
-	-DBUILD_STATIC_LIBS=ON -DBUILD_SHARED_LIBS=$OPT_SHARED -DBUILD_TESTING=OFF
+logme ${CMAKE_EXECUTABLE} . \
+ -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+ -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
+ -DCMAKE_SYSTEM_NAME=Android \
+ -DANDROID_ABI=${ANDROID_ABI} \
+ -DANDROID_PLATFORM=${API} \
+ -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+ -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
+ -DBUILD_SHARED_LIBS=$OPT_SHARED \
+ -DKISSFFT_SOURCE_DIR=$SRCDIR/kissfft \
+ -DFFT_LIB=kissfft
 
 log make
 logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
@@ -81,5 +93,5 @@ log install
 logme ${MAKE_EXECUTABLE} install
 
 popd >/dev/null
-logver $PKGDIR/$lib.pc
+logver $PKGDIR/libchromaprint.pc
 logend

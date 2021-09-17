@@ -1,15 +1,14 @@
 #!/bin/bash
-# TODO: ac build @ https://github.com/mirrorer/giflib
 
-lib='giflib'
-dsc='Library for manipulating GIF files'
-lic=''
-src='https://git.code.sf.net/p/giflib/code'
+lib='liblzma'
+dsc='LZMA Utils are legacy data compression software with high compression ratio'
+lic='GPL-3/LGPL-2.1'
+src='https://git.tukaani.org/lzma.git'
 sty='git'
-cfg=''
+cfg='ac'
 tls=''
 dep=''
-eta='18'
+eta='220'
 
 arch=arm64
 
@@ -33,7 +32,7 @@ while [ "$1" != "" ]; do
     --clean )		makeClean $SRCDIR && exit;;
 	--clearall )    rm -rf $SRCDIR $INSTALL_DIR $BUILDDIR && exit;;
 	--opts )		show_acopts $lib && exit;;
-	--shared )		OPT_SHARED=;;
+	--shared )		OPT_SHARED="--enable-shared";;
 	--update )		update=1;;
 	* )  			usage && exit;;
   esac
@@ -61,51 +60,44 @@ export PKG_CONFIG_PATH=$PKGDIR
 chkTools $tls
 chkDeps $dep
 
-
-patchSrc(){
-	cd ${libname}
-	sed -i 's/PREFIX = \/usr\/local/PREFIX = ${INSTALL_DIR}/g' Makefile
-	sed -i 's/CFLAGS  = -std=gnu99 -fPIC -Wall -Wno-format-truncation $(OFLAGS)/CFLAGS  = -std=gnu99 -fPIC -fPIE -Wall $(OFLAGS)/g' Makefile
-	sed -i 's/$(MAKE) -C doc/# $(MAKE) -C doc/g' Makefile
-	sed -i 's/install: all install-bin install-include install-lib install-man/install: all install-bin install-include install-lib/g' Makefile
-	cd ..
-}
-
-
 logstart $lib
 
 [ -n "$update" ] && rm -rf $SRCDIR
 
 if [ ! -d $SRCDIR ];then
 	gitClone $src $lib
-	log patch
-	logme patchSrc
+	log autogen
+	cd $SRCDIR
+	logme ./autogen.sh
+	cd ..
 fi
 
 pushd $BUILDDIR >/dev/null
 
-export PREFIX=${INSTALL_DIR}
-
-log clean
-logme ${MAKE_EXECUTABLE} clean
+log configure
+logme ./configure --prefix=$INSTALL_DIR \
+    --host=${TARGET} \
+    --with-sysroot=${SYSROOT} \
+    --with-pic --enable-static $OPT_SHARED
 
 log make
-logme ${MAKE_EXECUTABLE} -j${HOST_NPROC}
+logme ${MAKE_EXECUTABLE} -j${HOST_NPROC} 
 
 log install
 logme ${MAKE_EXECUTABLE} install
 
+
 createPkgConfig(){
-cat <<EOF >>$PKGDIR/${lib}.pc
+cat <<EOF >>$PKGDIR/$lib.pc
 prefix=${INSTALL_DIR}
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/lib
 includedir=\${prefix}/include
-Name: giflib
-Description: gif library
-Version: 1
+Name: lzma
+Description: LZMA Compression Binaries
+Version: 4.32.7
 Requires:
-Libs: -L\${libdir} -lgif
+Libs: -L\${libdir} -llzmadec
 Cflags: -I\${includedir}
 EOF
 }
