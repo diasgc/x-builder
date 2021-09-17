@@ -1,0 +1,139 @@
+adb-aarch64.sh  googlesource    make
+adb.sh          github          autotools
+aom.sh          googlesource    cmake
+aribb24.sh      github          autotools
+avisynth.sh     github          cmake
+axmldec.sh      github          cmake
+busybox.sh      git             make
+bzip2.sh        git             make
+celt.sh         gitlab          autotools
+chromaprint.sh  github          cmake
+codec2.sh       github          cmake
+cpu_features.sh github          cmake
+daala.sh        gitlab          autotools
+dav1d.sh        gitlab(vlan)    meson
+davs2.sh        github          autotools
+exhale.sh       gitlab          cmake
+exiv2.sh        github          cmake
+expat.sh        github          autotools
+fdk-aac.sh      github          autotools
+ffmpeg.sh       git             autotools
+fftw.sh         tgz             cmake
+file-signature.sh github        cc
+flac.sh         github          autotools
+flif.sh         github          cmake
+flite.sh        github          autotools
+fontconfig.sh   gitlab          autotools
+freetype.sh     git             cmake
+frei0r.sh       github          autotools
+fribidi.sh      github          autotools
+giflib.sh       git             cmake
+glslang.sh      github          cmake
+gmp.sh          tlz             autotools
+gnutls.sh       gitlab          autotools
+guetzli.sh      github          make
+harfbuzz.sh     github          autotools
+isobmff.sh      github          cmake
+jasper.sh       github          cmake
+jpegoptim.sh    github          autotools
+json-c.sh       github          cmake
+jsoncpp.sh      github          cmake
+kvazaar.sh      github          autotools
+ladspa.sh       tgz             make
+lame.sh         git/github      autotools
+lcms2.sh        github          autotools
+lensfun.sh      github          cmake
+leptonica.sh    github          autotools
+libao.sh        gitlab          autotools
+libass.sh       github          autotools
+libavif.sh      github          cmake
+libbluray.sh    gitlab(vlan)    autotools
+libbpg.sh       github          make
+libbs2b.sh      github          autotools
+libcaca.sh      github          autotools
+libcddb.sh      github          autotools
+libcdio.sh      
+libcunit.sh
+libdc1394.sh
+libde265.sh
+libexif.sh
+libfishsound.sh
+libgav1.sh
+libgcrypt.sh
+libgme.sh
+libgsm.sh
+libheif.sh
+libiconv.sh
+libiec61883.sh
+libilbc.sh
+libjack.sh
+libjbig.sh
+libjpeg.sh
+libklvanc.sh
+liblzma.sh
+libmagic.sh
+libmodplug.sh
+libmysofa.sh
+libnuma.sh
+libpng.sh
+libpulse.sh
+libraw.sh
+libraw1394.sh
+libressl.sh
+librsvg.sh
+libsrt.sh
+libtiff.sh
+libvideogfx.sh
+libwebp.sh
+libwebp2.sh
+libxml2.sh
+libzstd.sh
+lv2.sh
+mbedtls.sh
+ncurses.sh
+nettle.sh
+ogg.sh
+opencore-amr.sh
+openh264.sh
+openjpeg.sh
+openssl.sh
+opus.sh
+pdf2htmlex.sh
+postfish.sh
+rnnoise.sh
+rubberband.sh
+samplerate.sh
+sdl2.sh
+shine.sh
+snappy.sh
+sndfile.sh
+sndio.sh
+soxr.sh
+speex.sh
+speexdsp.sh
+svtav1.sh
+tcutils.sh
+tcutils_old.sh
+tesseract.sh
+theora.sh
+tree.sh
+turingcodec.sh
+twolame.sh
+uchardet.sh
+vapoursynth.sh
+vidstab.sh
+vo-amrwbenc.sh
+vorbis.sh
+vpx.sh
+vvc.sh
+wavpack.sh
+x264.sh
+x265.sh
+x265ml.sh
+xavs.sh
+xavs2.sh
+xeve.sh
+xvidcore.sh
+zimg.sh
+zlib.sh
+zvbi.sh

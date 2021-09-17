@@ -1,0 +1,5 @@
+aom         +
+aribb24     +
+avisynth    -
+axmldec     -
+bzip2       

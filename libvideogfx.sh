@@ -1,0 +1,43 @@
+#!/bin/bash
+# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
+#  .   .   .   .   .   .   .   .   .   .   .  static
+#  .   .   .   .   .   .   .   .   .   .   .  shared
+#  .   .   .   .   .   .   .   .   .   .   .  bin
+# PKGINFO-------------------------------------
+lib='libvideogfx'
+dsc='Rapid prototyping library for graphics and video processing.'
+lic='LGPL-3.0'
+src='https://github.com/farindk/libvideogfx.git'
+sty='git'
+cfg='ag'
+tls=''
+dep=''
+pkg='libvideogfx'
+
+eta='120'
+lsz=
+psz=
+ets=(0 0 0 0 0 0 0 0 0 0 0)
+ls0=(0 0 0 0 0 0 0 0 0 0 0)
+ls1=(0 0 0 0 0 0 0 0 0 0 0)
+
+cs0="--enable-static"
+cs1="--enable-shared"
+cb0=
+cb1=
+CSH=
+CBN=
+
+. tcutils.sh
+CFG="--with-pic=1"
+dbld=$SRCDIR
+loadToolchain
+test $arch != x86_64-linux-gnu && CFG="--host=${arch} --with-sysroot=${SYSROOT} $CFG"
+
+# Use function buildSrc to custom clone repo
+# Use function patchSrc to custom patch src and/or configure
+# Use function beforeBuild to execute extra code before buildLib
+# Use function buildLib to custom build
+# Use function buildPC to manually build pkg-config .pc file
+
+start
