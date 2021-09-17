@@ -16,7 +16,7 @@ CC0="\e[36m" CC1="\e[96m"
 CT0=$CY0; CT1=$CY1; CS0=$CM0; CS1=$CM1
 
 debug=
-vsh='2.2'
+vsh='0.2.1'
 cmake_build_type=Release
 
 aptInstallBr(){
@@ -1072,7 +1072,7 @@ setup(){
 }
 
 showBanner(){
-  echo -ne "\n\n  ${CW}Cross.compile Scripts 1.0 for Linux${C0}\n  "
+  echo -ne "\n\n  ${CW}X-Builder ${vsh} for Linux${C0}\n  "
   if [ -n "$(uname -r | grep 'microsoft')" ];then
     echo -ne "WSL2 "
   elif [ -n "$(uname -r | grep 'Microsoft')" ];then

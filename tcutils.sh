@@ -16,7 +16,7 @@ CC0="\e[36m" CC1="\e[96m"
 CT0=$CM0; CT1=$CM1; CS0=$CR0; CS1=$CR1
 
 debug=
-vsh='3.0'
+vsh='0.2.5'
 cmake_build_type=Release
 
 aptInstallBr(){
@@ -863,7 +863,7 @@ EOF
 
 showBanner(){
   if [ $banner = 1 ]; then
-    echo -ne "\n\n  ${CW}Cross Compile Shell Scripts ${vsh} for Linux${C0}\n  "
+    echo -ne "\n\n  ${CW}X-Builder ${vsh} for Linux${C0}\n  "
     [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
     if [ -n "$(uname -r | grep 'microsoft')" ];then
       echo -ne "WSL2 "
