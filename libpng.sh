@@ -24,7 +24,8 @@ cb1="-DPNG_EXECUTABLES=ON"
 CFG="-DPNG_TESTS=OFF -DPNG_HARDWARE_OPTIMIZATIONS=OFF -DHAVE_LD_VERSION_SCRIPT=OFF"
 
 case $arch in
-    *-mingw32) dep='zlib' CFG="${CFG} -DZLIB_INCLUDE_DIR=${LIBSDIR}/include -DZLIB_LIBRARY=${LIBSDIR}/lib/libzlib.dll.a";;
+#    *-mingw32) dep='zlib' CFG="${CFG} -DZLIB_INCLUDE_DIR=${LIBSDIR}/include -DZLIB_LIBRARY=${LIBSDIR}/lib/libzlib.dll.a";;
+    a*-gnu*|*-mingw32) pushvar_l CFG "-DPNG_BUILD_ZLIB=ON"; pushvar_l dep "zlib";;
 esac
 
 start

@@ -5,6 +5,7 @@
 #  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='liblzma'
+apt="${lib}-dev"
 dsc='General purpose data compression library'
 lic='GPL-3 LGPL-2.1'
 src='https://git.tukaani.org/xz.git'

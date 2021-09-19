@@ -20,7 +20,7 @@ cmake_path='share/cmake'
 
 source_patch(){
     pushdir $SRCDIR
-    gitClone https://github.com/abseil/abseil-cpp.git third_party/abseil-cpp
+    git_clone https://github.com/abseil/abseil-cpp.git third_party/abseil-cpp
     popdir
 }
 

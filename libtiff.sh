@@ -1,28 +1,32 @@
 #!/bin/bash
 # Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   +   .   .   .   .   .  static
-#  +   +   +   +   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#  P   P   .   .   +   +   .   .   .   .   .  static
+#  P   P   +   +   .   .   .   .   .   .   .  shared
+#  +   +   .   .   .   .   .   .   .   .   .  bin
 
 lib='libtiff'
+apt="${lib}-dev"
 dsc='TIFF Library and Utilities'
+vrs='v4.3.0'
 lic='GPL?'
 src='https://gitlab.com/libtiff/libtiff.git'
 sty='git'
-cfg='cm'
+cfg='ccm'
 pkg='libtiff-4'
 eta='150'
-mkc=distclean
+mkc='distclean'
+mki='install/strip'
 cmake_path='lib/cmake/tiff'
 
 extraOpts(){
     case $1 in
-        --jbig) dep_add 'libjbig';;
-        --lzma) dep_add 'liblzma';;
-        --jpeg|--jp12) dep_add 'libjpeg';;
-        --zstd) dep_add 'libzstd';;
-        --webp) dep_add 'libwebp';;
-        --all) dep_add libjbig liblzma libjpeg libzstd libwebp;;
+        --jbig) dep_add 'libjbig'; pushvar_f CFG="-Djbig=ON";;
+        --lzma) dep_add 'liblzma'; pushvar_f CFG="-Dlzma=ON";;
+        --jpeg|--jp12) dep_add 'libjpeg'; pushvar_f CFG="-Djpeg=ON";;
+        --zstd) dep_add 'libzstd'; pushvar_f CFG="-Dzstd=ON";;
+        --webp) dep_add 'libwebp'; pushvar_f CFG="-Dwebp=ON";;
+        --all) dep_add 'libjbig liblzma libjpeg libzstd libwebp libdeflate lerc';
+            pushvar_f CFG "-Djbig=ON -Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON";;
     esac
 }
 

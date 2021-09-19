@@ -12,24 +12,25 @@ src='https://github.com/madler/zlib.git'
 sty='git'
 cfg='cm'
 eta='22'
-cb0="-DBUILD_TOOLS=OFF"
-cb1="-DBUILD_TOOLS=ON"
+cbk="BUILD_TOOLS"
+mkc='distclean'
 
 . xbuilder.sh
 
-#CFG="-DINSTALL_PKGCONFIG_DIR=${INSTALL_DIR}/lib/pkgconfig"
-
-build_pkgconfig_file(){
+source_patch(){
+    # Is it a bug?
+    sed -i '/^set(INSTALL_PKGCONFIG_DIR.*/s/share/lib/'  CMakeLists.txt
+}
+str_contains arch "mingw32" && {
     [ ! -f "$INSTALL_DIR/lib/libz.a" ] && [ -f "$INSTALL_DIR/lib/libzlib.dll.a" ] && ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a
     [ ! -f "$INSTALL_DIR/lib/libzstatic.a" ] && [ -f "$INSTALL_DIR/lib/libzlibstatic.a" ] && ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a
-    echo -ne " "
 }
-
 start
+
+
 
 # Filelist
 # --------
-
 # include/zlib.h
 # include/zconf.h
 # lib/pkgconfig/zlib.pc

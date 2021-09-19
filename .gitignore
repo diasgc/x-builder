@@ -1,5 +1,6 @@
 builds/*
 sources/*
+packages/*
 .config
 xstat.json
 .vscode

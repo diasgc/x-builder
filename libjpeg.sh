@@ -1,23 +1,19 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   +   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
-# PKGINFO-------------------------------------
+
 lib='libjpeg'
+apt="${lib}-dev"
 dsc='JPEG image codec that uses SIMD instructions'
 lic='BSD'
 src='https://github.com/libjpeg-turbo/libjpeg-turbo.git'
 sty='git'
 cfg='cm'
 eta='52'
-cst0="-DENABLE_STATIC=OFF"
-cst1="-DENABLE_STATIC=ON"
-csh0="-DENABLE_SHARED=OFF"
-csh1="-DENABLE_SHARED=ON"
+cstk="ENABLE_STATIC"
+cshk="ENABLE_SHARED"
 cmake_path='lib/cmake/libjpeg-turbo'
-# -----------------------------------------
-CFG="-DWITH_JPEG8=ON -DWITH_JPEG7=ON"
+mki='install/strip'
+
+CFG="-DWITH_JPEG8=ON -DWITH_JPEG7=ON -DWITH_DOCS=OFF -DWITH_MAN=OFF"
 
 extraOpts(){
   case $1 in
@@ -27,18 +23,58 @@ extraOpts(){
   esac
 }
 
+
 . xbuilder.sh
 
-build_patch_config(){
-	#no docs
-	sed -i '/^SUBDIRS/ {s/ doc//}' $BUILD_DIR/Makefile
+source_patch(){
+  pushdir $SRCDIR
+
+  # Add options: WITH_DOCS and WITH_MAN (default OFF)
+  patch -p0 <<'EOF'
+--- CMakeLists.txt	2021-09-18 20:51:56.191317400 +0100
++++ CMakeLists.txt	2021-09-18 20:55:08.651317400 +0100
+@@ -1493,6 +1493,13 @@
+ 
+ install(TARGETS rdjpgcom wrjpgcom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
++option(WITH_DOCS "with docs" FALSE)
++boolean_number(WITH_DOCS)
++
++option(WITH_MAN "with man pages" FALSE)
++boolean_number(WITH_MAN)
++
++if(WITH_DOCS)
+ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.ijg
+   ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/example.txt
+   ${CMAKE_CURRENT_SOURCE_DIR}/tjexample.c
+@@ -1500,12 +1507,13 @@
+   ${CMAKE_CURRENT_SOURCE_DIR}/structure.txt
+   ${CMAKE_CURRENT_SOURCE_DIR}/usage.txt ${CMAKE_CURRENT_SOURCE_DIR}/wizard.txt
+   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
++endif()
+ if(WITH_JAVA)
+   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/java/TJExample.java
+     DESTINATION ${CMAKE_INSTALL_DOCDIR})
+ endif()
+ 
+-if(UNIX OR MINGW)
++if(WITH_MAN AND UNIX OR MINGW)
+   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cjpeg.1
+     ${CMAKE_CURRENT_SOURCE_DIR}/djpeg.1 ${CMAKE_CURRENT_SOURCE_DIR}/jpegtran.1
+     ${CMAKE_CURRENT_SOURCE_DIR}/rdjpgcom.1
+EOF
+  popdir
 }
 
 start
 
+# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
+#  +   +   .   .   +   .   .   .   .   .   .  static
+#  +   +   .   .   .   .   .   .   .   .   .  shared
+#  +   +   .   .   .   .   .   .   .   .   .  bin
+
 # Filelist
 # --------
-
 # include/jerror.h
 # include/jconfig.h
 # include/jpeglib.h
@@ -51,23 +87,9 @@ start
 # lib/cmake/libjpeg-turbo/libjpeg-turboConfig.cmake
 # lib/cmake/libjpeg-turbo/libjpeg-turboConfigVersion.cmake
 # lib/cmake/libjpeg-turbo/libjpeg-turboTargets.cmake
-# lib/libjpeg.so
-# lib/libturbojpeg.so
+# lib/libjpeg.so.8.2.2
+# lib/libturbojpeg.so.0.2.0
 # lib/libjpeg.a
-# share/man/man1/djpeg.1
-# share/man/man1/wrjpgcom.1
-# share/man/man1/rdjpgcom.1
-# share/man/man1/jpegtran.1
-# share/man/man1/cjpeg.1
-# share/doc/libjpeg-turbo/libjpeg.txt
-# share/doc/libjpeg-turbo/tjexample.c
-# share/doc/libjpeg-turbo/README.md
-# share/doc/libjpeg-turbo/example.txt
-# share/doc/libjpeg-turbo/usage.txt
-# share/doc/libjpeg-turbo/README.ijg
-# share/doc/libjpeg-turbo/wizard.txt
-# share/doc/libjpeg-turbo/structure.txt
-# share/doc/libjpeg-turbo/LICENSE.md
 # bin/rdjpgcom
 # bin/jpegtran
 # bin/wrjpgcom

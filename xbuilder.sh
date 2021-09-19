@@ -1,23 +1,31 @@
-#!/bin/bash
+#!$SHELL
 # ................................................
-# builder util 0.3 2020-diasgc
+# builder util 0.3.1 2021-diasgc
 # ................................................
-
+vsh='0.3.1'
 # def colors
-C0="\e[0m" CW="\e[97m" CD="\e[90m"
-CR0="\e[31m" CR1="\e[91m"
-CG0="\e[32m" CG1="\e[92m"
-CY0="\e[33m" CY1="\e[93m"
-CB0="\e[34m" CB1="\e[94m"
-CM0="\e[35m" CM1="\e[95m"
-CC0="\e[36m" CC1="\e[96m"
+C0="\e[0m" CW="\e[97m"  CD="\e[90m" CW2="\e[38;5;234m" CW3="\e[38;5;238m" CW4="\e[38;5;242m"  CW5="\e[38;5;246m" CW6="\e[38;5;250m"
+CR0="\e[31m" CR1="\e[91m" CR2="\e[38;5;52m" CR3="\e[38;5;88m" CR4="\e[38;5;124m" CR5="\e[38;5;160m"  CR6="\e[38;5;196m"
+CY0="\e[33m" CY1="\e[93m" CY2="\e[38;5;58m" CY3="\e[38;5;94m" CY4="\e[38;5;136m" CY5="\e[38;5;178m"  CY6="\e[38;5;220m"
+CG0="\e[32m" CG1="\e[92m" CG2="\e[38;5;46m" CG3="\e[38;5;82m" CG4="\e[38;5;118m" CG5="\e[38;5;154m"  CG6="\e[38;5;190m"
+CC0="\e[36m" CC1="\e[96m" CC2="\e[38;5;49m" CC3="\e[38;5;85m" CC4="\e[38;5;122m" CC5="\e[38;5;123m"  CC6="\e[38;5;195m"
+CB0="\e[34m" CB1="\e[94m" CB2="\e[38;5;26m" CB3="\e[38;5;69m" CB4="\e[38;5;111m" CB5="\e[38;5;152m"  CB6="\e[38;5;153m"
+CM0="\e[35m" CM1="\e[95m" CM2="\e[38;5;54m" CM3="\e[38;5;91m" CM4="\e[38;5;126m" CM5="\e[38;5;162m"  CM6="\e[38;5;198m"
+
+CO0="\e[38;5;130m" CO1="\e[38;5;166m" CO2="\e[38;5;202m" CO3="\e[38;5;208m"  CO4="\e[38;5;214m" CO5="\e[38;5;220m" CO6="\e[38;5;223m"
+CF0="\e[38;5;53m"  CF1="\e[38;5;89m"  CF2="\e[38;5;125m" CF3="\e[38;5;161m"  CF4="\e[38;5;197m" CF5="\e[38;5;211m" CF6="\e[38;5;219m"
+CL0="\e[38;5;34m" CL1="\e[38;5;72m" CL2="\e[38;5;114m" CL3="\e[38;5;120m"  CL4="\e[38;5;156m" CL5="\e[38;5;192m" CL6="\e[38;5;230m"
 
 # theme colors
 CT0=$CM0 CT1=$CM1 CS0=$CR0 CS1=$CR1 SSB=$C0
 
 # variables
+
 [ -z "${debug+x}" ] && debug=false
-vsh='0.3'
+[ -z "${is_init+x}" ] && is_init=false
+[ -z ${pkg+x} ] && pkg=${lib}
+[ -z ${apt+x} ] && apt=${lib}
+
 cmake_build_type=Release
 cmake_toolchain_file=
 banner=true
@@ -39,8 +47,7 @@ pc_filelist=
 
 shell_dstack=
 
-[ -z ${pkg+x} ] && pkg=${lib}
-[ -z ${apt+x} ] && apt=${lib}
+
 
 # some tools
 
@@ -49,7 +56,7 @@ ifdef_function(){
 }
 
 str_contains(){
-   [ -z "${!1##*${2}*}" ]
+   [ -z "${1##*${2}*}" ]
 }
 
 str_lowercase(){
@@ -60,12 +67,40 @@ str_uppercase(){
   echo ${1} | tr '[:lower:]' '[:upper:]'
 }
 
+# exclusive variable add substrings left var_xaddl <var> <substrings...>
+# appends substrings to the left/start of var iff main doesnt contains substring
+var_xaddl(){
+  local v=$1; shift
+    while [ -n "$1" ];do
+        [ -z "${!v##*${1}*}" ] || eval $v=\"${1} ${!v}\"
+        shift
+    done
+}
+
+# exclusive variable add substrings right var_xaddl <var> <substrings...>
+# appends substrings to the right/end of var variable iff main doesnt contains substring
+var_xaddr(){
+    local v=$1; shift
+    while [ -n "$1" ];do
+        [ -z "${!v##*${1}*}" ] || eval $v=\"${!v} ${1} \"
+        shift
+    done
+}
+
+var_addr(){
+    local v=$1; shift; eval $v=\"${!v} $@\"
+}
+
+var_addl(){
+    local v=$1; shift; eval $v=\"$@ ${!v}\"
+}
+
 pushvar_f(){
-  local name=$1; shift; eval $name=\"$@ ${!name}\"
+  var_addl $@
 }
 
 pushvar_l(){
-  local name=$1; shift; eval $name=\"${!name} $@\"
+  var_addr $@
 }
 
 popvar_f(){
@@ -97,7 +132,7 @@ popvar_l(){
 pushdir(){
   case $SHELL in
     *bash) pushd $1 >/dev/null 2>&1;;
-    *) pushvar_f shell_dstack; cd $1;;
+    *) pushvar_f shell_dstack $1; cd $1;;
   esac
 }
 
@@ -109,13 +144,13 @@ popdir(){
 }
 
 inc_tab(){
-  indent=$(expr $indent + 2)
-  tab=$(printf '%*s' "$indent")
+  indent=$(expr "$indent" + 2)
+  ind=$(printf '%*s' "$indent")
 }
 
 dec_tab(){
   indent=$(expr "$indent" - 2)
-  [ $indent -gt 0 ] && tab=$(printf '%*s' "$indent") || unset tab
+  [ $indent -gt 0 ] && ind=$(printf '%*s' "$indent") || unset ind
 }
 
 aptInstallBr(){
@@ -128,16 +163,16 @@ aptInstallBr(){
 }
 
 
-init(){  
-  if [ ! -f ".config" ];then
+init(){
+  [ -f ".config" ] && . .config
+  if [ ! -f ".config" ] || test `expr $(date +%s) - $config_lastupdate` -gt 86400; then
     ./xsetup.sh
+    . .config || doErr 'Unable to initialize config file'
   fi
-  . .config
-  export INIT=1 indent=0
-  test `expr $(date +%s) - $config_lastupdate` -gt 86400  && ./xsetup.sh
+  export is_init=true indent=0
 }
 
-test -z $INIT && init
+! $is_init && init
 
 inc_tab
 
@@ -213,7 +248,7 @@ start(){
       source_get
     else
       case $sty in
-        git) do_git $src $lib;;
+        git) git_clone $src $lib;;
         tgz|txz|tlz) wget_tarxx $src $lib;;
         svn) do_svn $src $lib;;
         hg) do_hg $src $lib;;
@@ -226,6 +261,8 @@ start(){
           ;;
       esac
     fi
+
+    pushdir $SRCDIR
 
     # check whether to custom config source
     if [ "$(type -t source_config)" = 'function' ]; then
@@ -258,7 +295,7 @@ start(){
 
   if [ -z "$BUILD_DIR" ];then
     case $build_tool in
-      cmake) BUILD_DIR="${SRCDIR}/build_${arch}"
+      cmake|meson) BUILD_DIR="${SRCDIR}/build_${arch}"
         [ -d "${BUILD_DIR}" ] && rm -rf ${BUILD_DIR}
         mkdir -p ${BUILD_DIR}
         ;;
@@ -266,7 +303,7 @@ start(){
     esac
   fi
   
-  pushdir ${BUILD_DIR}
+  popdir; pushdir ${BUILD_DIR}
 
   log_vars dep PKG_CONFIG_LIBDIR
   log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
@@ -297,7 +334,7 @@ start(){
         [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${BUILD_DIR}
         [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
         doLog 'cmake' $exec_config ${SRCDIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
-        case $cfg in ccm|ccmake) tput sc && ccmake .. && tput rc ;; esac
+        case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
         ;;
       automake)
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
@@ -305,7 +342,6 @@ start(){
         doLog 'configure' ${BUILD_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         ;;
       meson)
-        assert_tool meson
         local MESON_EXEC=$(check_tool_dependency meson)
         [ -z "$MESON_EXEC" ] && doErr 'Could not install meson. Aborting.'
         local MESON_CFG="$SRCDIR/${arch}.meson"
@@ -326,9 +362,9 @@ start(){
 
   # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
-  $build_static && str_contains LDFLAGS "-all-static" || pushvar_f LDFLAGS "-all-static"
+  $build_static && str_contains $LDFLAGS "-all-static" || pushvar_f LDFLAGS "-all-static"
 
-  ifdef_function 'build_make' && doLog 'make' build_make || doLog 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC}
+  ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC}
 
   ifdef_function 'patch_install' && patch_install
 
@@ -336,11 +372,16 @@ start(){
   ifdef_function 'build_install' && doLog 'install' build_install || doLog 'install' ${MAKE_EXECUTABLE} ${mki}
 
   # check whether to create pkg-config .pc file
-  if [ "$(type -t build_pkgconfig_file)" = 'function' ]; then
-    doLog 'pkgcfg' build_pkgconfig_file
-  elif [ -n "$pkgconfig_llib" ];then
+  ifdef_function 'build_pkgconfig_file' && \
+    doLog 'pkgcfg' build_pkgconfig_file || \
+    [ -n "$pkgconfig_llib" ] && \
     doLog 'write_pc' create_pkgconfig_file $pkg $pkgconfig_llib
-  fi
+    
+  #if [ "$(type -t build_pkgconfig_file)" = 'function' ]; then
+  #  doLog 'pkgcfg' build_pkgconfig_file
+  #elif [ -n "$pkgconfig_llib" ];then
+  #  doLog 'write_pc' create_pkgconfig_file $pkg $pkgconfig_llib
+  #fi
 
   # patch pkg-config files to relative paths
   # sed -i 's|'$LIBSDIR'|${prefix}|g' $PKGDIR/*.pc
@@ -441,8 +482,8 @@ build_packages_bin(){
 
 dep_add(){
   while [ -n "$1" ]; do
-    str_contains dep $1 || pushvar_f dep $1
-    # [[ "$dep" == *"$1"* ]] || dep="$1 $dep"
+    # doesnt work: str_contains $dep $1 || pushvar_f dep $1
+    [[ "$dep" == *"$1"* ]] || dep="$1 $dep" # bash
     shift
   done
 }
@@ -466,7 +507,7 @@ build_dependencies(){
       ldir="$(dirname ${pkgfile})"
       #local cmake_inc=$(./${1}.sh ${arch} --get cmake_include)
       #[ -n "$cmake_inc" ] && cmake_include_extra="$cmake_inc $cmake_include_extra"
-      str_contains PKG_CONFIG_LIBDIR ${ldir} || pushvar_f PKG_CONFIG_LIBDIR ${ldir}
+      str_contains $PKG_CONFIG_LIBDIR ${ldir} || pushvar_f PKG_CONFIG_LIBDIR ${ldir}
       #[[ "$PKG_CONFIG_LIBDIR" == *"${ldir}:"* ]] || PKG_CONFIG_LIBDIR="${ldir}:${PKG_CONFIG_LIBDIR}"
     fi
     shift
@@ -521,106 +562,14 @@ meson_create_toolchain(){
   cat ${1} >>${LOGFILE} 2>&1
 }
 
-cmake_create_toolchain_android(){
-  local cpu=$CPU
-  [ "$CPU" == "arm" ] && cpu="armv7-a"
-  cat <<-EOF >${cmake_toolchain_file}
-  set(CMAKE_SYSTEM_NAME Android)
-  set(CMAKE_SYSTEM_PROCESSOR ${cpu})
-  set(ANDROID_ABI ${ABI})
-  set(ANDROID_PLATFORM ${API})
-  set(ANDROID_NDK ${ANDROID_NDK_HOME})
-  set(CMAKE_FIND_ROOT_PATH ${SYSROOT}/usr $SYSROOT/usr/lib/${arch} ${SYSROOT}/usr/lib/${arch}/${API} ${LIBSDIR})
-  include(${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
-	EOF
-  
-}
-
 cmake_include_directories(){
   printf "include_directories($@)" >> $cmake_toolchain_file
 }
 
-cmake_create_toolchain_linuxgnu(){
-  cat <<-EOF >>${cmake_toolchain_file}
-  set(CMAKE_SYSTEM_NAME Linux)
-  set(CMAKE_SYSTEM_PROCESSOR ${CPU})
-  # search for programs in the build host directories
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-  # for libraries and headers in the target directories
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-	EOF
-  case $arch in
-    a*-linux-gnu*)
-      cat <<-EOF >>${cmake_toolchain_file}
-      # where is the target environment
-      set(CMAKE_FIND_ROOT_PATH /usr/${arch} /usr/lib/gcc-cross/${arch}/11)
-      # binutils
-      set(CMAKE_C_COMPILER ${arch}-gcc)
-      set(CMAKE_CXX_COMPILER ${arch}-g++)
-      set(CMAKE_AR ${arch}-ar CACHE FILEPATH Archiver)
-      set(CMAKE_RANLIB ${arch}-ranlib CACHE FILEPATH Indexer)
-			EOF
-      ;;
-    i686-linux-gnu)
-      cat <<-EOF >>${cmake_toolchain_file}
-      set(CMAKE_C_COMPILER ${arch}-gcc)
-      set(CMAKE_C_FLAGS "-m32")
-      set(CMAKE_CXX_COMPILER ${arch}-g++)
-      set(CMAKE_CXX_FLAGS "-m32")
-      set(CMAKE_AR ${arch}-ar CACHE FILEPATH Archiver)
-      set(CMAKE_RANLIB ${arch}-ranlib CACHE FILEPATH Indexer)
-      # where is the target environment
-      set(CMAKE_FIND_ROOT_PATH /usr/${arch} /usr/lib/gcc-cross/${arch}/10)
-			EOF
-      ;;
-    x86_64-linux-gnu)
-      cat <<-EOF >>${cmake_toolchain_file}
-      set(CMAKE_C_COMPILER gcc)
-      set(CMAKE_CXX_COMPILER g++)
-      # where is the target environment
-      set(CMAKE_FIND_ROOT_PATH /usr)
-			EOF
-      ;;
-  esac
-}
-
-cmake_create_toolchain_mingw32(){
-  local posix; $f_win_posix && posix="-posix"
-  cat <<-EOF >>${cmake_toolchain_file}
-  set(CMAKE_SYSTEM_NAME Windows)
-  set(CMAKE_SYSTEM_PROCESSOR ${CPU})
-  # where is the target environment
-  set(CMAKE_FIND_ROOT_PATH /usr/${arch} /usr/lib/gcc/${arch}/${xv_x64_mingw})
-  # search for programs in the build host directories
-  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-  # for libraries and headers in the target directories
-  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-  set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-  # binutils
-  set(CMAKE_C_COMPILER ${arch}-gcc${posix})
-  set(CMAKE_CXX_COMPILER ${arch}-g++${posix})
-  set(CMAKE_AR ${arch}-ar CACHE FILEPATH Archiver)
-  set(CMAKE_RANLIB ${arch}-ranlib CACHE FILEPATH Indexer)
-  set(CMAKE_RC_COMPILER ${arch}-windres)
-  set(CMAKE_MC_COMPILER ${arch}-windmc)
-  set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES}")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
-  set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
-  set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
-	EOF
-}
 
 # usage cmake_create_toolchain <dir>
 cmake_create_toolchain(){
-    export cmake_toolchain_file="${1}/${arch}.cmake"
-    case $PLATFORM in
-      Android) cmake_create_toolchain_android;;
-      Linux)   cmake_create_toolchain_linuxgnu;;
-      Windows) cmake_create_toolchain_mingw32;;
-    esac
+  export cmake_toolchain_file="${ROOTDIR}/xbuilder.cmake"
 }
 
 cargo_create_toolchain(){
@@ -708,7 +657,7 @@ log_start(){
   #echo -ne "$CC1  $@: "
   echo -ne "${C0}${ind}$(date '+%H:%M')"
   [ $eta ] && echo -ne "-${CW}$(date '+%H:%M' --date="$eta seconds")"
-  printf " ${CT1}%-10s ${CT0}%-21s${CD} " ${lib} ${arch}
+  printf " ${CT1}%-10s ${CT1}%-21s${CD} " ${lib} ${arch}
 }
 
 log_end(){
@@ -775,6 +724,14 @@ doLog() {
   logok $var
 }
 
+doLogP() {
+  local var=$1; shift
+  echo -ne "${CD}${var}"
+  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
+  "$@" 2>&1 | tee -a $LOGFILE | topct || err
+  logok $var
+}
+
 logok() {
   echo -ne "\e[${#1}D${CT0}${1}${C0} "
 }
@@ -784,7 +741,7 @@ logver() {
   if [ -f $1 ];then
     echo -ne "${CT1}version $(pkg-config --modversion $1)${C0}"
   else
-    echo -ne "${CS0} missing ${1}.pc ${C0}"
+    echo -ne "${CS0} missing ${1} ${C0}"
   fi
 }
 
@@ -802,12 +759,31 @@ isBottomRow(){
 # usage: do_git giturl [libname]
 do_git(){
   doLog 'git' git clone $1 $2
-  if $git_stable; then
+  [ -n "${vrs}" ] && {
     cd $2
-    local branch=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
-    [ -n "$branch" ] && doLog $branch git checkout $branch
+    doLog ${vrs} git checkout tags/${vrs}
     cd ..
-  fi
+  }
+}
+
+topct(){
+  printf "%-6s"
+  while read -r ln; do
+    printf "\e[5D%-5s" $(grep -oP '\d+%' <<< $ln)
+  done
+  printf "\e[6D"
+}
+
+git_clone(){
+  local var="git"
+  echo -ne "${CD}${var}"
+  git clone --progress --verbose $1 $2 |& tr '\r' '\n' | topct
+  logok $var
+  [ -n "${vrs}" ] && {
+    cd $2
+    doLog ${vrs} git checkout tags/${vrs}
+    cd ..
+  }
 }
 
 do_svn(){
@@ -871,12 +847,17 @@ wget_tarxx(){
     txz|tar_xz) args="-xvJ";;
   esac
   
-  wget -qO- $1 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args >/dev/null 2>&1 || err
+  mkdir tmp
+  wget -qO- $1 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
+  cd tmp
+  mv * $2 && mv $2 ..
+  cd ..
+  rm -rf tmp
   
-  if [ ! -f "${2}" ];then
-    local fname=$(basename $src | sed -E 's/[0-9\.-_].*//')
-    mv ${fname}* $2
-  fi
+  #if [ ! -f "${2}" ];then
+  #  local fname=$(basename $src | sed -E 's/[0-9\.-_].*//')
+  #  mv ${fname}* $2
+  #fi
   logok $tag
 }
 
@@ -1023,6 +1004,7 @@ patch_ndk_librt(){
 
 # usage: patch_zlib_createpc <sysroot-prefix>
 patch_zlib_createpc(){
+  [ -d "$LIBSDIR/lib/pkgconfig" ] && mkdir -p "$LIBSDIR/lib/pkgconfig"
   cat <<-EOF >$LIBSDIR/lib/pkgconfig/zlib.pc
   prefix=${1}
   libdir=\${prefix}/lib/${arch}
@@ -1200,7 +1182,7 @@ pkgInfo(){
     if [ -d $SRCDIR ];then
       set_git_version
       VS="${CT0}vrs: ${C0}$vrs "
-      str_contains vgit $vrs && \
+      str_contains $vgit $vrs && \
         pushvar_l VS 'updated' || \
         pushvar_l VS "$VS ${CT0}latest: ${CT1}${vgit}${C0}"
     else
@@ -1318,8 +1300,7 @@ while [ $1 ];do
       CPU="aarch64"
       ABI="arm64-v8a"
       EABI=
-      CT0=$CG0 CT1=$CG1 CS0=$CR0 CS1=$CR1
-      #CT0="\e[38;5;208m" CT1="\e[38;5;216m" CD="\e[38;5;59m"
+      CT0=$CG0 CT1=$CG1
       ;;
     aa7|arm-*android*eabi|arm-android)
       arch=arm-linux-androideabi
@@ -1330,7 +1311,6 @@ while [ $1 ];do
       ABI="armeabi-v7a"
       EABI="eabi"
       CT0=$CG0 CT1=$CG1
-      #CT0="\e[38;5;42m"; CT1="\e[38;5;51m"; CD="\e[38;5;59m"
       ;;
     a86|*86-*android)
       arch=i686-linux-android
@@ -1352,7 +1332,7 @@ while [ $1 ];do
       EABI=
       CT0=$CG0 CT1=$CG1
       ;;
-    la8|la64|a*64-linux|a*64-linux-gnu|rpi*64|rpi3b*)
+    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*)
       arch=aarch64-linux-gnu
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu
       LIBSDIR=$(pwd)/builds/arm/aarch64
