@@ -12,29 +12,19 @@ src='https://github.com/facebook/zstd.git'
 sty='git'
 cfg='cm'
 eta='134'
-cst0="-DZSTD_BUILD_STATIC=OFF"
-cst1="-DZSTD_BUILD_STATIC=ON"
-csh0="-DZSTD_BUILD_SHARED=OFF"
-csh1="-DZSTD_BUILD_SHARED=ON"
-cb0="-DZSTD_BUILD_PROGRAMS=OFF"
-cb1="-DZSTD_BUILD_PROGRAMS=ON"
+cstk="ZSTD_BUILD_STATIC"
+cshk="ZSTD_BUILD_SHARED"
+cbk="ZSTD_BUILD_PROGRAMS"
 cmake_path='lib/cmake/zstd'
-# -----------------------------------------
 
 . xbuilder.sh
-#CFG="-DZSTD_BUILD_TESTS=OFF -DZSTD_BUILD_CONTRIB=OFF \
-#  -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_LZ4_SUPPORT=OFF \
-#  -DZSTD_LZMA_SUPPORT=OFF -DZSTD_ZLIB_SUPPORT=OFF \
-#  -DZSTD_PROGRAMS_LINK_SHARED=OFF \
-#  -DZSTD_MULTITHREAD_SUPPORT=ON"
+
 SRCDIR=$SRCDIR/build/cmake/
-dbld=$SRCDIR/${arch}
 
 start
 
 # Filelist
 # --------
-
 # include/zstd_errors.h
 # include/zstd.h
 # include/zdict.h

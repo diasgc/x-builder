@@ -10,14 +10,12 @@ lic='As Is'
 src='https://git.code.sf.net/p/libpng/code'
 sty='git'
 cfg='cm'
-#mki='install/strip'
-#mkd=''
+mki='install/strip'
 eta='9'
-#cmake_path="lib/libpng"
-cst0="-DPNG_STATIC=OFF" cst1="-DPNG_STATIC=ON"
-csh0="-DPNG_SHARED=OFF" csh1="-DPNG_SHARED=ON"
-cb0="-DPNG_EXECUTABLES=OFF"
-cb1="-DPNG_EXECUTABLES=ON"
+cmake_path="lib/libpng"
+cstk="PNG_STATIC"
+cshk="PNG_SHARED"
+cbk="PNG_EXECUTABLES"
 
 . xbuilder.sh
 

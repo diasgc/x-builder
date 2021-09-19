@@ -503,10 +503,9 @@ build_dependencies(){
       ./${1}.sh ${arch} ${args} || err
     fi
     if [ -f "${pkgfile}" ]; then
-      # always add "First In Last Out":
+      local cmi=$(./${1}.sh ${arch} --get cmake_include)
+      [ -n "$cmi" ] && pushvar_f cmake_includes $cmi
       ldir="$(dirname ${pkgfile})"
-      #local cmake_inc=$(./${1}.sh ${arch} --get cmake_include)
-      #[ -n "$cmake_inc" ] && cmake_include_extra="$cmake_inc $cmake_include_extra"
       str_contains $PKG_CONFIG_LIBDIR ${ldir} || pushvar_f PKG_CONFIG_LIBDIR ${ldir}
       #[[ "$PKG_CONFIG_LIBDIR" == *"${ldir}:"* ]] || PKG_CONFIG_LIBDIR="${ldir}:${PKG_CONFIG_LIBDIR}"
     fi
@@ -1534,6 +1533,6 @@ export arch update retry \
   build_shared build_static build_bin build_tool \
   CSH CBN LIBSDIR PLATFORM CPU ABI EABI \
   host_arch host_64 host_eabi host_vnd host_arm host_os \
-  f_win_posix MAKE_EXECUTABLE=make
+  f_win_posix MAKE_EXECUTABLE=make cmake_includes
 
 main

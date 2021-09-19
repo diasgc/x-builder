@@ -10,6 +10,7 @@ set(XB_SYSROOT $ENV{SYSROOT})
 set(XB_NDK_API $ENV{API})
 set(XB_ABI $ENV{ABI})
 set(XB_CPU $ENV{CPU})
+set(XB_CMAKE_INCLUDES $ENV{cmake_includes})
 set(XB_ARMLINUX_TCVERSION 11)
 set(XB_X86LINUX_TCVERSION 10)
 set(XB_W64MINGW_TCVERSION 10)
@@ -24,7 +25,7 @@ if(NOT XB_NDK_API)
     set(XB_NDK_API 24)
 endif()
 
-message("XB_HOST=${XB_HOST}, XB_INSTALL=${XB_INSTALL} XB_SYSROOT=${XB_SYSROOT} XB_NDK_API=${XB_NDK_API} XB_POSIX=${XB_POSIX}")
+# message("XB_CMAKE_INCLUDES=${XB_CMAKE_INCLUDES} XB_POSIX=${XB_POSIX}")
 
 if(XB_OS STREQUAL "android")
 
@@ -37,23 +38,21 @@ if(XB_OS STREQUAL "android")
     set(ANDROID_ABI ${XB_ABI})
     set(ANDROID_PLATFORM ${XB_NDK_API})
     set(ANDROID_NDK $ENV{ANDROID_NDK_HOME})
-    set(CMAKE_FIND_ROOT_PATH
-        ${XB_SYSROOT}/usr $SYSROOT/usr/lib/${XB_HOST}
-        ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API}
-        ${XB_INSTALL}/lib)
+    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr 
+        ${XB_SYSROOT}/usr/lib/${XB_HOST} ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API} ${XB_INSTALL})
     include(${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
-
+    
 elseif(XB_OS STREQUAL "gnu")
 
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
     if(XB_HOST MATCHES "^a")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST} ${XB_INSTALL}
             /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION})
     elseif(XB_HOST MATCHES "^i")
         set(CMAKE_C_FLAGS "-m32")
         set(CMAKE_CXX_FLAGS "-m32")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST} ${XB_INSTALL}
             /usr/lib/gcc-cross/${XB_HOST}/${XB_X86LINUX_TCVERSION})
     endif()
     if(XB_HOST MATCHES "^x86_64")
@@ -70,7 +69,7 @@ elseif(XB_OS STREQUAL "mingw32")
 
     set(CMAKE_SYSTEM_NAME Windows)
     set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
-    set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+    set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST} ${XB_INSTALL}
         /usr/lib/gcc/${XB_HOST}/${XB_W64MINGW_TCVERSION})
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -87,4 +86,8 @@ elseif(XB_OS STREQUAL "mingw32")
     set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 
+endif()
+
+if(XB_CMAKE_INCLUDES)
+    include_directories(XB_CMAKE_INCLUDES)
 endif()

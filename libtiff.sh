@@ -17,6 +17,7 @@ eta='150'
 mkc='distclean'
 mki='install/strip'
 cmake_path='lib/cmake/tiff'
+f_win_posix=true
 
 extraOpts(){
     case $1 in
@@ -31,6 +32,9 @@ extraOpts(){
 }
 
 . xbuilder.sh
+
+pushvar_f CFLAGS "-I${LIBSDIR}/include"
+pushvar_f CXXFLAGS "-I${LIBSDIR}/include"
 
 build_install(){
 	#no html
