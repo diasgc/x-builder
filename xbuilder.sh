@@ -727,7 +727,8 @@ doLogP() {
   local var=$1; shift
   echo -ne "${CD}${var}"
   echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  "$@" 2>&1 | tee -a $LOGFILE | topct || err
+  "$@" 2>&1 | tee -a $LOGFILE | topct
+  [ $? -eq 0 ] || err
   logok $var
 }
 
@@ -768,6 +769,7 @@ do_git(){
 topct(){
   printf "%-6s"
   while read -r ln; do
+    str_contains $ln 'error: ' && printf $CR1
     printf "\e[5D%-5s" $(grep -oP '\d+%' <<< $ln)
   done
   printf "\e[6D"
@@ -1416,6 +1418,18 @@ while [ $1 ];do
     --bin)      build_bin=true CBN="${cb1}";;
     --nobin)    build_bin=false CBN="${cb0}";;
     --nodist)   bdist=false;;
+    --clear) shift
+      while [ -n "$1" ];do
+        case $1 in
+          source|src) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
+          all-sources) rm -rf sources 2>/dev/null;;
+          all-builds) rm -rf builds 2>/dev/null;;
+          all-packages) rm -rf packages 2>/dev/null;;
+        esac
+        shift
+      done
+      exit 0
+      ;;
     --get) shift
       pkgfile="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
       case $1 in
