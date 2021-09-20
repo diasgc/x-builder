@@ -1,37 +1,21 @@
 #!$SHELL
 # ................................................
-# builder util 0.3.1 2021-diasgc
+# X-Builder util 0.3.1 2021-diasgc
 # ................................................
-vsh='0.3.1'
-# def colors
-C0="\e[0m" CW="\e[97m"  CD="\e[90m" CW2="\e[38;5;234m" CW3="\e[38;5;238m" CW4="\e[38;5;242m"  CW5="\e[38;5;246m" CW6="\e[38;5;250m"
-CR0="\e[31m" CR1="\e[91m" CR2="\e[38;5;52m" CR3="\e[38;5;88m" CR4="\e[38;5;124m" CR5="\e[38;5;160m"  CR6="\e[38;5;196m"
-CY0="\e[33m" CY1="\e[93m" CY2="\e[38;5;58m" CY3="\e[38;5;94m" CY4="\e[38;5;136m" CY5="\e[38;5;178m"  CY6="\e[38;5;220m"
-CG0="\e[32m" CG1="\e[92m" CG2="\e[38;5;46m" CG3="\e[38;5;82m" CG4="\e[38;5;118m" CG5="\e[38;5;154m"  CG6="\e[38;5;190m"
-CC0="\e[36m" CC1="\e[96m" CC2="\e[38;5;49m" CC3="\e[38;5;85m" CC4="\e[38;5;122m" CC5="\e[38;5;123m"  CC6="\e[38;5;195m"
-CB0="\e[34m" CB1="\e[94m" CB2="\e[38;5;26m" CB3="\e[38;5;69m" CB4="\e[38;5;111m" CB5="\e[38;5;152m"  CB6="\e[38;5;153m"
-CM0="\e[35m" CM1="\e[95m" CM2="\e[38;5;54m" CM3="\e[38;5;91m" CM4="\e[38;5;126m" CM5="\e[38;5;162m"  CM6="\e[38;5;198m"
+. .commons
 
-CO0="\e[38;5;130m" CO1="\e[38;5;166m" CO2="\e[38;5;202m" CO3="\e[38;5;208m"  CO4="\e[38;5;214m" CO5="\e[38;5;220m" CO6="\e[38;5;223m"
-CF0="\e[38;5;53m"  CF1="\e[38;5;89m"  CF2="\e[38;5;125m" CF3="\e[38;5;161m"  CF4="\e[38;5;197m" CF5="\e[38;5;211m" CF6="\e[38;5;219m"
-CL0="\e[38;5;34m" CL1="\e[38;5;72m" CL2="\e[38;5;114m" CL3="\e[38;5;120m"  CL4="\e[38;5;156m" CL5="\e[38;5;192m" CL6="\e[38;5;230m"
-
-# theme colors
-CT0=$CM0 CT1=$CM1 CS0=$CR0 CS1=$CR1 SSB=$C0
-
-# variables
+trap err ERR
 
 [ -z "${debug+x}" ] && debug=false
 [ -z "${is_init+x}" ] && is_init=false
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
-
 cmake_build_type=Release
 cmake_toolchain_file=
 banner=true
-update=
-retry=
 posix=
+update=false
+retry=false
 
 # default build static, no shared, no executables
 build_shared=false
@@ -46,112 +30,6 @@ only_repo=false
 pc_filelist=
 
 shell_dstack=
-
-
-
-# some tools
-
-ifdef_function(){
-  [ "$(type -t $1)" = 'function' ]
-}
-
-str_contains(){
-   [ -z "${1##*${2}*}" ]
-}
-
-str_lowercase(){
-  echo ${1} | tr '[:upper:]' '[:lower:]'
-}
-
-str_uppercase(){
-  echo ${1} | tr '[:lower:]' '[:upper:]'
-}
-
-# exclusive variable add substrings left var_xaddl <var> <substrings...>
-# appends substrings to the left/start of var iff main doesnt contains substring
-var_xaddl(){
-  local v=$1; shift
-    while [ -n "$1" ];do
-        [ -z "${!v##*${1}*}" ] || eval $v=\"${1} ${!v}\"
-        shift
-    done
-}
-
-# exclusive variable add substrings right var_xaddl <var> <substrings...>
-# appends substrings to the right/end of var variable iff main doesnt contains substring
-var_xaddr(){
-    local v=$1; shift
-    while [ -n "$1" ];do
-        [ -z "${!v##*${1}*}" ] || eval $v=\"${!v} ${1} \"
-        shift
-    done
-}
-
-var_addr(){
-    local v=$1; shift; eval $v=\"${!v} $@\"
-}
-
-var_addl(){
-    local v=$1; shift; eval $v=\"$@ ${!v}\"
-}
-
-pushvar_f(){
-  var_addl $@
-}
-
-pushvar_l(){
-  var_addr $@
-}
-
-popvar_f(){
-  local n=$1
-  local v=( ${!1} )
-  case ${#v[@]} in
-    0) echo;;
-    1) echo $v; eval $n=;;
-    *) local p="${v%% *} "
-       echo $p
-       eval $n=\"${v#$p}\"
-       ;;
-  esac
-}
-
-popvar_l(){
-  local n=$1
-  local v=( ${!1} )
-  case ${#v[@]} in
-    0) echo;;
-    1) echo $v; eval $n=;;
-    *) local p="${v## *} "
-       echo $p
-       eval $n=\"${v%$p}\"
-       ;;
-  esac
-}
-
-pushdir(){
-  case $SHELL in
-    *bash) pushd $1 >/dev/null 2>&1;;
-    *) pushvar_f shell_dstack $1; cd $1;;
-  esac
-}
-
-popdir(){
-  case $SHELL in
-    *bash) popd >/dev/null 2>&1;;
-    *) local d=$(popvar_f shell_dstack); [ -n "$d" ] && cd $d;;
-  esac
-}
-
-inc_tab(){
-  indent=$(expr "$indent" + 2)
-  ind=$(printf '%*s' "$indent")
-}
-
-dec_tab(){
-  indent=$(expr "$indent" - 2)
-  [ $indent -gt 0 ] && ind=$(printf '%*s' "$indent") || unset ind
-}
 
 aptInstallBr(){
   while [ -n "$1" ];do
@@ -190,7 +68,6 @@ main(){
   #[ -z "${cmake_toolchain_file}" ] && 
   logtime_start=0
   logtime_end=0
-  update=
 
   PKGDIST="${ROOTDIR}/dist/${lib}"
   INSTALL_DIR=$LIBSDIR
@@ -217,7 +94,7 @@ main(){
 start(){
   
   # if pkgconfig.pc file exists and not for update, it's done
-  [ -z "$update" ] && [ -f "${PKGDIR}/${pkg}.pc" ] && exit
+  ! $update && [ -f "${PKGDIR}/${pkg}.pc" ] && exit
   
   # Reset LOGFILE
   [ -f "${LOGFILE}" ] && rm -f $LOGFILE
@@ -238,8 +115,9 @@ start(){
   $build_bin && echo -ne "${bss}${SSB}[bin]${C0} " || echo -ne "${bss}${CD}[bin]${C0} "
   cd $SOURCES
 
-  test -n "$update" && rm -rf $SRCDIR
-  [ -z "$retry" ] && [ "${BUILD_DIR}" != "$SRCDIR" ] && rm -rf ${BUILD_DIR}
+  $update && rm -rf $SRCDIR
+
+  ! $retry && [ "${BUILD_DIR}" != "$SRCDIR" ] && rm -rf ${BUILD_DIR}
 
   if [ ! -d $SRCDIR ];then
     
@@ -364,7 +242,7 @@ start(){
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
   $build_static && str_contains $LDFLAGS "-all-static" || pushvar_f LDFLAGS "-all-static"
 
-  ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC}
+  ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
 
   ifdef_function 'patch_install' && patch_install
 
@@ -727,8 +605,8 @@ doLogP() {
   local var=$1; shift
   echo -ne "${CD}${var}"
   echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  "$@" 2>&1 | tee -a $LOGFILE | topct
-  [ $? -eq 0 ] || err
+  set -o pipefail
+  ("$@" |& tee -a $LOGFILE | topct) || doErr "in ${var}:\n\n...\n$(tail -n5 $LOGFILE)${C0}"
   logok $var
 }
 
@@ -1014,7 +892,7 @@ patch_zlib_createpc(){
   Name: zlib
   Description: zlib compression library
   Version: 1.2.11
-  Libs: -L\${libdir] -lz
+  Libs: -L\${libdir} -lz
   Cflags: -I\${includedir}
 	EOF
 }
@@ -1400,17 +1278,14 @@ while [ $1 ];do
     --help|-h) showBanner && usage && exit 0;;
     --clean ) clean && exit 0;;
     --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
-    --update )
-      rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null
-      rm -rf $(pwd)/sources/$lib >/dev/null
-      ;;
+    --update )  update=true;;
     --vrep)     getGitLastTag $src && exit 0;;
     --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
     --checkPkg) checkPkg && exit 0;;
     --libName)  echo $lib && exit 0;;
     --getVar)   shift && echo $($1) && exit 0;;
-    --refresh)  update=1;;
-    --retry)    retry=1;;
+    --refresh)  update=true;;
+    --retry)    retry=true;;
     --rebuild)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
     --shared)   build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;

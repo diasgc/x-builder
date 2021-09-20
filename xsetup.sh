@@ -2,38 +2,12 @@
 # ................................................
 # setup util 1.0 2021-diasgc
 # ................................................
+. .commons
 
-# def colors
-C0="\e[0m" CW="\e[97m" CD="\e[90m"
-CR0="\e[31m" CR1="\e[91m"
-CG0="\e[32m" CG1="\e[92m"
-CY0="\e[33m" CY1="\e[93m"
-CB0="\e[34m" CB1="\e[94m"
-CM0="\e[35m" CM1="\e[95m"
-CC0="\e[36m" CC1="\e[96m"
-
-vsh="1.0"
-#b="\u25ba"
-b="\u2605"
-c="\u2714"
-
+echo -ne "$CY1  Request to sudo apt update "; sudo apt update |& prt_progress
 sudo echo -ne "\r" || exit 1
 
 [ "$1" == "--debug" ] && shift && set -x
-
-banner(){
-    echo -ne "\n\n  ${CW}Setup Utility for XSh Scripts ${vsh}${C0}\n  "
-    echo -ne "Running on $(uname -m) $(uname -o) "
-    [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
-    if [ -n "$(uname -r | grep 'microsoft')" ];then
-        echo -ne "${CD}WSL2 "
-    elif [ -n "$(uname -r | grep 'Microsoft')" ];then
-        echo -ne "${CD}WSL "
-    else
-        echo -ne "${CD} "
-    fi
-    echo -e "$(uname -r)${C0}\n"
-}
 
 aptInstall(){
     local showV=1
@@ -210,6 +184,7 @@ check4Ndk(){
             test "$(echo "$testVer $ndkVer" | tr " " "n" | sort -V | head -n 1)" != "$testVer" && ndkVer=$testVer && ndkDir=$testDir
         done
         if [ -n "$ndkDir" ] && [ -d "$ndkDir" ]; then
+            export ANDROID_NDK_HOME=${ndkDir}
             echo -e "${CC0}  ${b} Android NDK${C0}\t\tfound at $ndkDir $ndkVer"
             [ -z "$(cat ~/.bashrc | grep 'ANDROID_NDK_HOME')" ] && printf "\nexport ANDROID_NDK_HOME=$ndkDir\n" >> ~/.bashrc && source ~/.bashrc
         else
@@ -220,25 +195,9 @@ check4Ndk(){
     
 }
 
-# vercomp v1 v2 returns 0: v1=v2, 1: v1>v2, 2: v1<v2
-vercomp () {
-    test "$1" = "$2" && return 0
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++)); do
-        test -z "${ver2[i]}" && ver2[i]=0
-        if ((10#${ver1[i]} > 10#${ver2[i]})); then return 1; fi
-        if ((10#${ver1[i]} < 10#${ver2[i]})); then return 2; fi
-    done
-    return 0
-}
-
 writeConfig(){
     local ldate=$(date +%s)
+    local xv_ndk=$(getAndroidNdkHomeVersion $ANDROID_NDK_HOME)
     local xv_aarch64_gnu=$(ls -t /usr/lib/gcc-cross/aarch64-linux-gnu 2>/dev/null | head -n1)
     local xv_armeabi_gnu=$(ls -t /usr/lib/gcc-cross/arm-linux-gnueabihf 2>/dev/null | head -n1)
     local xv_x64_gnu=$(ls -t /usr/lib/gcc/x86_64-linux-gnu 2>/dev/null | head -n1)
@@ -261,27 +220,51 @@ writeConfig(){
     cat <<-EOF >${1}
     #!/bin/bash
     export config_lastupdate=${ldate} \\
-           xv_aarch64_gnu=${xv_aarch64_gnu} \\
-           xv_armeabi_gnu=${xv_armeabi_gnu} \\
-           xv_x86_gnu=${xv_x86_gnu} \\
-           xv_x64_gnu=${xv_x64_gnu} \\
-           xv_x64_mingw=${xv_x64_mingw} \\
-           xv_x86_mingw=${xv_x86_mingw} \\
+           ROOTDIR=$(pwd) \\
+           ANDROID_NDK_HOME=${ANDROID_NDK_HOME} \\
            MAKE_EXECUTABLE=$(which make) \\
            CMAKE_EXECUTABLE=$(which cmake) \\
            NASM_EXECUTABLE=$(which nasm) \\
            PKG_CONFIG=$(which pkg-config) \\
            BUILD_TRIP=$BUILD_TRIP \\
            HOST_NPROC=$(nproc) \\
-           ROOTDIR=$(pwd)
+           LLVM_MINGW_HOME=${llvm_mingw} \\
+           xv_ndk=${xv_ndk} \\
+           xv_llvm_mingw=${xv_llvm_mingw} \\
+           xv_aarch64_gnu=${xv_aarch64_gnu} \\
+           xv_armeabi_gnu=${xv_armeabi_gnu} \\
+           xv_x86_gnu=${xv_x86_gnu} \\
+           xv_x64_gnu=${xv_x64_gnu} \\
+           xv_x64_mingw=${xv_x64_mingw} \\
+           xv_x86_mingw=${xv_x86_mingw}
+           
+           
 	EOF
 }
 
-banner
+find_llvm_mingw(){
+    echo -ne "searching..."
+    llvm_mingw=$(find ~ -name "aarch64-w64-mingw32-clang")
+    [ -f "$llvm_mingw" ] && {
+        xv_llvm_mingw="$(${llvm_mingw} --version | grep -oP '\d*\.\d*.\d* (?=\()')"
+        llvm_mingw=$(dirname "${llvm_mingw%/*}")
+        echo -ne " found $xv_llvm_mingw at $llvm_mingw "
+        [ -d "$llvm_mingw" ] && return 0
+    }
+    unset llvm_mingw
+    echo -ne "not found"
+}
+
+banner 'Setup Utility'
+
+# load config
+[ -f ".config" ] && . .config
 
 echo -e "${CC1}${b} Toolchains${C0}"
 #ANDROID NDK
 check4Ndk
+
+[ ! -d "$LLVM_MINGW_HOME" ] && find_llvm_mingw || echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw (found at ~/${LLVM_MINGW_HOME#"$HOME"/}) "
 
 #MINGW
 check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'

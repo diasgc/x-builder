@@ -12,23 +12,26 @@ svn='https://svn.code.sf.net/p/lame/svn'
 src="${svn}/trunk/lame"
 sty='svn'
 #src='https://github.com/despoa/LAME.git'
-#sty='git'
 cfg='ac'
 dep='libiconv'
 eta='180'
+mki='install-strip'
+mkc='distclean'
 cb0="--disable-frontend"
-cb1="--enable-frontend"
+cb1="--enable-frontend" #cannot build frontend
+
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-decoder --disable-debug"
-[[ $arch = *mingw32* ]] && CFG="$CFG --enable-expopt=full"
+CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-gtktest --disable-decoder --disable-debug"
+
+[ "$host_os" == "mingw32" ] && CFG+=" --enable-expopt=full"
 
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
 # make shared executable so
 $build_shared && $build_bin && CBN="--enable-dynamic-frontends"
-mkf="-Wno-shift-negative-value -Wno-unused-variable"
+
 
 build_patch_config(){
 	#no docs

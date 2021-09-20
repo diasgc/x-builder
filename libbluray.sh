@@ -10,7 +10,7 @@ lic='LGPL-2.1'
 src='https://code.videolan.org/videolan/libbluray.git'
 sty='git'
 cfg='ar'
-dep='libxml2 freetype fontconfig'
+dep='libxml2 freetype fontconfig libudfread'
 pkg='libbluray'
 eta='60'
 
