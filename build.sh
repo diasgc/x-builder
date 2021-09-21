@@ -1,11 +1,4 @@
 #!/bin/bash
-C0="\e[0m" CW="\e[97m" CD="\e[90m"
-CR0="\e[31m" CR1="\e[91m"
-CG0="\e[32m" CG1="\e[92m"
-CY0="\e[33m" CY1="\e[93m"
-CB0="\e[34m" CB1="\e[94m"
-CM0="\e[35m" CM1="\e[95m"
-CC0="\e[36m" CC1="\e[96m"
 
 [ "${1}" == "--debug" ] && shift && set -x
 
@@ -24,9 +17,7 @@ while test ${#} -gt 0; do
     shift
 done
 
-#echo -e "  Build ${sh}.sh <${args}> for ${CG0}${archs}${C0}"
-
-opts=
+unset opts
 for arch in $archs; do
     ./${sh}.sh ${arch} ${args} ${opts}
     opts="--nobanner"

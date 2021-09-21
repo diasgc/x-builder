@@ -41,9 +41,11 @@ EOF
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +  +   +   +   .   .   .   .   .   .   .  static
-#  +  +   +   +   .   .   .   .   .   .   .  shared
+#     Aa8 Aa7 A86 A64
+# NDK ++o ++o ++o ++o clang
+# GNU  .   .   .   .  gcc
+# WIN +++ +++  .   .  clang/gcc
+
 # Filelist
 # --------
 # include/Lerc_c_api.h

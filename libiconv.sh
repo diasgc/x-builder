@@ -1,18 +1,16 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   .   +   .   .   .   .   .  static
-#  +   +   +   +   .   +   .   .   .   .   .  shared
-#  +   +   +   +   .   +   .   .   .   .   .  bin
+
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ CLANG
+# GNU  +   +   +   +  GCC
+# WIN  F   F   +   +  CLANG/GCC
 
 lib='libiconv'
-apt=''
 dsc='Character set conversion library'
-lic='GPL'
+lic='LGPL2.1'
 vrs='1.16'
-#src='https://git.savannah.gnu.org/git/libiconv.git'
-#sty='git'
-src="https://ftp.gnu.org/gnu/libiconv/libiconv-${vrs}.tar.gz"
-sty='tgz'
+#src='https://git.savannah.gnu.org/git/libiconv.git' sty='git'
+src="https://ftp.gnu.org/gnu/libiconv/libiconv-${vrs}.tar.gz" sty='tgz'
 cfg='ac'
 eta='90'
 pkgconfig_llib="-liconv"
@@ -22,6 +20,7 @@ pkgconfig_url="https://www.gnu.org/software/libiconv"
 
 CFG="--with-sysroot=${SYSROOT}"
 
+# don't use git or it will dowload gnulib
 source_patch(){
 	if [ $sty = 'git' ];then
 		$SRCDIR/gitsub.sh pull
@@ -38,7 +37,6 @@ start
 
 # Filelist
 # --------
-
 # include/iconv.h
 # include/libcharset.h
 # include/localcharset.h

@@ -5,24 +5,23 @@
 #  .   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='jq'
-pkg='jq'
-apt='jq'
 dsc='Lightweight and flexible command-line JSON processor'
-lic=''
+lic='Other'
+vrs='jq-1.6' # latest
 src='https://github.com/stedolan/jq.git'
 sty='git'
 cfg='ar'
-tls=''
-dep=''
+dep='oniguruma'
 eta='22'
-mkclean='distclean'
+mkc='distclean'
+mki='install-strip'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-oniguruma=builtin --disable-maintainer-mode "
+CFG="--with-sysroot=${SYSROOT} --disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
 CSH=0
 
-source_patch(){
+_source_patch(){
     pushdir $SRCDIR
     doLog 'git2' git submodule update --init # if building from git to get oniguruma
     popdir

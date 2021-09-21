@@ -2,20 +2,22 @@
 # ................................................
 # X-Builder util 0.3.1 2021-diasgc
 # ................................................
-. .commons
+[ -z ${vsh+x} ] && . .common
 
 trap err ERR
 
-[ -z "${debug+x}" ] && debug=false
-[ -z "${is_init+x}" ] && is_init=false
+[ -z ${debug+x} ] && debug=false
+[ -z ${is_init+x} ] && is_init=false
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
 cmake_build_type=Release
 cmake_toolchain_file=
 banner=true
-posix=
+mingw_posix_suffix=
 update=false
 retry=false
+use_llvm_mingw=true
+use_clang=true
 
 # default build static, no shared, no executables
 build_shared=false
@@ -345,7 +347,7 @@ build_packages_bin(){
       [ ! -d "${xb_pkgd}" ] && mkdir -p $xb_pkgd
       if [ -n "${pc_filelist}" ];then
         for pp in ${pc_filelist}; do
-          cp $PKGDIR/${pp}.pc ${xb_pkgd}/
+          cp $PKGDIR/${pp} ${xb_pkgd}/
         done
       else
         cp $PKGDIR/${pkg}.pc ${xb_pkgd}/
@@ -982,21 +984,31 @@ loadToolchain(){
       LDFLAGS="${LDFLAGS} -L${LT_SYS_LIBRARY_PATH}"
       ;;
     Windows)
-      local ltsdir=$(ls -t /usr/lib/gcc/${arch} | grep -E "*-win32" | head -n1)
-      PLATFORM=Windows
-      TOOLCHAIN="/usr/${arch}/bin"
-      SYSROOT="/usr/${arch}"
-      CROSS_PREFIX="${arch}-"
-      $f_win_posix && posix="-posix" || unset posix
-      CC="${CROSS_PREFIX}gcc${posix}"
-      CXX="${CROSS_PREFIX}g++${posix}"
-      AS="${CROSS_PREFIX}as"
-      LD="${CROSS_PREFIX}ld"
-      LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${ltsdir}"
+      local ltsdir
+      PLATFORM='Windows'
+      if [ -n "${LLVM_MINGW_HOME}" ] && $use_llvm_mingw; then
+        TOOLCHAIN="${LLVM_MINGW_HOME}/bin"
+        SYSROOT="${LLVM_MINGW_HOME}/${arch}"
+        CROSS_PREFIX="${TOOLCHAIN}/${arch}-"
+        $use_clang && {
+          CC="${CROSS_PREFIX}clang" CXX="${CC}++"
+        } || {
+          CC="${CROSS_PREFIX}gcc" CXX="${CROSS_PREFIX}g++"
+        }
+        LT_SYS_LIBRARY_PATH="${LLVM_MINGW_HOME}/lib/clang/${xv_llvm_mingw}"
+      else
+        CROSS_PREFIX="${arch}-"
+        TOOLCHAIN="/usr/${arch}/bin"
+        SYSROOT="/usr/${arch}"
+        $f_win_posix && posix="-posix" || unset posix
+        CC="${CROSS_PREFIX}gcc${posix}"
+        CXX="${CROSS_PREFIX}g++${posix}"
+        LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
+      fi
+      LD="${CROSS_PREFIX}ld" AS="${CROSS_PREFIX}as"
       LDFLAGS="${LDFLAGS} -L${LT_SYS_LIBRARY_PATH}"
       ;;
   esac
-
   AR=${CROSS_PREFIX}ar
   NM=${CROSS_PREFIX}nm
 
@@ -1175,103 +1187,90 @@ while [ $1 ];do
       arch=aarch64-linux-android
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android
       LIBSDIR=$(pwd)/builds/android/arm64-v8a
-      PLATFORM="Android"
-      CPU="aarch64"
-      ABI="arm64-v8a"
-      EABI=
+      PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
     aa7|arm-*android*eabi|arm-android)
       arch=arm-linux-androideabi
       host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android
       LIBSDIR=$(pwd)/builds/android/armeabi-v7a
-      PLATFORM="Android"
-      CPU="arm"
-      ABI="armeabi-v7a"
-      EABI="eabi"
+      PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
       CT0=$CG0 CT1=$CG1
       ;;
     a86|*86-*android)
       arch=i686-linux-android
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android
       LIBSDIR=$(pwd)/builds/android/x86
-      PLATFORM="Android"
-      CPU="i686"
-      ABI="x86"
-      EABI=
+      PLATFORM="Android" CPU="i686" ABI="x86" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
     a64|*64-*android)
       arch=x86_64-linux-android
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android
       LIBSDIR=$(pwd)/builds/android/x86_64
-      PLATFORM="Android"
-      CPU="x86_64"
-      ABI="x86_64"
-      EABI=
+      PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
     la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*)
       arch=aarch64-linux-gnu
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu
       LIBSDIR=$(pwd)/builds/arm/aarch64
-      PLATFORM="Linux"
-      CPU="aarch64"
-      ABI="aarch64"
-      EABI=
+      PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
       CT0=$CM0 CT1=$CM1
       ;;
     la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*)
       arch=arm-linux-gnueabihf
       host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/arm/armeabihf
-      PLATFORM="Linux"
-      CPU="arm"
-      ABI="arm"
-      EABI="eabihf"
+      PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
       CT0=$CM0 CT1=$CM1
       ;;
     l86|*86-linux*|linux*32 )
       arch=i686-linux-gnu
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/linux/i686
-      PLATFORM="Linux"
-      CPU="i686"
-      ABI="x86"
-      EABI=
+      PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
       CT0=$CM0 CT1=$CM1
       ;;
     l64|*64-linux*|linux*64|linux )
       arch=x86_64-linux-gnu
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/linux/x86_64
-      PLATFORM="Linux"
-      CPU="x86_64"
-      ABI="x86_64"
-      EABI=
+      PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CM0 CT1=$CM1
+      ;;
+    wa8|a*64-w64*|a*64-*mingw*)
+      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for aarch64-w64-mingw32 is not installed"
+      arch='aarch64-w64-mingw32'
+      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32
+      LIBSDIR=$(pwd)/builds/windows/aarch64
+      PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
+      CT0=$CC0 CT1=$CC1
+      ;;
+    wa7|arm*-w64*|arm*-*mingw*)
+    [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
+      arch=armv7-w64-mingw32
+      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32
+      LIBSDIR=$(pwd)/builds/windows/armv7
+      PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
+      CT0=$CC0 CT1=$CC1
       ;;
     w64|*64-win*|*64-*mingw*|windows|win|w*64)
       arch=x86_64-w64-mingw32
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/x86_64
-      PLATFORM="Windows"
-      CPU="x86_64"
-      ABI="x86_64"
-      EABI=
+      PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
     w86|*86-win*|*86-*mingw*|w*32)
       arch=i686-w64-mingw32
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/i686
-      PLATFORM="Windows"
-      CPU="i686"
-      ABI="x86"
-      EABI=
+      PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
     --api) shift && export API=$1;;
+    --clang) use_clang=true;;
     --prefix) shift && LIBSDIR=$1;;
     --stable) git_stable=true;;
     --desc ) echo $dsc && exit 0;;
@@ -1399,7 +1398,15 @@ case $cfg in
     [ -z "$cst0" ] && cst0="--disable-static"
     [ -z "$cst1" ] && cst1="--enable-static"
     [ -z "$csh0" ] && csh0="--disable-shared"
-    [ -n "$cbk" ] && cb0="--enable-${cbk}=0" cb1="--enable-${cbk}=1"
+    [ -z "$csh1" ] && csh0="--enable-shared"
+    [ -n "$cbk" ] && {
+      case $cbk in
+        --enable-*) cb0="${cbk}=0"; cb1="${cbk}=1";;
+        able-*) cb0="--dis${cbk}"; cb1="--en${cbk}";;
+        with-*) cb0="--without-${cbk:5}"; cb1="--${cbk}";;
+        *) cb0="--enable-${cbk}=0" cb1="--enable-${cbk}=1";;
+      esac
+    }
     ;;
   meson)
     build_tool=meson

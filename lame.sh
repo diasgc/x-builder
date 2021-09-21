@@ -8,49 +8,31 @@
 lib='lame'
 dsc='LAME is a high quality MPEG Audio Layer III (MP3) encoder'
 lic='LGPL'
-svn='https://svn.code.sf.net/p/lame/svn'
-src="${svn}/trunk/lame"
-sty='svn'
-#src='https://github.com/despoa/LAME.git'
+svn='https://svn.code.sf.net/p/lame/svn' #sty='svn'
+src="${svn}/trunk/lame" #src='https://github.com/despoa/LAME.git'
 cfg='ac'
 dep='libiconv'
 eta='180'
 mki='install-strip'
 mkc='distclean'
-cb0="--disable-frontend"
-cb1="--enable-frontend" #cannot build frontend
-
+cbk="able-frontend"
+pkgconfig_llib="-lmp3lame"
+API=26 # required for frontends build
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-gtktest --disable-decoder --disable-debug"
-
-[ "$host_os" == "mingw32" ] && CFG+=" --enable-expopt=full"
-
+# update latest version
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
+CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-gtktest --disable-decoder --disable-debug"
+[ "$host_os" == "mingw32" ] && CFG+=" --enable-expopt=full"
 # make shared executable so
 $build_shared && $build_bin && CBN="--enable-dynamic-frontends"
-
+[ "$host_os" == "android" ] && [ $API -lt 26 ] && unset CBN
 
 build_patch_config(){
 	#no docs
 	sed -i '/^SUBDIRS/ {s/ doc//}' $SRCDIR/Makefile
-}
-
-build_pkgconfig_file(){
-	cat <<-EOF >>$PKGDIR/$pkg.pc
-		prefix=${INSTALL_DIR}
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-		Name: Lame
-		Description: ${dsc}
-		Version: ${vrs}
-		Requires:
-		Libs: -L\${libdir} -lmp3lame
-		Cflags: -I\${includedir}
-		EOF
 }
 
 start

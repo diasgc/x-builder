@@ -2,8 +2,9 @@
 # ................................................
 # setup util 1.0 2021-diasgc
 # ................................................
-. .commons
+[ -z ${vsh+x} ] && . .common
 
+clear
 echo -ne "$CY1  Request to sudo apt update "; sudo apt update |& prt_progress
 sudo echo -ne "\r" || exit 1
 

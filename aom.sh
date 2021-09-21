@@ -1,10 +1,9 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   +   +   +   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++  .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
-# HEADER --------------------------------
 lib='aom'
 apt='libaom0'
 dsc='Alliance for Open Media AV1 codec'
@@ -14,11 +13,8 @@ sty='git'
 cfg='cm'
 tls='perl'
 eta='200'
-cb0="-DENABLE_EXAMPLES=OFF"
-cb1="-DENABLE_EXAMPLES=ON"
 cbk='ENABLE_EXAMPLES'
 
-# LOADER --------------------------------
 . xbuilder.sh
 
 CFG="-DENABLE_TESTS=OFF -DENABLE_TOOLS=OFF -DENABLE_TESTDATA=OFF -DENABLE_DOCS=OFF -DCONFIG_PIC=1"
@@ -72,7 +68,6 @@ start
 
 # Filelist
 # --------
-
 # include/aom/aom_decoder.h
 # include/aom/aom_integer.h
 # include/aom/aom_external_partition.h
