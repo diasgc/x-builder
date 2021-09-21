@@ -9,11 +9,11 @@ src='https://github.com/acoustid/chromaprint.git'
 sty='git'
 cfg='cm'
 eta='12'
-cb0="-DBUILD_TOOLS=OFF"
-cb1="-DBUILD_TOOLS=OFF" # disable bin: cannot build bin (requires FFMPEG_LIBXXXXX_INCLUDE_DIRS)
+# cb0="-DBUILD_TOOLS=OFF"
+# cb1="-DBUILD_TOOLS=OFF" # disable bin: cannot build bin (requires FFMPEG_LIBXXXXX_INCLUDE_DIRS)
 
 . xbuilder.sh
-CFG="-DKISSFFT_SOURCE_DIR=${SRCDIR}/vendor/kissfft"
+CFG="-DKISSFFT_SOURCE_DIR=${SRCDIR}/vendor/kissfft -DBUILD_TOOLS=OFF"
 
 start
 

@@ -19,6 +19,8 @@ cmake_path='lib/cmake/zstd'
 
 . xbuilder.sh
 
+nodev=false
+
 SRCDIR=$SRCDIR/build/cmake/
 
 start

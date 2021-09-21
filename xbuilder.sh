@@ -7,6 +7,7 @@
 trap err ERR
 
 [ -z ${debug+x} ] && debug=false
+[ -z ${nodev+x} ] && nodev=false
 [ -z ${is_init+x} ] && is_init=false
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
@@ -26,7 +27,7 @@ build_bin=false
 build_usepkgflags=false
 git_stable=false
 ndkcmake=false
-nodev=
+
 build_package=true
 only_repo=false
 pc_filelist=
@@ -660,11 +661,12 @@ git_clone(){
   echo -ne "${CD}${var}"
   git clone --progress --verbose $1 $2 |& tr '\r' '\n' | topct
   logok $var
-  [ -n "${vrs}" ] && {
-    cd $2
-    doLog ${vrs} git checkout tags/${vrs}
-    cd ..
-  }
+  cd $2
+  $nodev && vrs=$(git describe --abbrev=0 --tags)
+  if [ -n "${vrs}" ];then
+    doLog ${vrs} git checkout tags/${vrs};
+  fi
+  cd ..
 }
 
 do_svn(){
@@ -1332,7 +1334,7 @@ while [ $1 ];do
     --ccmake) cfg='ccm';;
     --nobanner) banner=false;;
     --debug) debug=true && set -x;;
-    --nodev) nodev=1;;
+    --nodev) nodev=true;;
     --posix) f_win_posix=true;;
     --ndkLpthread) patch_ndk_libpthread;;
     --ndkLrt) patch_ndk_librt;;
