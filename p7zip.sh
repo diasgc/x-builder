@@ -4,15 +4,18 @@
 #  .   .   .   .   .   .   .   .   .   .   .  shared
 #  .   .   .   .   .   .   .   .   .   .   .  bin
 
-lib='pzip'
-dsc='c++ library wrapper of 7zip'
+lib='p7zip'
+dsc='p7zip is a port of the Windows programs 7z.exe and 7za.exe provided by 7-zip'
 lic='MLP-2.0'
 src='https://github.com/jinfeihan57/p7zip.git'
 sty='git'
-cfg='mk'
+cfg='cm'
+API=28
 
-eta='1095'
+eta='60'
 
 . xbuilder.sh
+
+SRCDIR=$SRCDIR/CPP/7zip/CMAKE
 
 start
