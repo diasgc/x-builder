@@ -15,6 +15,7 @@ sty='tgz'
 cfg='mk'
 dep='sndfile'
 eta='60'
+pkgconfig_llib='-lladspa'
 
 . xbuilder.sh
 

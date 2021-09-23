@@ -1200,14 +1200,14 @@ while [ $1 ];do
       PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
       CT0=$CG0 CT1=$CG1
       ;;
-    a86|*86-*android)
+    a86|ax86|*86-*android)
       arch=i686-linux-android
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android
       LIBSDIR=$(pwd)/builds/android/x86
       PLATFORM="Android" CPU="i686" ABI="x86" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
-    a64|*64-*android)
+    a64|ax64|*64-*android)
       arch=x86_64-linux-android
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android
       LIBSDIR=$(pwd)/builds/android/x86_64
@@ -1228,14 +1228,14 @@ while [ $1 ];do
       PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
       CT0=$CM0 CT1=$CM1
       ;;
-    l86|*86-linux*|linux*32 )
+    l86|lx86|*86-linux*|linux*32 )
       arch=i686-linux-gnu
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/linux/i686
       PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
       CT0=$CM0 CT1=$CM1
       ;;
-    l64|*64-linux*|linux*64|linux )
+    l64|lx64|*64-linux*|linux*64|linux )
       arch=x86_64-linux-gnu
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/linux/x86_64
@@ -1258,14 +1258,14 @@ while [ $1 ];do
       PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
-    w64|*64-win*|*64-*mingw*|windows|win|w*64)
+    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64)
       arch=x86_64-w64-mingw32
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/x86_64
       PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
-    w86|*86-win*|*86-*mingw*|w*32)
+    w86|wx86|*86-win*|*86-*mingw*|w*32)
       arch=i686-w64-mingw32
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/i686

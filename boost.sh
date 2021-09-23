@@ -11,7 +11,7 @@ dsc='Super-project for modularized Boost'
 lic='GLP-2.0'
 src='https://github.com/boostorg/boost.git'
 sty='git'
-cfg='ccm'
+cfg='cm'
 
 eta='1095'
 

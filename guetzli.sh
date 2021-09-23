@@ -1,19 +1,116 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  F   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
-
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++  .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 lib='guetzli'
 dsc='Perceptual JPEG encoder'
 lic='Apache-2.0'
 src='https://github.com/google/guetzli.git'
 sty='git'
-cfg='mk'
-dep='libpng'
-eta='60'
+cfg='cm'
+dep='libpng libjpeg'
+eta='30'
+pkgconfig_llib='-lguetzli'
 
 . xbuilder.sh
 
+source_patch(){
+    cd $SRCDIR
+    # git submodule update --init --recursive
+    cat <<-EOF >CMakeLists.txt
+cmake_minimum_required(VERSION 2.8.12)
+
+project(guetzli CXX)
+option(BUILD_STATIC_LIBS "Build static libs" ON)
+option(BUILD_TOOLS "Build tools" ON)
+option(INSTALL_MAN "Install man" OFF)
+option(INSTALL_DOCS "Install docs" OFF)
+
+add_compile_options("-Wno-format")
+
+find_package(ZLIB)
+find_package(PNG)
+find_package(JPEG)
+
+include_directories(\${CMAKE_SOURCE_DIR} \${CMAKE_SOURCE_DIR}/third_party/butteraugli \${ZLIB_INCLUDE_DIRS} \${PNG_INCLUDE_DIRS} \${JPEG_INCLUDE_DIRS})
+
+file(GLOB_RECURSE src_guetzli guetzli/*.cc)
+list(APPEND src_guetzli \${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.cc)
+file(GLOB_RECURSE hdr_guetzli guetzli/*.h)
+list(APPEND hdr_guetzli \${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.h)
+
+if(BUILD_SHARED_LIBS)
+  add_library(guetzli SHARED \${src_guetzli})
+  target_link_libraries(guetzli PUBLIC \${ZLIB_LIBRARIES} \${PNG_LIBRARIES} \${JPEG_LIBRARIES})
+endif()
+
+if(BUILD_STATIC_LIBS)
+    add_library(guetzli_static STATIC \${src_guetzli})
+    set_target_properties(guetzli_static PROPERTIES OUTPUT_NAME guetzli)
+    target_link_libraries(guetzli_static PRIVATE \${ZLIB_LIBRARIES} \${PNG_LIBRARIES} \${JPEG_LIBRARIES})
+endif()
+
+if(BUILD_TOOLS)
+    add_executable(butteraugli third_party/butteraugli/butteraugli/butteraugli_main.cc
+         third_party/butteraugli/butteraugli/butteraugli.cc
+         third_party/butteraugli/butteraugli/butteraugli.h)
+    target_link_libraries(butteraugli guetzli)
+endif()
+
+if(BUILD_SHARED_LIBS)
+  install(TARGETS guetzli
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib\${LIB_SUFFIX}
+    LIBRARY DESTINATION lib\${LIB_SUFFIX})
+endif()
+
+if(BUILD_STATIC_LIBS)
+  install(TARGETS guetzli_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
+endif()
+
+install(FILES \${hdr_guetzli} DESTINATION include)
+
+if(BUILD_TOOLS)
+  install(TARGETS butteraugli RUNTIME DESTINATION bin)
+endif()
+EOF
+cd ..
+}
+
 start
+
+
+# Filelist
+# --------
+# include/gamma_correct.h
+# include/jpeg_data_writer.h
+# include/color_transform.h
+# include/entropy_encode.h
+# include/processor.h
+# include/jpeg_data_decoder.h
+# include/debug_print.h
+# include/score.h
+# include/jpeg_huffman_decode.h
+# include/butteraugli.h
+# include/fdct.h
+# include/dct_double.h
+# include/jpeg_data.h
+# include/quantize.h
+# include/jpeg_data_encoder.h
+# include/preprocess_downsample.h
+# include/jpeg_data_reader.h
+# include/fast_log.h
+# include/quality.h
+# include/jpeg_bit_writer.h
+# include/butteraugli_comparator.h
+# include/output_image.h
+# include/stats.h
+# include/jpeg_error.h
+# include/idct.h
+# include/comparator.h
+# lib/pkgconfig/guetzli.pc
+# lib/libguetzli.so
+# lib/libguetzli.a
+# bin/butteraugli

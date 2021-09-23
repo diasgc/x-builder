@@ -17,7 +17,7 @@ aom                        cm
 aribb24                    ar
 avisynth                   cm
 binutils                   ac
-boost                      ccm
+boost                      cm
 brotli                     cm
 brunsli                    cm
 bzip2                      cm
@@ -32,11 +32,11 @@ cpu_features               cm
 daala                      ag
 dav1d                      meson
 davs2                      ac
-density                    mk
+density                    cm
 exhale                     cm
 exiv2                      cm
 expat                      ac
-fastlz                     mk
+fastlz                     cm..........READY
 fdk-aac                    ag
 fftw                       cm
 fftwf                      cm
@@ -55,7 +55,7 @@ glib2                      meson
 glslang                    cm
 gmp                        ac
 gnutls                     ac
-guetzli                    mk
+guetzli                    cm
 harfbuzz                   ag
 highway                    cm
 isobmff                    cm

@@ -22,15 +22,13 @@ cbk="PNG_EXECUTABLES"
 CFG="-DPNG_TESTS=OFF -DPNG_HARDWARE_OPTIMIZATIONS=OFF -DHAVE_LD_VERSION_SCRIPT=OFF"
 
 case $arch in
-#    *-mingw32) dep='zlib' CFG="${CFG} -DZLIB_INCLUDE_DIR=${LIBSDIR}/include -DZLIB_LIBRARY=${LIBSDIR}/lib/libzlib.dll.a";;
-    a*-gnu*|*-mingw32) pushvar_l CFG "-DPNG_BUILD_ZLIB=ON"; pushvar_l dep "zlib";;
+    a*-gnu*|*86-linux*|*-mingw32) pushvar_l dep "zlib";;
 esac
 
 start
 
 # Filelist
 # --------
-
 # include/pnglibconf.h
 # include/png.h
 # include/libpng16/pnglibconf.h
@@ -38,10 +36,10 @@ start
 # include/libpng16/pngconf.h
 # include/pngconf.h
 # lib/pkgconfig/libpng16.pc
+# lib/libpng16.so.16.37.0
 # lib/libpng/libpng16-release.cmake
 # lib/libpng/libpng16.cmake
 # lib/libpng16.a
-# lib/libpng16.so
 # share/man/man5/png.5
 # share/man/man3/libpng.3
 # share/man/man3/libpngpf.3
