@@ -241,9 +241,10 @@ start(){
 
   ifdef_function 'build_patch_config' && doLog 'patch' build_patch_config
 
+  case $CC in *clang) $build_static && pushvar_f LDFLAGS "-all-static";; esac
   # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
-  $build_static && str_contains $LDFLAGS "-all-static" || pushvar_f LDFLAGS "-all-static"
+  
 
   ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
 
@@ -1318,6 +1319,7 @@ while [ $1 ];do
         prefix)     echo $LIBSDIR && exit 0;;
         libname)    echo ${lib} && exit 0;;
         aptname)    echo ${apt} && exit 0;;
+        var) shift; echo ${!1} && exit 0;;
         cmake_include)
           if [ -z "$cmake_path" ];then
             echo

@@ -95,3 +95,14 @@ wget_tar(){
   rm -rf tmp
   echo -e "${CG0}\e[${#tag}D${tag} done${C0}\n"
 }
+
+list_scripts(){
+  for f in $(ls -1 *.sh); do
+    case $f in
+      _test*|build*|xbuild*|xsetup*|cmake*|xunpack*);;
+      *)  cfg=$(./${f} --get var cfg)
+          [ -n "cfg" ] && printf "%-26s %s\n" ${f::-3} $cfg >> readme.txt
+          ;;
+    esac
+  done
+}

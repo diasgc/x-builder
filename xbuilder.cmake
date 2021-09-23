@@ -3,6 +3,11 @@
 # 2021 diasgc
 # CMake cross-config file for X-Builder
 
+if(XB_CMAKE_TOOLCHAIN_)
+  return()
+endif()
+set(XB_CMAKE_TOOLCHAIN_ 1)
+
 set(XB_HOST $ENV{arch})
 set(XB_OS $ENV{host_os})
 set(XB_INSTALL $ENV{LIBSDIR})
@@ -28,7 +33,7 @@ if(NOT XB_NDK_API)
     set(XB_NDK_API 24)
 endif()
 
-# message("XB_CMAKE_INCLUDES=${XB_CMAKE_INCLUDES} XB_POSIX=${XB_POSIX}")
+message("XB_CMAKE_INCLUDES=${XB_CMAKE_INCLUDES} XB_POSIX=${XB_POSIX}")
 
 if(XB_OS STREQUAL "android")
 
@@ -41,8 +46,8 @@ if(XB_OS STREQUAL "android")
     set(ANDROID_ABI ${XB_ABI})
     set(ANDROID_PLATFORM ${XB_NDK_API})
     set(ANDROID_NDK $ENV{ANDROID_NDK_HOME})
-    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr 
-        ${XB_SYSROOT}/usr/lib/${XB_HOST} ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API} ${XB_INSTALL})
+    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr ${XB_INSTALL}
+        ${XB_SYSROOT}/usr/lib/${XB_HOST} ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API})
     include(${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
     
 elseif(XB_OS STREQUAL "gnu")

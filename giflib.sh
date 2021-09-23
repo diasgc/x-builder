@@ -1,60 +1,174 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  .   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++  .   .  gcc
+# WIN +++ +++  .   .  clang/gcc
 
 lib='giflib'
 apt='libgif-dev'
 dsc='Library for manipulating GIF files'
-lic='free'
+lic='other'
 src='https://git.code.sf.net/p/giflib/code'
 sty='git'
-cfg='mk'
+cfg='cmake'
+pkgconfig_llib='-lgif'
 eta='18'
+ils='gif_lib.h'
+lls='libgiflib'
+bls='giftext gifsponge giffilter giffix gifecho \
+	 gifbg gifhisto gifwedge giftool gifclrmp \
+	 gif2rgb gifcolor gifbuild gifinto'
+dll='libgiflib-7'
+cbk="BUILD_UTILITIES"
 
 . xbuilder.sh
 
-build_patch_config(){
-	pushdir $SRCDIR
-	# some guy made this...
-	#wget https://sourceforge.net/p/giflib/feature-requests/6/attachment/CMakeLists.txt >/dev/null 2>&1
-	sed -i 's/PREFIX = \/usr\/local/PREFIX = ${INSTALL_DIR}/g' Makefile
-	sed -i 's/-Wno-format-truncation//g' Makefile
-	sed -i 's/$(MAKE) -C doc//g' Makefile
-	sed -i 's/install: all install-bin install-include install-lib install-man/install: all install-bin install-include install-lib/g' Makefile
-	popdir
-}
+source_patch(){
+cat <<-EOF >$SRCDIR/CMakeLists.txt
+cmake_minimum_required(VERSION 2.8.12)
 
-build_pkgconfig_file(){
-	pushd $SRCDIR >/dev/null
-	export vrs=$(./getversion)
-	popd >/dev/null
-	cat <<-EOF >>$PKGDIR/$pkg.pc
-		prefix=${INSTALL_DIR}
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-		Name: giflib
-		Description: ${dsc}
-		Version: ${vrs}
-		Requires:
-		Libs: -L\${libdir} -lgif
-		Cflags: -I\${includedir}
-		EOF
+project(giflib C)
+
+option(BUILD_STATIC_LIBS "Build static libs" ON)
+option(BUILD_UTILITIES "Build utilities" OFF)
+option(INSTALL_MAN "Install man" OFF)
+option(INSTALL_DOCS "Install docs" OFF)
+
+execute_process(COMMAND ./getversion
+    WORKING_DIRECTORY \${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+set(LIBMAJOR 7)
+set(LIBMINOR 1)
+set(LIBPOINT 0)
+set(LIBVER "\${LIBMAJOR}.\${LIBMINOR}.\${LIBPOINT}")
+
+set(giflib_SRC
+    dgif_lib.c
+    egif_lib.c
+    getarg.c
+    gifalloc.c
+    gif_err.c
+    gif_font.c
+    gif_hash.c
+    openbsd-reallocarray.c
+    qprintf.c
+    quantize.c
+)
+
+set(giflib_INSTALLABLE
+    gif2rgb
+    gifbuild
+    gifecho
+    giffilter
+    giffix
+    gifinto
+    giftext
+    giftool
+    gifsponge
+    gifclrmp
+)
+
+set(giflib_UTILS
+    \${giflib_INSTALLABLE}
+    gifbg
+    gifcolor
+    gifhisto
+    gifwedge
+)
+
+set(giflib_DOCS
+    README
+    NEWS
+    TODO
+    COPYING
+    getversion
+    ChangeLog
+    history.adoc
+    control
+    doc/*.xml
+    doc/*.txt
+    doc/index.html.in
+    doc/00README
+)
+
+if(INSTALL_MAN)
+  file(GLOB giflib_MAN doc/*.1)
+endif()
+
+if(BUILD_SHARED_LIBS)
+  add_library(giflib SHARED \${giflib_SRC})
+  target_link_libraries(giflib m)
+  set_target_properties(giflib PROPERTIES VERSION \${LIBVER} SOVERSION \${LIBMAJOR})
+  if(WIN32)
+    set_target_properties(giflib PROPERTIES SUFFIX "-\${LIBMAJOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  endif(WIN32)
+endif()
+
+if(BUILD_STATIC_LIBS)
+  add_library(giflib_static STATIC \${giflib_SRC})
+  set_target_properties(giflib_static PROPERTIES OUTPUT_NAME giflib)
+endif()
+
+if(BUILD_UTILITIES)
+  foreach(UTILITY \${giflib_UTILS})
+    add_executable(\${UTILITY} \${UTILITY}.c)
+    target_link_libraries(\${UTILITY} giflib)
+  endforeach()
+endif()
+
+# Install
+
+if(BUILD_SHARED_LIBS)
+  install(TARGETS giflib
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib\${LIB_SUFFIX}
+    LIBRARY DESTINATION lib\${LIB_SUFFIX})
+endif()
+
+if(BUILD_STATIC_LIBS)
+  install(TARGETS giflib_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
+endif()
+
+if(BUILD_UTILITIES)
+  foreach(UTILITY \${giflib_UTILS})
+    install(TARGETS \${UTILITY} DESTINATION bin)
+  endforeach()
+endif()
+
+install(FILES gif_lib.h DESTINATION include)
+
+if(INSTALL_MAN)
+  install(FILES \${giflib_MAN} DESTINATION \${CMAKE_INSTALL_PREFIX}/man/man1)
+endif()
+
+install(DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR}/doc
+    DESTINATION \${CMAKE_INSTALL_PREFIX}/share/gif
+    FILES_MATCHING PATTERN "*ml")
+EOF
 }
 
 start
 
 # Filelist
 # --------
-
 # include/gif_lib.h
-# lib/libgif.a
-# lib/libgif.so.7.2.0
+# lib/libgiflib.a
+# lib/pkgconfig/giflib.pc
+# lib/libgiflib.so
 # bin/giftext
+# bin/gifsponge
+# bin/giffilter
 # bin/giffix
+# bin/gifecho
+# bin/gifbg
+# bin/gifhisto
+# bin/gifwedge
 # bin/giftool
 # bin/gifclrmp
 # bin/gif2rgb
+# bin/gifcolor
 # bin/gifbuild
+# bin/gifinto
