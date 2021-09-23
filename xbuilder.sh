@@ -660,7 +660,7 @@ topct(){
 git_clone(){
   local var="git"
   echo -ne "${CD}${var}"
-  git clone --progress --verbose $1 $2 |& tr '\r' '\n' | topct
+  git clone --progress --verbose $1 $2 $src_opt|& tr '\r' '\n' | topct
   logok $var
   cd $2
   $nodev && vrs=$(git describe --abbrev=0 --tags)

@@ -133,6 +133,7 @@ mbedtls                    cm
 nettle                     ac
 ogg                        ag
 oniguruma                  cm
+open-vcdiff                cm
 opencore-amr               ar
 openh264                   meson
 openjpeg                   cm

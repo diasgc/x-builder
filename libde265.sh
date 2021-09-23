@@ -30,7 +30,6 @@ start
 
 # Filelist
 # --------
-
 # include/libde265/de265.h
 # include/libde265/de265-version.h
 # lib/pkgconfig/libde265.pc
