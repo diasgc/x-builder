@@ -205,7 +205,7 @@ writeConfig(){
     local xv_x86_gnu=$(ls -t /usr/lib/gcc-cross/i686-linux-gnu 2>/dev/null | head -n1)
     local xv_x64_mingw=$(ls -t /usr/lib/gcc/x86_64-w64-mingw32 | grep -E "*-win32" | head -n1)
     local xv_x86_mingw=$(ls -t /usr/lib/gcc/i686-w64-mingw32 | grep -E "*-win32" | head -n1)
-    
+    [ -z "${llvm_mingw}" ] && [ -n "${LLVM_MINGW_HOME}" ] && llvm_mingw=${LLVM_MINGW_HOME}
     case "$(uname -s)" in
         Linux)  BUILD_TRIP=$(echo $(uname -m)-linux-gnu)
         [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && BUILD_TRIP="${BUILD_TRIP}eabihf"    

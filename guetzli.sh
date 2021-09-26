@@ -12,14 +12,13 @@ sty='git'
 cfg='cm'
 dep='libpng libjpeg'
 eta='30'
-pkgconfig_llib='-lguetzli'
+pc_llib='-lguetzli'
 
 . xbuilder.sh
 
-source_patch(){
-    cd $SRCDIR
-    # git submodule update --init --recursive
-    cat <<-EOF >CMakeLists.txt
+start
+
+<<'XB_CREATE_CMAKELISTS'
 cmake_minimum_required(VERSION 2.8.12)
 
 project(guetzli CXX)
@@ -34,22 +33,22 @@ find_package(ZLIB)
 find_package(PNG)
 find_package(JPEG)
 
-include_directories(\${CMAKE_SOURCE_DIR} \${CMAKE_SOURCE_DIR}/third_party/butteraugli \${ZLIB_INCLUDE_DIRS} \${PNG_INCLUDE_DIRS} \${JPEG_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/third_party/butteraugli ${ZLIB_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS} ${JPEG_INCLUDE_DIRS})
 
 file(GLOB_RECURSE src_guetzli guetzli/*.cc)
-list(APPEND src_guetzli \${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.cc)
+list(APPEND src_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.cc)
 file(GLOB_RECURSE hdr_guetzli guetzli/*.h)
-list(APPEND hdr_guetzli \${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.h)
+list(APPEND hdr_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.h)
 
 if(BUILD_SHARED_LIBS)
-  add_library(guetzli SHARED \${src_guetzli})
-  target_link_libraries(guetzli PUBLIC \${ZLIB_LIBRARIES} \${PNG_LIBRARIES} \${JPEG_LIBRARIES})
+  add_library(guetzli SHARED ${src_guetzli})
+  target_link_libraries(guetzli PUBLIC ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 endif()
 
 if(BUILD_STATIC_LIBS)
-    add_library(guetzli_static STATIC \${src_guetzli})
+    add_library(guetzli_static STATIC ${src_guetzli})
     set_target_properties(guetzli_static PROPERTIES OUTPUT_NAME guetzli)
-    target_link_libraries(guetzli_static PRIVATE \${ZLIB_LIBRARIES} \${PNG_LIBRARIES} \${JPEG_LIBRARIES})
+    target_link_libraries(guetzli_static PRIVATE ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 endif()
 
 if(BUILD_TOOLS)
@@ -62,25 +61,20 @@ endif()
 if(BUILD_SHARED_LIBS)
   install(TARGETS guetzli
     RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib\${LIB_SUFFIX}
-    LIBRARY DESTINATION lib\${LIB_SUFFIX})
+    ARCHIVE DESTINATION lib${LIB_SUFFIX}
+    LIBRARY DESTINATION lib${LIB_SUFFIX})
 endif()
 
 if(BUILD_STATIC_LIBS)
-  install(TARGETS guetzli_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
+  install(TARGETS guetzli_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif()
 
-install(FILES \${hdr_guetzli} DESTINATION include)
+install(FILES ${hdr_guetzli} DESTINATION include)
 
 if(BUILD_TOOLS)
   install(TARGETS butteraugli RUNTIME DESTINATION bin)
 endif()
-EOF
-cd ..
-}
-
-start
-
+XB_CREATE_CMAKELISTS
 
 # Filelist
 # --------

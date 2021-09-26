@@ -1,8 +1,9 @@
 #!/bin/bash
-#     Aa8 Aa7 A86 A64
-# NDK +++ +++ +++ +++ clang
-# GNU +++ +++  .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+
+#             a8  a7  x86 x64
+# ndk-clang   +++ +++ +++ +++
+# linux-gnu   +++ +++ ... ...
+# mingw-llvm  ... ... ... ...
 
 lib='aom'
 apt='libaom0'
@@ -13,13 +14,25 @@ sty='git'
 cfg='cm'
 tls='perl'
 eta='200'
+cstk="CONFIG_STATIC"
+cshk="CONFIG_SHARED"
 cbk='ENABLE_EXAMPLES'
+CFG='-DENABLE_TESTS=OFF \
+     -DENABLE_TOOLS=OFF \
+     -DENABLE_TESTDATA=OFF \
+     -DENABLE_DOCS=OFF'
+
+lst_inc='aom/aom_decoder.h aom/aom_integer.h aom/aom_external_partition.h \
+         aom/aom_frame_buffer.h aom/aom_image.h aom/aom.h aom/aom_encoder.h \
+         aom/aomcx.h aom/aom_codec.h aom/aomdx.h'
+lst_lib='libaom'
+lst_bin='aomdec aomenc'
 
 . xbuilder.sh
 
-CFG="-DENABLE_TESTS=OFF -DENABLE_TOOLS=OFF -DENABLE_TESTDATA=OFF -DENABLE_DOCS=OFF -DCONFIG_PIC=1"
 cmake_toolchain_file="${SRCDIR}/build/cmake/toolchains/${arch}.cmake"
-[[ $arch = *android* ]] && CFG="$CFG -DAOM_ANDROID_NDK_PATH=${ANDROID_NDK_HOME}"
+str_contains $host_arch android && CFG+=" -DAOM_ANDROID_NDK_PATH=${ANDROID_NDK_HOME}"
+! str_contains $host_arch mingw32 && CFG+=" -DCONFIG_PIC=1"
 
 source_patch(){
   

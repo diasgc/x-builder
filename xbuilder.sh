@@ -109,7 +109,9 @@ start(){
 
   # Check Tools and Dependencies
   check_tools $tls
+  pushvar_f old_vrs $vrs
   build_dependencies $dep
+  vrs=$(popvar_f old_vrs)
 
   log_start $arch ${eta}s
   local bss=
@@ -148,25 +150,28 @@ start(){
     # check whether to custom config source
     if [ "$(type -t source_config)" = 'function' ]; then
       doLog 'config' source_config
-    else
-      case $cfg in
-        ag) doAutogen $SRCDIR --noconfigure;;
-        ar) doAutoreconf $SRCDIR;;
-        am|automake)
-          if [ ! -f "${SRCDIR}/configure" ];then
-            if [ -f "${SRCDIR}/autogen.sh" ];then
-              doAutogen $SRCDIR --noconfigure
-            elif [ -n "$automake_cmd" ];then
-              doLog 'automake' $SRCDIR/$automake_cmd
-            else
-              doAutoreconf $SRCDIR
-            fi
+    elif [ -n "$automake_cmd" ];then
+      doLog 'automake' $SRCDIR/$automake_cmd
+      unset automake_cmd
+    else case $cfg in
+      ag) doAutogen $SRCDIR --noconfigure;;
+      ar) doAutoreconf $SRCDIR;;
+      am|autom*)
+        if [ ! -f "${SRCDIR}/configure" ];then
+          if [ -f "${SRCDIR}/autogen.sh" ];then
+            doAutogen $SRCDIR --noconfigure
+          else
+            doAutoreconf $SRCDIR
           fi
-          ;;
+        fi
+        ;;
       esac
     fi
 
-    # check whether to patch source
+    # check whether to auto patch source
+    check_xbautopatch
+
+    # check whether to custom patch source
     if [ "$(type -t source_patch)" = 'function' ]; then
       doLog 'patch' source_patch
     fi
@@ -189,10 +194,6 @@ start(){
   log_vars dep PKG_CONFIG_LIBDIR
   log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
   log_vars CC CXX LD AS AR NM RANLIB STRIP
-
-  #echo -e "dependencies=$dep\nPKG_CONFIG_LIBDIR=$PKG_CONFIG_LIBDIR\n\n" >>$LOGFILE 2>&1
-  #echo -e "CFLAGS=$CFLAGS\nCXXFLAGS=$CXXFLAGS\nCPPFLAGS=$CPPFLAGS\nLDFLAGS=$LDFLAGS\nLIBS=$LIBS\n\n" >>$LOGFILE 2>&1
-  #echo -e "CC=$CC\nCXX=$CXX\nLD=$LD\nAS=$AS\nAR=$AR\nNM=$NM\nRANLIB=$RANLIB\nSTRIP=$STRIP\n\n\n" >>$LOGFILE 2>&1
   
   ifdef_function 'build_all' && {
     build_all
@@ -256,18 +257,8 @@ start(){
   # check whether to create pkg-config .pc file
   ifdef_function 'build_pkgconfig_file' && \
     doLog 'pkgcfg' build_pkgconfig_file || \
-    [ -n "$pkgconfig_llib" ] && \
-    doLog 'write_pc' create_pkgconfig_file $pkg $pkgconfig_llib
-    
-  #if [ "$(type -t build_pkgconfig_file)" = 'function' ]; then
-  #  doLog 'pkgcfg' build_pkgconfig_file
-  #elif [ -n "$pkgconfig_llib" ];then
-  #  doLog 'write_pc' create_pkgconfig_file $pkg $pkgconfig_llib
-  #fi
-
-  # patch pkg-config files to relative paths
-  # sed -i 's|'$LIBSDIR'|${prefix}|g' $PKGDIR/*.pc
-  # sed -i 's|^prefix=.*|prefix='$LIBSDIR'|g' $PKGDIR/*.pc
+    [ -n "$pc_llib" ] && \
+    doLog 'write_pc' create_pkgconfig_file $pkg $pc_llib
 
   # create package
   $build_package && doLog 'tar' build_packages_bin
@@ -284,19 +275,36 @@ end_script(){
   log_end
   # check if parent process is shell script
   local parent=$(ps -o comm= $PPID)
-  [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n\n"
+  [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CSH CBN exec_config
+  unset CSH CBN exec_config vrs
   dec_tab
+  echo
   exit 0
+}
+
+check_xbautopatch(){
+  pushdir $ROOTDIR
+  local match=$(grep -oP "(?<=^<<').*?(?=')" $0)
+  [ -z "$match" ] && return 0
+  local block=$(awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0)
+  case $match in
+    XB_CREATE_CMAKELISTS) awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0 >$SRCDIR/CMakeLists.txt;;
+    XB_PATCH_CMAKELISTS) pushdir $SRCDIR; patch -p0 <<<$block 2>&1 >$LOGFILE; popdir;;
+  esac
+  popdir
 }
 
 # usage create_pkgconfig_file <pkg>.pc <llibds>
 create_pkgconfig_file(){
-    [ -z "$pkgconfig_cflags" ] && pkgconfig_cflags="-I\${includedir}"
-    [ -z "$pkgconfig_libs" ] && pkgconfig_libs="-L\${libdir}"
-    [ -z "$pkgconfig_url" ] && pkgconfig_url=$(dirname $src)
-    [ -z "$vrs" ] && set_git_version
+    [ -z "${1}" ] && pc_file=${lib} || pc_file=${1}
+    [ -z "${2}" ] && pc_llib="-l${pc_file}" || pc_llib=${2}
+    [ -z "$pc_cflags" ] && pc_cflags="-I\${includedir}"
+    [ -z "$pc_libs" ] && pc_libs="-L\${libdir}"
+    [ -z "$pc_url" ] && pc_url=$(dirname $src)
+    [ -z "$pc_vrs" ] && {
+      [ -d "${SRCDIR}/.git" ] && pc_vrs=$(git_getversion ${SRCDIR}) || pc_vrs=$vrs
+    }
     cat <<-EOF >$PKGDIR/${1}.pc
 		prefix=$INSTALL_DIR
 		exec_prefix=\${prefix}
@@ -305,10 +313,14 @@ create_pkgconfig_file(){
 
 		Name: ${lib}
 		Description: ${dsc}
-		URL: ${pkgconfig_url}
-		Version: ${vrs}
-		Libs: ${pkgconfig_libs} ${2}
-		Cflags: ${pkgconfig_cflags}
+		URL: ${pc_url}
+		Version: ${pc_vrs}
+    Requires: ${pc_requires}
+    Requires.private: ${pc_requiresprivate}
+		Libs: ${pc_libs} ${pc_llib}
+    Libs.private: ${pc_libsprivate}
+		Cflags: ${pc_cflags}
+  
 		EOF
     pc_filelist="${1}.pc ${pc_filelist}"
 }
@@ -344,7 +356,7 @@ build_packages_bin(){
     pushdir "${xb_distdir}${mkd_suffix}"
     
     # also include .pc manually-built file
-    if [ "$(type -t build_pkgconfig_file)" = 'function' ] || [ -n "$pkgconfig_llib" ];then
+    if [ "$(type -t build_pkgconfig_file)" = 'function' ] || [ -n "$pc_llib" ];then
       local xb_pkgd=$(pwd)/lib/pkgconfig
       [ ! -d "${xb_pkgd}" ] && mkdir -p $xb_pkgd
       if [ -n "${pc_filelist}" ];then
@@ -566,6 +578,14 @@ log_vars(){
 
 doErr(){
   echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
+  if [ -f $LOGFILE ];then
+    if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
+      echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
+      cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $LOGFILE
+    fi
+    echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
+    [ "$openlog" != "n" ] && nano $LOGFILE
+  fi
   exit 1
 }
 
@@ -650,9 +670,11 @@ do_git(){
 
 topct(){
   printf "%-6s"
+  local sln
   while read -r ln; do
     str_contains $ln 'error: ' && printf $CR1
-    printf "\e[5D%-5s" $(grep -oP '\d+%' <<< $ln)
+    sln=$(grep -oP '\d+%' <<< $ln)
+    [ -n "$sln" ] && printf "\e[5D%-5s" $sln
   done
   printf "\e[6D"
 }
@@ -662,7 +684,7 @@ git_clone(){
   echo -ne "${CD}${var}"
   git clone --progress --verbose $1 $2 $src_opt|& tr '\r' '\n' | topct
   logok $var
-  cd $2
+  [ -d "$2" ] && cd $2 || err
   $nodev && vrs=$(git describe --abbrev=0 --tags)
   if [ -n "${vrs}" ];then
     doLog ${vrs} git checkout tags/${vrs};
@@ -722,15 +744,15 @@ wget_tarxx(){
   echo -ne "${CD}${tag}${C0}"
   echo "$(date): $@" >> "$LOGFILE"
   
-  case $sty in
-    tlz|tar_lz) 
+  case $src in
+    *.tar.lz) 
       test -z $(which lzip) && aptInstall lzip
       ags="--lzip -xv"
       ;;
-    tgz|tar_gz) args="-xvz";;
-    txz|tar_xz) args="-xvJ";;
+    *.tar.gz|*.tgz) args="-xvz";;
+    *.tar.xz) args="-xvJ";;
   esac
-  
+  [ -d "tmp" ] && rm -rf tmp
   mkdir tmp
   wget -qO- $1 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
   cd tmp
@@ -984,7 +1006,7 @@ loadToolchain(){
       LD=${CROSS_PREFIX}ld
       # local ltsdir=$(ls -t /usr/lib/gcc${cross}/${arch} 2>/dev/null | head -n1)
       [ -n "$ltsdir" ] && LT_SYS_LIBRARY_PATH="/usr/lib/gcc${cross}/${arch}/${ltsdir}"
-      LDFLAGS="${LDFLAGS} -L${LT_SYS_LIBRARY_PATH}"
+      LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       ;;
     Windows)
       local ltsdir
@@ -1009,7 +1031,7 @@ loadToolchain(){
         LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
       fi
       LD="${CROSS_PREFIX}ld" AS="${CROSS_PREFIX}as"
-      LDFLAGS="${LDFLAGS} -L${LT_SYS_LIBRARY_PATH}"
+      LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       ;;
   esac
   AR=${CROSS_PREFIX}ar

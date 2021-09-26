@@ -5,8 +5,6 @@
 #  +   .   .   .   f   .   .   .   .   .   .  bin
 
 lib='flif'
-pkg='flif flif_dec'
-apt=''
 dsc='Free Lossless Image Format'
 lic='BSD-2c'
 src='https://github.com/FLIF-hub/FLIF.git'
@@ -15,9 +13,21 @@ cfg='cm'
 dep='libpng'
 eta='60'
 
+pc_inc='flif_dec.h flif_enc.h flif.h flif_common.h'
+pc_lib='libflif libflif_dec'
+pc_bin='flif apng2flif gif2flif dflif'
+pc_oth='share/FLIF/flif.magic \
+        share/man/man1/flif.1 \
+        share/mime/packages/flif-mime.xml \
+        share/licenses/FLIF/LICENSE_Apache2 \
+        share/licenses/FLIF/LICENSE \
+        share/licenses/FLIF/LICENSE_GPL \
+        share/licenses/FLIF/LICENSE_LGPL \
+        share/licenses/FLIF/FLIF-CLA-template.txt'
+
 . xbuilder.sh
 
-BUILD_DIR=$SRCDIR/build_${arch}
+#BUILD_DIR=$SRCDIR/build_${arch}
 SRCDIR=$SRCDIR/src
 
 source_patch(){

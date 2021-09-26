@@ -1,7 +1,7 @@
 #!/bin/bash
 # Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-# +/-   .   .   .   .   .   .   .   .   .   .  shared
+#  P   .   .   .   .   .   .   .   .   .   .  static
+#  P   .   .   .   .   .   .   .   .   .   .  shared
 #  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='zopfli'
@@ -11,9 +11,13 @@ src='https://github.com/google/zopfli.git'
 sty='git'
 cfg='cm'
 eta='20'
-cmake_path='lib/cmake/Zopfli'
-pkgconfig_llib="-lzopflipng -lzopfli"
-pkgconfig_url="https://github.com/google/zopfli"
+
+pc_llib="-lzopflipng -lzopfli"
+pc_url="https://github.com/google/zopfli"
+
+lst_inc='zopflipng_lib.h zopfli.h'
+lst_lib='libzopflipng libzopfli'
+lst_bin='zopflipng zopfli'
 
 . xbuilder.sh
 

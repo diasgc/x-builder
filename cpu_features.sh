@@ -11,7 +11,7 @@ src='https://github.com/google/cpu_features.git'
 sty='git'
 cfg='cm'
 pkg='cpu_features'
-pkgconfig_llib='-lcpufeatures'
+pc_llib='-lcpufeatures'
 CFG='-DBUILD_PIC=ON'
 
 . xbuilder.sh

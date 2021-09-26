@@ -8,16 +8,16 @@ lib='libtool'
 dsc='A library for reading and writing audio files'
 lic='LGPL-3.0'
 src='git://git.savannah.gnu.org/libtool.git'
-sty='git'
 cfg='am'
 tls='help2man'
 eta='35'
+pc_llib="-ltdl"
+pc_url="https://savannah.gnu.org/git/?group=libtool"
 
 . xbuilder.sh
 
 CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-pkgconfig_llib="-ltdl"
-pkgconfig_url="https://savannah.gnu.org/git/?group=libtool"
+
 
 source_config(){
     pushdir $SRCDIR

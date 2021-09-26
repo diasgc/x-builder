@@ -10,15 +10,20 @@ dsc='General purpose data compression library'
 lic='?'
 vrs='3.6'
 src="http://dist.schmorp.de/liblzf/liblzf-${vrs}.tar.gz"
-sty='tgz'
 cfg='ac'
 eta='10'
+
+pc_llib="-llzf"
+pc_url="http://oldhome.schmorp.de/marc/liblzf.html"
+
+lst_inc='lzf.h'
+lst_lib='liblzf'
+lst_bin='lzf'
 
 . xbuilder.sh
 
 CFG="--with-sysroot=${SYSROOT}"
-pkgconfig_llib="-llzf"
-pkgconfig_url="http://oldhome.schmorp.de/marc/liblzf.html"
+
 
 build_patch_config(){
   mkd="prefix=$(build_packages_getdistdir) install"

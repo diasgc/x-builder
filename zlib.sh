@@ -7,13 +7,16 @@
 lib='zlib'
 apt='zlib1g'
 dsc='zlib compression library'
-lic='Free'
+lic='zlib'
 src='https://github.com/madler/zlib.git'
-sty='git'
 cfg='cm'
 eta='22'
 cbk="BUILD_TOOLS"
 mkc='distclean'
+
+lst_inc='zlib.h'
+lst_lib='libz'
+lst_pc='zlib.pc'
 
 . xbuilder.sh
 

@@ -12,17 +12,22 @@ src='https://github.com/k0dai/density.git'
 sty='git'
 cfg='cm'
 eta='30'
-pkgconfig_llib='-ldensity'
-pkgconfig_url='https://github.com/k0dai/density'
+pc_llib='-ldensity'
+pc_url='https://github.com/k0dai/density'
 
 . xbuilder.sh
 
 CFG="-DBUILD_BENCHMARK=ON"
 
-source_patch(){
-    cd $SRCDIR
-    git submodule update --init --recursive
-    cat <<-EOF >CMakeLists.txt
+source_config(){
+  cd $SRCDIR
+  git submodule update --init --recursive
+  cd ..
+}
+
+start
+
+<<'XB_CREATE_CMAKELISTS'
 cmake_minimum_required(VERSION 3.10)
 
 project(density C)
@@ -36,45 +41,40 @@ file(GLOB_RECURSE SRC src/*.c)
 file(GLOB_RECURSE HDR src/*.h)
 
 if(BUILD_SHARED_LIBS)
-  add_library(density SHARED \${SRC})
+  add_library(density SHARED ${SRC})
 endif()
 
 if(BUILD_STATIC_LIBS)
-    add_library(density_static STATIC \${SRC})
-    set_target_properties(density_static PROPERTIES OUTPUT_NAME density)
+  add_library(density_static STATIC ${SRC})
+  set_target_properties(density_static PROPERTIES OUTPUT_NAME density)
 endif()
 
 if(BUILD_BENCHMARK)
-    file(GLOB_RECURSE src_cputime benchmark/libs/cputime/src/*.c)
-    add_library(cputime STATIC \${src_cputime})
-    file(GLOB_RECURSE src_spookyhash benchmark/libs/spookyhash/src/*.c)
-    add_library(spookyhash STATIC \${src_spookyhash})
-    add_executable(benchmark benchmark/src/benchmark.c)
-    target_link_libraries(benchmark density cputime spookyhash)
+  file(GLOB_RECURSE src_cputime benchmark/libs/cputime/src/*.c)
+  add_library(cputime STATIC ${src_cputime})
+  file(GLOB_RECURSE src_spookyhash benchmark/libs/spookyhash/src/*.c)
+  add_library(spookyhash STATIC ${src_spookyhash})
+  add_executable(benchmark benchmark/src/benchmark.c)
+  target_link_libraries(benchmark density cputime spookyhash)
 endif()
 
 if(BUILD_SHARED_LIBS)
   install(TARGETS density
     RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib\${LIB_SUFFIX}
-    LIBRARY DESTINATION lib\${LIB_SUFFIX})
+    ARCHIVE DESTINATION lib${LIB_SUFFIX}
+    LIBRARY DESTINATION lib${LIB_SUFFIX})
 endif()
 
 if(BUILD_STATIC_LIBS)
-  install(TARGETS density_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
+  install(TARGETS density_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif()
 
-install(FILES \${HDR} DESTINATION include)
+install(FILES ${HDR} DESTINATION include)
 
 if(BUILD_BENCHMARK)
   install(TARGETS benchmark RUNTIME DESTINATION bin)
 endif()
-EOF
-cd ..
-}
-
-start
-
+XB_CREATE_CMAKELISTS
 
 # Filelist
 # --------

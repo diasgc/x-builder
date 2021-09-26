@@ -16,7 +16,7 @@ eta='180'
 mki='install-strip'
 mkc='distclean'
 cbk="able-frontend"
-pkgconfig_llib="-lmp3lame"
+pc_llib="-lmp3lame"
 API=26 # required for frontends build
 
 . xbuilder.sh

@@ -16,7 +16,8 @@ pkg='libtiff-4'
 eta='150'
 mkc='distclean'
 mki='install/strip'
-cmake_path='lib/cmake/tiff'
+dep='libjbig liblzma libjpeg libzstd libwebp libdeflate lerc'
+CFG="-Djbig=ON -Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON"
 f_win_posix=true
 
 extraOpts(){
@@ -26,15 +27,14 @@ extraOpts(){
         --jpeg|--jp12) dep_add 'libjpeg'; pushvar_f CFG="-Djpeg=ON";;
         --zstd) dep_add 'libzstd'; pushvar_f CFG="-Dzstd=ON";;
         --webp) dep_add 'libwebp'; pushvar_f CFG="-Dwebp=ON";;
-        --all) dep_add 'libjbig liblzma libjpeg libzstd libwebp libdeflate lerc';
-            pushvar_f CFG "-Djbig=ON -Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON";;
+        --reset) unset dep CFG;;
     esac
 }
 
 . xbuilder.sh
 
-pushvar_f CFLAGS "-I${LIBSDIR}/include"
-pushvar_f CXXFLAGS "-I${LIBSDIR}/include"
+#pushvar_f CFLAGS "-I${LIBSDIR}/include"
+#pushvar_f CXXFLAGS "-I${LIBSDIR}/include"
 
 build_install(){
 	#no html

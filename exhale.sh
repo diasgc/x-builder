@@ -12,6 +12,7 @@ src='https://gitlab.com/ecodis/exhale.git'
 sty='git'
 cfg='cm'
 eta='150'
+pc_llib="-lexhale"
 
 . xbuilder.sh
 
@@ -22,24 +23,11 @@ source_patch(){
   sed -i 's|\\|\/|g' $SRCDIR/src/app/exhaleApp.rc
 }
 
-build_pkgconfig_file(){
-  cat <<-EOF >>$PKGDIR/${pkg}.pc
-		prefix=$INSTALL_DIR
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-
-		Name: ${lib}
-		Description: ${dsc}
-		Requires:
-		Version: ${vrs}
-		Libs: -L\${libdir} -lexhale
-		Libs.private:
-		Cflags: -I\${includedir}/
-		EOF
-  mkdir -p $INSTALL_DIR/include $INSTALL_DIR/share/licenses/exhale
-  install -Dm644 $SRCDIR/include/{exhaleDecl.h,version.h} -t $INSTALL_DIR/include
-  install -Dm644 $SRCDIR/include/{License.htm,Release.htm,styles.css} -t $INSTALL_DIR/share/licenses/exhale
+build_install(){
+	${MAKE_EXECUTABLE} ${mki}
+	mkdir -p $INSTALL_DIR/include $INSTALL_DIR/share/licenses/exhale
+	install -Dm644 $SRCDIR/include/{exhaleDecl.h,version.h} -t $INSTALL_DIR/include
+	install -Dm644 $SRCDIR/include/{License.htm,Release.htm,styles.css} -t $INSTALL_DIR/share/licenses/exhale
 }
 
 start

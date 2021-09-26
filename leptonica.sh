@@ -1,6 +1,6 @@
 #!/bin/bash
 # Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
+#  +   .   .   .   .   .   .   .   +   .   .  static
 #  +   .   .   .   .   .   .   .   .   .   .  shared
 #  +   .   .   .   .   .   .   .   .   .   .  bin
 # PKGINFO-------------------------------------
@@ -10,15 +10,13 @@ apt='libleptonica-dev'
 dsc='An open source C library for efficient image processing and image analysis operations'
 lic='copyleft'
 src='https://github.com/DanBloomberg/leptonica.git'
-sty='git'
-cfg='ag'
-eta='120'
-mkc="distclean"
-cmake_path='lib/cmake/'
+cfg='am'
+eta='180'
+
 
 case $cfg in
     cm|ccm|cmake|ccmake)  cbk="BUILD_PROG";;
-    ac|ag|am|ar|automake) cbk="programs";;
+    ac|ag|am|ar|automake) cbk="programs" mkc="distclean";;
 esac
 
 extraOpts(){
@@ -33,11 +31,15 @@ extraOpts(){
             --reset) unset dep;;
       esac
 }
+CFLAGS="-Wno-address-of-packed-member $CFLAGS"
 
 . xbuilder.sh
 
+case $arch in *mingw32|a*gnu*) dep="zlib $dep";; esac
+
 case $build_tool in
     automake) CFG="--disable-fast-install";;
+    cmake) CFG="-DSW_BUILD=OFF";;
 esac
 
 start

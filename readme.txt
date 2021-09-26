@@ -1,8 +1,5 @@
 todo:
 json package-stat file
-implement llvm-mingw toolchain
-dual static			ared on some cmake repos
-xsetup vs sudo apt update
 
 libs-2-build/fix:
 binutils
@@ -14,7 +11,7 @@ turingcodec
 ...
 status:
 aom                        cm
-aribb24                    ar
+aribb24                    ar..........READY
 avisynth                   cm
 binutils                   ac
 boost                      cm
@@ -98,7 +95,7 @@ libiconv                   ac
 libiec61883                ar
 libilbc                    cm
 libjack                    waf
-libjbig                    mk
+libjbig                    cmake.......READY
 libjpeg                    cm
 libjxl                     cm
 libklvanc                  ac

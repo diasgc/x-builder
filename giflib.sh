@@ -11,20 +11,21 @@ lic='other'
 src='https://git.code.sf.net/p/giflib/code'
 sty='git'
 cfg='cmake'
-pkgconfig_llib='-lgif'
+pc_llib='-lgif'
 eta='18'
-ils='gif_lib.h'
-lls='libgiflib'
-bls='giftext gifsponge giffilter giffix gifecho \
-	 gifbg gifhisto gifwedge giftool gifclrmp \
-	 gif2rgb gifcolor gifbuild gifinto'
+lst_inc='gif_lib.h'
+lst_lib='libgiflib'
+lst_bin='giftext gifsponge giffilter giffix gifecho \
+         gifbg gifhisto gifwedge giftool gifclrmp \
+         gif2rgb gifcolor gifbuild gifinto'
 dll='libgiflib-7'
 cbk="BUILD_UTILITIES"
 
 . xbuilder.sh
 
-source_patch(){
-cat <<-EOF >$SRCDIR/CMakeLists.txt
+start
+
+<<'XB_CREATE_CMAKELISTS'
 cmake_minimum_required(VERSION 2.8.12)
 
 project(giflib C)
@@ -35,7 +36,7 @@ option(INSTALL_MAN "Install man" OFF)
 option(INSTALL_DOCS "Install docs" OFF)
 
 execute_process(COMMAND ./getversion
-    WORKING_DIRECTORY \${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE VERSION
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
@@ -43,55 +44,26 @@ execute_process(COMMAND ./getversion
 set(LIBMAJOR 7)
 set(LIBMINOR 1)
 set(LIBPOINT 0)
-set(LIBVER "\${LIBMAJOR}.\${LIBMINOR}.\${LIBPOINT}")
+set(LIBVER "${LIBMAJOR}.${LIBMINOR}.${LIBPOINT}")
 
-set(giflib_SRC
-    dgif_lib.c
-    egif_lib.c
-    getarg.c
-    gifalloc.c
-    gif_err.c
-    gif_font.c
-    gif_hash.c
-    openbsd-reallocarray.c
-    qprintf.c
-    quantize.c
+set(giflib_SRC dgif_lib.c egif_lib.c getarg.c
+    gifalloc.c gif_err.c gif_font.c gif_hash.c
+    openbsd-reallocarray.c qprintf.c quantize.c
 )
 
-set(giflib_INSTALLABLE
-    gif2rgb
-    gifbuild
-    gifecho
-    giffilter
-    giffix
-    gifinto
-    giftext
-    giftool
-    gifsponge
-    gifclrmp
+set(giflib_INSTALLABLE gif2rgb gifbuild gifecho
+    giffilter giffix gifinto giftext giftool
+    gifsponge gifclrmp
 )
 
-set(giflib_UTILS
-    \${giflib_INSTALLABLE}
-    gifbg
-    gifcolor
-    gifhisto
-    gifwedge
+set(giflib_UTILS ${giflib_INSTALLABLE}
+    gifbg gifcolor gifhisto gifwedge
 )
 
-set(giflib_DOCS
-    README
-    NEWS
-    TODO
-    COPYING
-    getversion
-    ChangeLog
-    history.adoc
-    control
-    doc/*.xml
-    doc/*.txt
-    doc/index.html.in
-    doc/00README
+set(giflib_DOCS README NEWS TODO COPYING
+    getversion ChangeLog history.adoc
+    control doc/*.xml doc/*.txt
+    doc/index.html.in doc/00README
 )
 
 if(INSTALL_MAN)
@@ -99,58 +71,53 @@ if(INSTALL_MAN)
 endif()
 
 if(BUILD_SHARED_LIBS)
-  add_library(giflib SHARED \${giflib_SRC})
+  add_library(giflib SHARED ${giflib_SRC})
   target_link_libraries(giflib m)
-  set_target_properties(giflib PROPERTIES VERSION \${LIBVER} SOVERSION \${LIBMAJOR})
+  set_target_properties(giflib PROPERTIES VERSION ${LIBVER} SOVERSION ${LIBMAJOR})
   if(WIN32)
-    set_target_properties(giflib PROPERTIES SUFFIX "-\${LIBMAJOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set_target_properties(giflib PROPERTIES SUFFIX "-${LIBMAJOR}${CMAKE_SHARED_LIBRARY_SUFFIX}")
   endif(WIN32)
 endif()
 
 if(BUILD_STATIC_LIBS)
-  add_library(giflib_static STATIC \${giflib_SRC})
+  add_library(giflib_static STATIC ${giflib_SRC})
   set_target_properties(giflib_static PROPERTIES OUTPUT_NAME giflib)
 endif()
 
 if(BUILD_UTILITIES)
-  foreach(UTILITY \${giflib_UTILS})
-    add_executable(\${UTILITY} \${UTILITY}.c)
-    target_link_libraries(\${UTILITY} giflib)
+  foreach(UTILITY ${giflib_UTILS})
+    add_executable(${UTILITY} ${UTILITY}.c)
+    target_link_libraries(${UTILITY} giflib)
   endforeach()
 endif()
-
-# Install
 
 if(BUILD_SHARED_LIBS)
   install(TARGETS giflib
     RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib\${LIB_SUFFIX}
-    LIBRARY DESTINATION lib\${LIB_SUFFIX})
+    ARCHIVE DESTINATION lib${LIB_SUFFIX}
+    LIBRARY DESTINATION lib${LIB_SUFFIX})
 endif()
 
 if(BUILD_STATIC_LIBS)
-  install(TARGETS giflib_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
+  install(TARGETS giflib_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif()
 
 if(BUILD_UTILITIES)
-  foreach(UTILITY \${giflib_UTILS})
-    install(TARGETS \${UTILITY} DESTINATION bin)
+  foreach(UTILITY ${giflib_UTILS})
+    install(TARGETS ${UTILITY} DESTINATION bin)
   endforeach()
 endif()
 
 install(FILES gif_lib.h DESTINATION include)
 
 if(INSTALL_MAN)
-  install(FILES \${giflib_MAN} DESTINATION \${CMAKE_INSTALL_PREFIX}/man/man1)
+  install(FILES ${giflib_MAN} DESTINATION ${CMAKE_INSTALL_PREFIX}/man/man1)
 endif()
 
-install(DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR}/doc
-    DESTINATION \${CMAKE_INSTALL_PREFIX}/share/gif
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/gif
     FILES_MATCHING PATTERN "*ml")
-EOF
-}
-
-start
+XB_CREATE_CMAKELISTS
 
 # Filelist
 # --------

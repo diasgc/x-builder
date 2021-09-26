@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#             a8  a7  x86 x64
+# ndk-clang   ++. ++. ++. ++.
+# linux-gnu   ++. ++. ++. ++.
+# mingw-llvm  ++. ++. ... ++.
+
 lib='aribb24'
 apt='libaribb24-dev'
 dsc='A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream'
@@ -8,17 +13,22 @@ src='https://github.com/nkoriyama/aribb24.git'
 cfg='ar'
 dep='libpng'
 eta='10'
+mki='install-strip'
+mkc='distclean'
+
+lst_inc='aribb24/parser.h aribb24/decoder.h aribb24/bits.h aribb24/aribb24.h'
+lst_lib='libaribb24'
 
 . xbuilder.sh
 
 CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 
-start
+build_patch_config(){
+    # to build shared libs on mingw
+    str_contains $arch mingw32 && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo
+}
 
-#     Aa8 Aa7 A86 A64
-# NDK ++. ++. ++. ++. CLANG
-# GNU ++. ++. ++. ++. GCC
-# WIN  F   F   +  ++. CLANG/GCC
+start
 
 # Filelist
 # --------

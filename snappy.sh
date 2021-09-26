@@ -13,12 +13,18 @@ sty='git'
 cfg='cm'
 eta='12'
 dep='lz4 lzo'
-cmake_path="lib/cmake/Snappy"
+
+pc_llib='-lsnappy'
+
+CFG="-DSNAPPY_BUILD_TESTS=OFF \
+     -DSNAPPY_BUILD_BENCHMARKS=OFF"
+
+lst_inc='snappy.h snappy-c.h snappy-stubs-public.h snappy-sinksource.h'
+lst_pc='snappy.pc'
+lst_lib='libsnappy'
+lst_bin=''
 
 . xbuilder.sh
-
-CFG="-DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF"
-pkgconfig_llib='-lsnappy'
 
 source_patch(){
     # required vqtbl1q_u8 neon intrinsics is not defined in ARMv7
@@ -27,6 +33,9 @@ source_patch(){
 }
 
 start
+
+# TODO
+# dual static/shared
 
 # Filelist
 # --------

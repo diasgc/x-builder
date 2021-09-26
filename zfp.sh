@@ -8,19 +8,35 @@ lib='zfp'
 dsc='Compressed numerical arrays that support high-speed random access'
 lic='BSD-3c'
 src='https://github.com/LLNL/zfp.git'
-sty='git'
 cfg='cm'
 eta='190'
-cmake_path='lib/cmake/zfp'
+
+CFG="-DBUILD_TESTING=OFF \
+     -DBUILD_GMOCK=OFF"
+
+pc_url='http://oldhome.schmorp.de/marc/liblzf.html'
+pc_llib='-llzf'
+
+lst_inc='zfpcarray3.h zfparray.h zfpcarray2.h zfparray2.h \
+         zfpcarray1.h bitstream.h zfparray1.h \
+         zfp/exception.h zfp/pointer2.h zfp/view2.h zfp/handle2.h \
+         zfp/view3.h zfp/cache.h zfp/store3.h zfp/iterator1.h \
+         zfp/cache4.h zfp/iterator2.h zfp/memory.h zfp/cache2.h \
+         zfp/view4.h zfp/zfpheader.h zfp/types.h zfp/store2.h \
+         zfp/traits.h zfp/handle4.h zfp/reference1.h zfp/store1.h \
+         zfp/store.h zfp/pointer4.h zfp/iterator4.h zfp/handle3.h \
+         zfp/reference4.h zfp/cache1.h zfp/version.h zfp/pointer1.h \
+         zfp/cache3.h zfp/pointer3.h zfp/reference2.h zfp/view1.h \
+         zfp/reference3.h zfp/store4.h zfp/header.h zfp/macros.h \
+         zfp/iterator3.h zfp/handle1.h zfp/system.h zfpcpp.h \
+         zfpcarray4.h zfpindex.h zfparray3.h zfpcodec.h \
+         zfparray4.h zfpfactory.h zfp.h ieeecodec.h'
+lst_lib='libzfp'
+lst_bin=''         
 
 . xbuilder.sh
 
-CFG="-DBUILD_TESTING=OFF -DBUILD_GMOCK=OFF"
-pkgconfig_url='http://oldhome.schmorp.de/marc/liblzf.html'
-pkgconfig_llib='-llzf'
-
 start
-
 
 # CMAKE OPTIONS
 # -DBUILD_ALL                        OFF
@@ -47,7 +63,6 @@ start
 
 # Filelist
 # --------
-
 # include/zfpcarray3.h
 # include/zfparray.h
 # include/zfpcarray2.h

@@ -1,19 +1,23 @@
 #!/bin/bash
 
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++ +++ +++ gcc
+# WIN +++ +++ +++ +++ clang/gcc
+
 lib='fastlz'
 dsc='Small & portable byte-aligned LZ77 compression'
 lic='MIT'
 src='https://github.com/ariya/FastLZ.git'
-sty='git'
 cfg='cm'
 eta='30'
-pkgconfig_llib="-lfastlz"
+pc_llib="-lfastlz"
 
 . xbuilder.sh
 
-source_patch(){
-    cd $SRCDIR
-    cat <<-EOF >CMakeLists.txt
+start
+
+<<'XB_CREATE_CMAKELISTS'
 cmake_minimum_required(VERSION 3.10)
 
 project(fastlz C)
@@ -67,16 +71,7 @@ endif()
 if(INSTALL_DOCS)
   install(FILES LICENSE.MIT README.md DESTINATION share/docs/fastlz)
 endif()
-EOF
-cd ..
-}
-
-start
-
-#     Aa8 Aa7 A86 A64
-# NDK +++ +++ +++ +++ clang
-# GNU +++ +++ +++ +++ gcc
-# WIN +++ +++ +++ +++ clang/gcc
+XB_CREATE_CMAKELISTS
 
 # Filelist
 # --------

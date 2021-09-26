@@ -18,9 +18,9 @@ CFG="-DBUILD_TESTS=OFF -DENABLE_THREADS=ON -DWITH_COMBINED_THREADS=ON"
 
 extraOpts(){
   case $1 in
-    -f|--float ) CFG+=" -DENABLE_FLOAT=ON" pkg='fftwf' pkgconfig_llib='-lfftwf';;
-    -l|--long )  CFG+=" -DENABLE_LONG_DOUBLE=ON" pkg='fftwl' pkgconfig_llib='-lfftwl';;
-    -q|--quad )  CFG+=" -DENABLE_QUAD_PRECISION=ON" pkg='fftwq' pkgconfig_llib=='-lfftwq';;
+    -f|--float ) CFG+=" -DENABLE_FLOAT=ON" pkg='fftwf' pc_llib='-lfftwf';;
+    -l|--long )  CFG+=" -DENABLE_LONG_DOUBLE=ON" pkg='fftwl' pc_llib='-lfftwl';;
+    -q|--quad )  CFG+=" -DENABLE_QUAD_PRECISION=ON" pkg='fftwq' pc_llib=='-lfftwq';;
   esac
 }
 

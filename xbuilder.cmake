@@ -33,21 +33,21 @@ if(NOT XB_NDK_API)
     set(XB_NDK_API 24)
 endif()
 
-message("XB_CMAKE_INCLUDES=${XB_CMAKE_INCLUDES} XB_POSIX=${XB_POSIX}")
-
 if(XB_OS STREQUAL "android")
 
-    set(CMAKE_SYSTEM_NAME Android)
+    set(CMAKE_SYSTEM_NAME "Android")
     if(XB_HOST MATCHES "^arm")
-        set(CMAKE_SYSTEM_PROCESSOR armv7-a)
+        set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
     else()
-        set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
+        set(CMAKE_SYSTEM_PROCESSOR "${XB_CPU}")
     endif()
     set(ANDROID_ABI ${XB_ABI})
     set(ANDROID_PLATFORM ${XB_NDK_API})
     set(ANDROID_NDK $ENV{ANDROID_NDK_HOME})
-    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr ${XB_INSTALL}
-        ${XB_SYSROOT}/usr/lib/${XB_HOST} ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API})
+    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr
+        ${XB_SYSROOT}/usr/lib/${XB_HOST}
+        ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API}
+        ${XB_INSTALL})
     include(${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
     
 elseif(XB_OS STREQUAL "gnu")
@@ -55,13 +55,16 @@ elseif(XB_OS STREQUAL "gnu")
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
     if(XB_HOST MATCHES "^a")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST} ${XB_INSTALL}
-            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION})
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION
+            ${XB_INSTALL}})
     elseif(XB_HOST MATCHES "^i")
-        set(CMAKE_C_FLAGS "-m32")
-        set(CMAKE_CXX_FLAGS "-m32")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST} ${XB_INSTALL}
-            /usr/lib/gcc-cross/${XB_HOST}/${XB_X86LINUX_TCVERSION})
+        set(CMAKE_SYSTEM_PROCESSOR "x86")
+        set(CMAKE_C_COMPILER_ARG1 "-m32")
+        set(CMAKE_CXX_COMPILER_ARG1 "-m32")
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+            /usr/lib/gcc-cross/${XB_HOST}/${XB_X86LINUX_TCVERSION}
+            ${XB_INSTALL})
     endif()
     if(XB_HOST MATCHES "^x86_64")
         set(CMAKE_C_COMPILER gcc)
@@ -87,8 +90,7 @@ elseif(XB_OS STREQUAL "mingw32")
         set(CMAKE_C_COMPILER ${XB_HOST}-gcc${XB_W64POSIX})
         set(CMAKE_CXX_COMPILER ${XB_HOST}-g++${XB_W64POSIX})
     endif()
-    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT} ${XB_INSTALL}
-        ${XB_LT_SYS_LIBRARY_PATH})
+    set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT} ${XB_LT_SYS_LIBRARY_PATH} ${XB_INSTALL})
     set(CMAKE_AR ${XB_CROSS_PREFIX}ar CACHE FILEPATH Archiver)
     set(CMAKE_RANLIB ${XB_CROSS_PREFIX}ranlib CACHE FILEPATH Indexer)
     set(CMAKE_RC_COMPILER ${XB_CROSS_PREFIX}windres)
