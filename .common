@@ -51,6 +51,14 @@ str_contains(){
    [ -z "${1##*${2}*}" ]
 }
 
+str_starts(){
+   [ "${1#${2}}" != "${1}" ]
+}
+
+str_ends(){
+   [ "${1%${2}}" != "${1}" ]
+}
+
 str_lowercase(){
   echo ${1} | tr '[:upper:]' '[:lower:]'
 }

@@ -56,7 +56,7 @@ elseif(XB_OS STREQUAL "gnu")
     set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
     if(XB_HOST MATCHES "^a")
         set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
-            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION
+            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION}
             ${XB_INSTALL}})
     elseif(XB_HOST MATCHES "^i")
         set(CMAKE_SYSTEM_PROCESSOR "x86")

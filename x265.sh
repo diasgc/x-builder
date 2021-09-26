@@ -1,39 +1,37 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#             a8  a7  x86 x64
+# ndk-clang   +++ +++ +++ +++
+# linux-gnu   +++ ... ... ...
+# mingw-llvm  F   F   ... +++
 
 lib='x265'
-apt='x265'
 dsc='x265 is an open source HEVC encoder'
 lic='GPL-2.0'
 src='https://github.com/videolan/x265.git'
-sty='git'
 cfg='cm'
 tls='yasm libnuma-dev'
-
 eta='720'
-cb0="-DENABLE_CLI=OFF"
-cb1="-DENABLE_CLI=ON"
-# -----------------------------------------
+cbk="ENABLE_CLI"
 
-. xbuilder.sh $@ --ndkLpthread
+CFG='-DHIGH_BIT_DEPTH=ON'
 
-#-DHIGH_BIT_DEPTH=ON
-BUILD_DIR=$SRCDIR/build_${arch}
-SRCDIR=$SRCDIR/source
-AS=$YASM
-case $arch in
-  *mingw32 ) CFG="$CFG -DENABLE_LUMA=OFF";;
-  aarch64*|arm* ) CFG="$CFG -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF";;
-esac
+lst_inc='x265.h x265_config.h'
+lst_lib='libx265'
+lst_bin='x265'
+lst_oth=''
+
+. xbuilder.sh #$@ --ndkLpthread
+
+SRCDIR+='/source'
+
+str_contains $arch mingw32 && CFG+=" -DENABLE_LUMA=OFF"
+str_starts $arch a && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF"
 
 start
 
+
 # Filelist
 # --------
-
 # include/x265.h
 # include/x265_config.h
 # lib/pkgconfig/x265.pc

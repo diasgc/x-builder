@@ -288,9 +288,10 @@ check_xbautopatch(){
   local match=$(grep -oP "(?<=^<<').*?(?=')" $0)
   [ -z "$match" ] && return 0
   local block=$(awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0)
+  echo -e "\npatch this: \n$block" >>$LOGFILE
   case $match in
-    XB_CREATE_CMAKELISTS) awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0 >$SRCDIR/CMakeLists.txt;;
-    XB_PATCH_CMAKELISTS) pushdir $SRCDIR; patch -p0 <<<$block 2>&1 >$LOGFILE; popdir;;
+    XB_CREATE_CMAKELISTS) echo "${block}" >$SRCDIR/CMakeLists.txt;;
+    XB_PATCH_CMAKELISTS) pushdir $SRCDIR; patch -p0 <<<$(echo "${block}") 2>&1 >$LOGFILE; popdir;;
   esac
   popdir
 }
