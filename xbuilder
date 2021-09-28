@@ -1,0 +1,265 @@
+#!$SHELL
+# ................................................
+# X-Builder util 0.3.1 2021-diasgc
+# ................................................
+[ -z ${vsh+x} ] && . .common
+
+trap err ERR
+
+[ -z ${debug+x} ] && debug=false
+[ -z ${nodev+x} ] && nodev=false
+[ -z ${is_init+x} ] && is_init=false
+[ -z ${pkg+x} ] && pkg=${lib}
+[ -z ${apt+x} ] && apt=${lib}
+
+install_tree=false
+cmake_build_type=Release
+cmake_toolchain_file=
+banner=true
+mingw_posix_suffix=
+use_llvm_mingw=true
+use_ndk_cmake=false
+use_clang=true
+req_src_nodev=false
+req_src_clone=false
+req_src_update=false
+req_bld_retry=false
+
+build_shared=false
+build_static=false
+build_bin=false
+build_docs=false
+
+build_package=true
+only_repo=false
+pc_filelist=
+log_time_global=
+log_time_script=$(date +%s)
+shell_dstack=
+
+init(){
+  [ -f ".config" ] && . .config
+  if [ ! -f ".config" ] || test `expr $(date +%s) - $config_lastupdate` -gt 86400; then
+    ./xsetup.sh
+    . .config || doErr 'Unable to initialize config file'
+  fi
+  log_time_global=$(date +%s)
+  export is_init=true ind=0
+}
+
+$is_init || init
+
+log_time_script=$(date +%s)
+
+inc_tab
+
+set_toolchain_variables(){
+  case $host_os in
+    android) host_platform='Android' host_sys='linux' host_clang=true
+      host_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64"
+      host_sysroot="${host_toolchain}/sysroot"
+      arch="${host_arch}-${host_sys}-${host_os}${host_eabi}"
+      CC="${host_toolchain}/bin/${host_prefix}-clang"
+      CXX="${CC}++"
+      AS="${CC}"
+      LD="${host_toolchain}/bin/ld.lld"
+      CROSS_PREFIX="${host_toolchain}/bin/llvm-"
+      CT0=$CG0 CT1=$CG1
+      ;;
+    gnu) host_platform='Linux' host_sys='linux' host_clang=false
+      arch="${host_arch}-${host_sys}-${host_os}${host_eabi}"
+      host_toolchain="/usr/${host_prefix}/bin"
+      host_sysroot="/usr/${arch}"
+      CROSS_PREFIX="${host_prefix}-"
+      CC="${CROSS_PREFIX}gcc"
+      CXX="${CROSS_PREFIX}g++"
+      AS="${CROSS_PREFIX}as"
+      LD="${CROSS_PREFIX}ld"
+      CT0=$CM0 CT1=$CM1
+      ;;
+    mingw32) host_platform='Windows' host_sys='w64' host_clang=true
+      arch="${host_arch}-${host_sys}-${host_os}${host_eabi}"
+      host_toolchain="${LLVM_MINGW_HOME}/bin"
+      host_sysroot="${LLVM_MINGW_HOME}/${host_prefix}"
+      CROSS_PREFIX="${host_toolchain}/${host_prefix}-"
+      CC="${CROSS_PREFIX}clang"
+      CXX="${CC}++"
+      AS="${CROSS_PREFIX}as"
+      LD="${CROSS_PREFIX}ld"
+      CT0=$CC0 CT1=$CC1
+      ;;
+  esac
+  ADDR2LINE=${CROSS_PREFIX}addr2line
+  OBJCOPY=${CROSS_PREFIX}objcopy
+  OBJDUMP=${CROSS_PREFIX}objdump
+  RANLIB=${CROSS_PREFIX}ranlib
+  READELF=${CROSS_PREFIX}readelf
+  SIZE=${CROSS_PREFIX}size
+  STRINGS=${CROSS_PREFIX}strings
+  STRIP=${CROSS_PREFIX}strip
+  WINDRES=${CROSS_PREFIX}windres
+}
+
+while [ $1 ];do
+  case $1 in
+    aa64|aa8|a*64-*android|android )
+      host_prefix='aarch64-linux-android'
+      host_arch='aarch64' host_cpu='arm64'
+      host_abi='arm64-v8a' host_eabi=
+      host_64b=true host_x86=false
+      host_sys='linux' host_os='android' 
+      set_toolchain_variables
+      ;;
+    aa7|arm-*android*eabi|arm-android)
+      host_prefix='armv7a-linux-androideabi'
+      host_arch='arm' host_cpu='arm'
+      host_abi='armeabi-v7a' host_eabi='eabi'
+      host_64b=false host_x86=false
+      host_sys='linux' host_os='android' 
+      set_toolchain_variables
+      ;;
+    a86|ax86|*86-*android)
+      host_prefix='i686-linux-androideabi'
+      host_arch='i686' host_cpu='x86'
+      host_abi='x86' host_eabi=
+      host_64b=false host_x86=true
+      host_sys='linux' host_os='android' 
+      set_toolchain_variables
+      ;;
+    a64|ax64|*64-*android)
+      host_prefix='x86_64-linux-androideabi'
+      host_arch='x86_64' host_cpu='x86_64'
+      host_abi='x86_64' host_eabi=
+      host_64b=true host_x86=true
+      host_sys='linux' host_os='android' 
+      set_toolchain_variables
+      ;;
+    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*)
+      host_prefix='aarch64-linux-gnu'
+      host_arch='aarch64' host_cpu='arm64'
+      host_abi='aarch64' host_eabi=
+      host_64b=true host_x86=false
+      host_sys='linux' host_os='gnu'
+      set_toolchain_variables
+      ;;
+    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*)
+      host_prefix='arm-linux-gnueabihf'
+      host_arch='arm' host_cpu='arm'
+      host_abi='arm' host_eabi='eabihf'
+      host_64b=false host_x86=false
+      host_sys='linux' host_os='gnu'
+      set_toolchain_variables
+      ;;
+    l86|lx86|*86-linux*|linux*32)
+      host_prefix='i686-linux-gnu'
+      host_arch='i686' host_cpu='x86'
+      host_abi='x86' host_eabi=
+      host_64b=false host_x86=true
+      host_sys='linux' host_os='gnu'
+      host_toolchain="/usr/${host_prefix}/bin"
+      host_sysroot="/usr/${arch}"
+      set_toolchain_variables
+      ;;
+    l64|lx64|*64-linux*|linux*64|linux )
+      host_prefix='x86_64-linux-gnu'
+      host_arch='x86_64' host_cpu='x86_64'
+      host_abi='x86_64' host_eabi=
+      host_64b=true host_x86=true
+      host_sys='linux' host_os='gnu'
+      host_toolchain="/usr/bin"
+      host_sysroot="/usr"
+      CT0=$CM0 CT1=$CM1
+      ;;
+    wa8|a*64-w64*|a*64-*mingw*)
+      host_prefix='aarch64-w64-mingw32'
+      host_arch='aarch64' host_cpu='arm64'
+      host_abi='aarch64' host_eabi=
+      host_64b=true host_x86=false
+      host_sys='w64' host_os='mingw32'
+      set_toolchain_variables
+      ;;
+    wa7|arm*-w64*|arm*-*mingw*)
+      host_prefix='armv7-w64-mingw32'
+      host_arch='arm' host_cpu='armv7'
+      host_abi='armv7' host_eabi=
+      host_64b=false host_x86=false
+      host_sys='w64' host_os='mingw32'
+      set_toolchain_variables
+      ;;
+    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64)
+      host_prefix='i686-w64-mingw32'
+      host_arch='x86_64' host_cpu='x86_64'
+      host_abi='x86_64' host_eabi=
+      host_64b=true host_x86=true
+      host_sys='w64' host_os='mingw32'
+      set_toolchain_variables
+      ;;
+    w86|wx86|*86-win*|*86-*mingw*|w*32)
+      host_prefix='i686-w64-mingw32'
+      host_arch='i686' host_cpu='x86'
+      host_abi='x86' host_eabi=
+      host_64b=false host_x86=true
+      set_toolchain_variables
+      ;;
+
+    --api)		shift; export host_api=$1;;
+    --clang)	use_clang=true;;
+    --prefix)	shift; packages_dir=$1;;
+    --nodev)	req_src_nodev=true;;
+    --clone)	req_src_clone=true;;
+    --update)	req_src_update=true;;
+    --redo)		shift; redo_action=${1};;
+    --static)	build_static=true;;
+    --shared)	build_shared=true;;
+    --both)		build_shared=true build_static=true;;
+    --bin)		build_bin=true;;
+    --docs)		build_docs=true;;
+    --get)		shift; case $1 in
+		pc_cflags)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
+		pc_libs)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
+		pc_staticlibs)	[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
+		pc-version)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
+		pc-fpath)		echo ${pkgfile} && exit 0;;
+		pc_fname)		echo ${pkg} && exit 0;;
+		prefix)			echo ${install_dir} && exit 0;;
+		desc)			echo ${dsc} && exit 0;;
+		licence)		echo ${lic} && exit 0;;
+		libname)		echo ${lib} && exit 0;;
+		aptname)		echo ${apt} && exit 0;;
+		varname)		shift; echo ${!1} && exit 0;;
+		options)		;;
+		esac
+		;;
+	--clear)	shift; case $1 in
+		sources)	req_erase_list+=" ${pwd}/sources";;
+		builds)		req_erase_list+=" ${pwd}/builds";;
+		logs)		req_erase_list+=" ${pwd}/builds/*.log";;
+		source)		req_erase_list+=" ${pwd}/sources/${lib}";;
+		build)		install_tree && req_erase_list+=" $(pwd)/builds/${host_os}/${host_abi}/${lib}";;
+		pkgdist)	req_erase_list+=" ${pwd}/packages";;
+		wipeall)	rm -rf sources builds packages 2>&1 >/dev/null && exit 0;;
+		esac
+		;;
+	--setup)	
+  esac
+  shift
+done
+
+if [ -n "${req_erase_list}" ];then
+	for f in ${req_erase_list}; do
+		rm_quiet $f
+	done
+fi
+
+! $build_static && ! $build_shared && build_static=true
+
+[ -z ${packages_dir+x} ] && packages_dir="$(pwd)/builds/${host_os}/${host_abi}"
+
+if $install_tree; then
+  install_dir="$(pwd)/builds/${host_os}/${host_abi}/${lib}"
+else
+  install_dir="${packages_dir}"
+fi
+
+
+main

@@ -207,37 +207,38 @@ writeConfig(){
     local xv_x86_mingw=$(ls -t /usr/lib/gcc/i686-w64-mingw32 | grep -E "*-win32" | head -n1)
     [ -z "${llvm_mingw}" ] && [ -n "${LLVM_MINGW_HOME}" ] && llvm_mingw=${LLVM_MINGW_HOME}
     case "$(uname -s)" in
-        Linux)  BUILD_TRIP=$(echo $(uname -m)-linux-gnu)
-        [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && BUILD_TRIP="${BUILD_TRIP}eabihf"    
+        Linux)  build_arch=$(echo $(uname -m)-linux-gnu)
+        [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && build_arch="${build_arch}eabihf"    
         if [ -n "$(which getprop)" ];then
-            BUILD_TRIP=$(echo $(uname -m)-linux-android)
+            build_arch=$(echo $(uname -m)-linux-android)
             export API=$(getprop ro.build.version.sdk)
         fi
         ;;
-        Darwin) BUILD_TRIP=$(echo $(uname -m)-darwin-gnu);;
-        CYGWIN*|MINGW32*|MSYS*|MINGW*) BUILD_TRIP=$(echo $(uname -m)-w64-mingw32);;
+        Darwin) build_arch=$(echo $(uname -m)-darwin-gnu);;
+        CYGWIN*|MINGW32*|MSYS*|MINGW*) build_arch=$(echo $(uname -m)-w64-mingw32);;
     esac
 
     cat <<-EOF >${1}
     #!/bin/bash
     export config_lastupdate=${ldate} \\
-           ROOTDIR=$(pwd) \\
-           ANDROID_NDK_HOME=${ANDROID_NDK_HOME} \\
-           MAKE_EXECUTABLE=$(which make) \\
-           CMAKE_EXECUTABLE=$(which cmake) \\
-           NASM_EXECUTABLE=$(which nasm) \\
-           PKG_CONFIG=$(which pkg-config) \\
-           BUILD_TRIP=$BUILD_TRIP \\
-           HOST_NPROC=$(nproc) \\
-           LLVM_MINGW_HOME=${llvm_mingw} \\
-           xv_ndk=${xv_ndk} \\
-           xv_llvm_mingw=${xv_llvm_mingw} \\
-           xv_aarch64_gnu=${xv_aarch64_gnu} \\
-           xv_armeabi_gnu=${xv_armeabi_gnu} \\
-           xv_x86_gnu=${xv_x86_gnu} \\
-           xv_x64_gnu=${xv_x64_gnu} \\
-           xv_x64_mingw=${xv_x64_mingw} \\
-           xv_x86_mingw=${xv_x86_mingw}
+           ROOTDIR="$(pwd)" \\
+           build_arch="${build_arch}" \\
+           ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \\
+           xv_ndk="${xv_ndk}" \\
+           xv_ndk_major="${xv_ndk%%.*}" \\
+           MAKE_EXECUTABLE="$(which make)" \\
+           CMAKE_EXECUTABLE="$(which cmake)" \\
+           NASM_EXECUTABLE="$(which nasm)" \\
+           PKG_CONFIG="$(which pkg-config)" \\
+           HOST_NPROC="$(nproc)" \\
+           LLVM_MINGW_HOME="${llvm_mingw}" \\
+           xv_llvm_mingw="${xv_llvm_mingw}" \\
+           xv_aarch64_gnu="${xv_aarch64_gnu}" \\
+           xv_armeabi_gnu="${xv_armeabi_gnu}" \\
+           xv_x86_gnu="${xv_x86_gnu}" \\
+           xv_x64_gnu="${xv_x64_gnu}" \\
+           xv_x64_mingw="${xv_x64_mingw%%-*}" \\
+           xv_x86_mingw="${xv_x86_mingw%%-*}"
            
            
 	EOF
