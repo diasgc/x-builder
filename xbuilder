@@ -2,56 +2,60 @@
 # ................................................
 # X-Builder util 0.3.1 2021-diasgc
 # ................................................
-[ -z ${vsh+x} ] && . .common
-
-trap err ERR
-
-[ -z ${debug+x} ] && debug=false
-[ -z ${nodev+x} ] && nodev=false
-[ -z ${is_init+x} ] && is_init=false
-[ -z ${pkg+x} ] && pkg=${lib}
-[ -z ${apt+x} ] && apt=${lib}
-
-install_tree=false
-cmake_build_type=Release
-cmake_toolchain_file=
-banner=true
-mingw_posix_suffix=
-use_llvm_mingw=true
-use_ndk_cmake=false
-use_clang=true
-req_src_nodev=false
-req_src_clone=false
-req_src_update=false
-req_bld_retry=false
-
-build_shared=false
-build_static=false
-build_bin=false
-build_docs=false
-
-build_package=true
-only_repo=false
-pc_filelist=
-log_time_global=
-log_time_script=$(date +%s)
-shell_dstack=
 
 init(){
+
+  set -euo pipefail
+  . .common
+
+  trap err ERR
+
+  [ -z ${debug+x} ] && debug=false
+  [ -z ${nodev+x} ] && nodev=false
+  [ -z ${is_init+x} ] && is_init=false
+  [ -z ${pkg+x} ] && pkg=${lib}
+  [ -z ${apt+x} ] && apt=${lib}
+
+  install_tree=false
+  cmake_build_type=Release
+  cmake_toolchain_file=
+  banner=true
+  mingw_posix_suffix=
+  use_llvm_mingw=true
+  use_ndk_cmake=false
+  use_clang=true
+  req_src_nodev=false
+  req_src_clone=false
+  req_src_update=false
+  req_bld_retry=false
+
+  build_shared=false
+  build_static=false
+  build_bin=false
+  build_docs=false
+
+  build_package=true
+  only_repo=false
+  pc_filelist=
+  log_time_global=$(date +%s)
+  shell_dstack=
   [ -f ".config" ] && . .config
   if [ ! -f ".config" ] || test `expr $(date +%s) - $config_lastupdate` -gt 86400; then
     ./xsetup.sh
     . .config || doErr 'Unable to initialize config file'
   fi
   log_time_global=$(date +%s)
-  export is_init=true ind=0
+  ind=0
+  banner ${lib}
 }
 
-$is_init || init
-
+$[ -z ${vsh+x} ] && init
 log_time_script=$(date +%s)
-
 inc_tab
+
+start(){
+
+}
 
 set_toolchain_variables(){
   case $host_os in
@@ -215,32 +219,31 @@ while [ $1 ];do
     --bin)		build_bin=true;;
     --docs)		build_docs=true;;
     --get)		shift; case $1 in
-		pc_cflags)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
-		pc_libs)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
-		pc_staticlibs)	[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
-		pc-version)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
-		pc-fpath)		echo ${pkgfile} && exit 0;;
-		pc_fname)		echo ${pkg} && exit 0;;
-		prefix)			echo ${install_dir} && exit 0;;
-		desc)			echo ${dsc} && exit 0;;
-		licence)		echo ${lic} && exit 0;;
-		libname)		echo ${lib} && exit 0;;
-		aptname)		echo ${apt} && exit 0;;
-		varname)		shift; echo ${!1} && exit 0;;
-		options)		;;
-		esac
-		;;
-	--clear)	shift; case $1 in
-		sources)	req_erase_list+=" ${pwd}/sources";;
-		builds)		req_erase_list+=" ${pwd}/builds";;
-		logs)		req_erase_list+=" ${pwd}/builds/*.log";;
-		source)		req_erase_list+=" ${pwd}/sources/${lib}";;
-		build)		install_tree && req_erase_list+=" $(pwd)/builds/${host_os}/${host_abi}/${lib}";;
-		pkgdist)	req_erase_list+=" ${pwd}/packages";;
-		wipeall)	rm -rf sources builds packages 2>&1 >/dev/null && exit 0;;
-		esac
-		;;
-	--setup)	
+      pc_cflags)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
+      pc_libs)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
+      pc_staticlibs)	[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
+      pc-version)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
+      pc-fpath)		echo ${pkgfile} && exit 0;;
+      pc_fname)		echo ${pkg} && exit 0;;
+      prefix)			echo ${install_dir} && exit 0;;
+      desc)			echo ${dsc} && exit 0;;
+      licence)		echo ${lic} && exit 0;;
+      libname)		echo ${lib} && exit 0;;
+      aptname)		echo ${apt} && exit 0;;
+      varname)		shift; echo ${!1} && exit 0;;
+      options)		;;
+      esac
+      ;;
+    --clear)	shift; case $1 in
+      sources)	req_erase_list+=" ${pwd}/sources";;
+      builds)		req_erase_list+=" ${pwd}/builds";;
+      logs)		req_erase_list+=" ${pwd}/builds/*.log";;
+      source)		req_erase_list+=" ${pwd}/sources/${lib}";;
+      build)		install_tree && req_erase_list+=" $(pwd)/builds/${host_os}/${host_abi}/${lib}";;
+      pkgdist)	req_erase_list+=" ${pwd}/packages";;
+      wipeall)	rm -rf sources builds packages 2>&1 >/dev/null && exit 0;;
+      esac
+      ;;
   esac
   shift
 done

@@ -3,11 +3,6 @@
 # 2021 diasgc
 # CMake cross-config file for X-Builder
 
-if(XB_CMAKE_TOOLCHAIN_)
-  return()
-endif()
-set(XB_CMAKE_TOOLCHAIN_ 1)
-
 set(XB_HOST $ENV{arch})
 set(XB_OS $ENV{host_os})
 set(XB_INSTALL $ENV{LIBSDIR})
