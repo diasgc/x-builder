@@ -28,6 +28,8 @@ lst_bin='JxrEncApp JxrDecApp'
 
 . xbuilder.sh
 
+CPPFLAGS="-Wno-implicit-int -Wno-endif-labels $CPPFLAGS"
+
 start
 
 <<'XB_CREATE_CMAKELISTS'

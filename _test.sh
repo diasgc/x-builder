@@ -106,3 +106,7 @@ list_scripts(){
     esac
   done
 }
+
+check_tf(){
+  [ "${1}" == "ok" ] && return 0 || return 1
+}

@@ -13,8 +13,7 @@ src='https://git.code.sf.net/p/opencore-amr/code'
 sty='git'
 cfg='ar'
 eta='100'
-cb0="--disable-examples"
-cb1="--enable-examples"
+cbk="able-examples"
 
 . xbuilder.sh
 

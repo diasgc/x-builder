@@ -27,6 +27,7 @@ init(){
   req_src_nodev=false
   req_src_clone=false
   req_src_update=false
+  req_src_update_deps=false
   req_bld_retry=false
 
   build_shared=false
@@ -49,12 +50,26 @@ init(){
   banner ${lib}
 }
 
-$[ -z ${vsh+x} ] && init
+[ -z ${vsh+x} ] && init
 log_time_script=$(date +%s)
 inc_tab
 
 start(){
+    [ $($0 --check) ] && echo "already installed" || echo "must install first"
+}
 
+check_packege_integrity(){
+  [ -n "$lst_pc" ] && for p in $lst_pc; do
+    [ ! -f "$install_dir/lib/pkgconfig/$p" ] && return 1
+  done
+  [ -n "$lst_inc" ] && for i in $lst_inc; do
+    [ ! -f "$install_dir/include/$i" ] && return 1
+  done
+  [ -n "$lst_lib" ] && for l in $lst_lib; do
+    [ ! -f "$install_dir/lib/${l}.a" ] && return 1
+    [ ! -f "$install_dir/lib/${l}.so*" ] && return 1
+  done
+  return 0
 }
 
 set_toolchain_variables(){
@@ -93,15 +108,18 @@ set_toolchain_variables(){
       CT0=$CC0 CT1=$CC1
       ;;
   esac
-  ADDR2LINE=${CROSS_PREFIX}addr2line
-  OBJCOPY=${CROSS_PREFIX}objcopy
-  OBJDUMP=${CROSS_PREFIX}objdump
-  RANLIB=${CROSS_PREFIX}ranlib
-  READELF=${CROSS_PREFIX}readelf
-  SIZE=${CROSS_PREFIX}size
-  STRINGS=${CROSS_PREFIX}strings
-  STRIP=${CROSS_PREFIX}strip
-  WINDRES=${CROSS_PREFIX}windres
+  export host_platform host_sys host_clang arch host_toolchain \
+      host_sysroot CROSS_PREFIX CC CXX AS LD \
+      ADDR2LINE=${CROSS_PREFIX}addr2line \
+      OBJCOPY=${CROSS_PREFIX}objcopy \
+      OBJDUMP=${CROSS_PREFIX}objdump \
+      RANLIB=${CROSS_PREFIX}ranlib \
+      READELF=${CROSS_PREFIX}readelf \
+      SIZE=${CROSS_PREFIX}size \
+      STRINGS=${CROSS_PREFIX}strings \
+      STRIP=${CROSS_PREFIX}strip \
+      WINDRES=${CROSS_PREFIX}windres \
+      install_dir="$(pwd)/builds/${host_platform,}/${host_abi}"
 }
 
 while [ $1 ];do
@@ -218,6 +236,7 @@ while [ $1 ];do
     --both)		build_shared=true build_static=true;;
     --bin)		build_bin=true;;
     --docs)		build_docs=true;;
+    --check)  check_packege_integrity && echo 0 || echo 1; exit 0;;
     --get)		shift; case $1 in
       pc_cflags)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
       pc_libs)		[ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;

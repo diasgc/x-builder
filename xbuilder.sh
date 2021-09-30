@@ -1022,6 +1022,8 @@ loadToolchain(){
           CC="${CROSS_PREFIX}gcc" CXX="${CROSS_PREFIX}g++"
         }
         LT_SYS_LIBRARY_PATH="${LLVM_MINGW_HOME}/lib/clang/${xv_llvm_mingw}"
+        CPPFLAGS+=" -I$LT_SYS_LIBRARY_PATH/include"
+        LDFLAGS="-L${LT_SYS_LIBRARY_PATH}/lib -L${SYSROOT}/lib ${LDFLAGS}"
       else
         CROSS_PREFIX="${arch}-"
         TOOLCHAIN="/usr/${arch}/bin"
@@ -1030,9 +1032,10 @@ loadToolchain(){
         CC="${CROSS_PREFIX}gcc${posix}"
         CXX="${CROSS_PREFIX}g++${posix}"
         LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
+        LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       fi
       LD="${CROSS_PREFIX}ld" AS="${CROSS_PREFIX}as"
-      LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+      
       ;;
   esac
   AR=${CROSS_PREFIX}ar
@@ -1050,8 +1053,8 @@ loadToolchain(){
   [ -z ${GCOV+x} ] && GCOV=${CROSS_PREFIX}gcov
 
   pushvar_f CPPFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-  pushvar_f CFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-  pushvar_f CXXFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
+  #pushvar_f CFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
+  #pushvar_f CXXFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
 
   # export
   export CMAKE_EXECUTABLE YASM PKG_CONFIG API \
@@ -1112,8 +1115,6 @@ pkgInfo(){
 }
 
 aptLongDesc(){
-  #[ -n "$apt" ] && echo -e $(apt-cache show ${apt} 2>/dev/null | grep -E "Description-..^|^ " | sed $'s/\*/\u2605/g') | sed '/^ *This package contains.*\./d' | fold -s || echo
-  #apt-cache show ${apt} | grep -Po "(Description-..:) \K.*|^ .*$|^ \."
   [ -n "$apt" ] && echo -e $(apt-cache show ${apt} 2>/dev/null | \
     grep -E "Description-..^|^ " | \
     sed $'s/\*/\u2605/g' | \
@@ -1249,7 +1250,7 @@ while [ $1 ];do
       host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=false; host_os=gnu
       LIBSDIR=$(pwd)/builds/arm/armeabihf
       PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
-      CT0=$CM0 CT1=$CM1
+      CT0=$CY0 CT1=$CY1
       ;;
     l86|lx86|*86-linux*|linux*32 )
       arch=i686-linux-gnu
@@ -1274,7 +1275,7 @@ while [ $1 ];do
       CT0=$CC0 CT1=$CC1
       ;;
     wa7|arm*-w64*|arm*-*mingw*)
-    [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
+      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
       arch=armv7-w64-mingw32
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/armv7
@@ -1286,14 +1287,14 @@ while [ $1 ];do
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/x86_64
       PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
-      CT0=$CC0 CT1=$CC1
+      CT0=$CB0 CT1=$CB1
       ;;
     w86|wx86|*86-win*|*86-*mingw*|w*32)
       arch=i686-w64-mingw32
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32
       LIBSDIR=$(pwd)/builds/windows/i686
       PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
-      CT0=$CC0 CT1=$CC1
+      CT0=$CB0 CT1=$CB1
       ;;
     --api) shift && export API=$1;;
     --clang) use_clang=true;;
