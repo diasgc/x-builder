@@ -220,7 +220,7 @@ start(){
         ;;
       automake)
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
-        [ -z "$no_host" ] && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
+        [ -z "${ac_nohost}" ] && ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
         doLog 'configure' ${BUILD_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         ;;
       meson)

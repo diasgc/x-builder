@@ -29,8 +29,8 @@ if(NOT XB_NDK_API)
 endif()
 
 if(XB_OS STREQUAL "android")
-
     set(CMAKE_SYSTEM_NAME "Android")
+    set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
     if(XB_HOST MATCHES "^arm")
         set(CMAKE_SYSTEM_PROCESSOR "armv7-a")
     else()

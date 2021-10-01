@@ -8,7 +8,7 @@ src='https://github.com/georgmartius/vid.stab.git'
 sty='git'
 cfg='cm'
 eta='80'
-
+CFG="-DUSE_OMP=OFF"
 . xbuilder.sh
 
 case $arch in

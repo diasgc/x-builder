@@ -247,16 +247,18 @@ log_init(){
 }
 
 err(){
-  local logfile=$1; shift
-  echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
-  if [ -f $logfile ];then
-    # todo
-    #if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
-    #  echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $logfile
-    #  cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $logfile
-    #fi
-    echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
-    case $openlog in y*|Y*) nano $logfile;; esac
+  if [ $# -gt 0];then
+    local logfile=$1; shift
+    echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
+    if [ -f $logfile ];then
+      # todo
+      #if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
+      #  echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $logfile
+      #  cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $logfile
+      #fi
+      echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
+      case $openlog in y*|Y*) nano $logfile;; esac
+    fi
   fi
   exit 1
 }
