@@ -18,7 +18,7 @@ lst_pc='ogg.pc'
 lst_inc='ogg/config_types.h ogg/ogg.h ogg/os_types.h'
 lst_lib='libogg'
 
-. xbuilder.sh
+. xbuilder
 
 case $cfg in
   cm|ccm|cmake|ccmake)

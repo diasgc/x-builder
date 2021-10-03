@@ -22,9 +22,9 @@ lst_pc='zlib.pc'
 
 source_patch(){
     # Is it a bug?
-    sed -i '/^set(INSTALL_PKGCONFIG_DIR.*/s/share/lib/'  CMakeLists.txt
+    sed -i '/^set(INSTALL_PKGCONFIG_DIR.*/s/share/lib/'  $SRCDIR/CMakeLists.txt
 }
-str_contains arch "mingw32" && {
+str_contains $arch "mingw32" && {
     [ ! -f "$INSTALL_DIR/lib/libz.a" ] && [ -f "$INSTALL_DIR/lib/libzlib.dll.a" ] && ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a
     [ ! -f "$INSTALL_DIR/lib/libzstatic.a" ] && [ -f "$INSTALL_DIR/lib/libzlibstatic.a" ] && ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a
 }

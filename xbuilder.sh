@@ -11,6 +11,8 @@ trap err ERR
 [ -z ${is_init+x} ] && is_init=false
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
+[ -z ${ac_nohost+x} ] && ac_nohost=false
+
 cmake_build_type=Release
 cmake_toolchain_file=
 banner=true
@@ -217,11 +219,13 @@ start(){
         [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
         doLog 'cmake' $exec_config ${SRCDIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
         case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
+        MAKE_EXECUTABLE=make
         ;;
       automake)
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
-        [ -z "${ac_nohost}" ] && ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
+        ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
         doLog 'configure' ${BUILD_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+        MAKE_EXECUTABLE=make
         ;;
       meson)
         local MESON_EXEC=$(check_tool_dependency meson)
@@ -229,10 +233,12 @@ start(){
         local MESON_CFG="$SRCDIR/${arch}.meson"
         [ -f "$MESON_CFG" ] && rm $MESON_CFG
         meson_create_toolchain $MESON_CFG
+        MAKE_EXECUTABLE=ninja
         doLog 'meson' ${MESON_EXEC} setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         ;;
       mk)
         mkf=$CFG
+        MAKE_EXECUTABLE=make
         ;;
       *)
         doErr "No cfg found or unknown for $cfg. Use build_config to custom configure makefile"
@@ -401,8 +407,7 @@ build_dependencies(){
       local cmi=$(./${1}.sh ${arch} --get cmake_include)
       [ -n "$cmi" ] && pushvar_f cmake_includes $cmi
       ldir="$(dirname ${pkgfile})"
-      str_contains $PKG_CONFIG_LIBDIR ${ldir} || pushvar_f PKG_CONFIG_LIBDIR ${ldir}
-      #[[ "$PKG_CONFIG_LIBDIR" == *"${ldir}:"* ]] || PKG_CONFIG_LIBDIR="${ldir}:${PKG_CONFIG_LIBDIR}"
+      str_contains $PKG_CONFIG_LIBDIR ${ldir} || PKG_CONFIG_LIBDIR="${ldir}:${PKG_CONFIG_LIBDIR}"
     fi
     shift
   done
@@ -1172,8 +1177,7 @@ hwinfoCountCores(){
 }
 
 hwinfoCountCoresReadable(){
-  local n=$(cat /proc/cpuinfo | grep -Po -c 'model name\s+: \K(.*)')
-  case $n in
+  case $(nproc) in
     "1") echo "Single-Core";;
     "2") echo "Dual-Core";;
     "4") echo "Quad-Core";;
@@ -1215,14 +1219,14 @@ while [ $1 ];do
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android
       LIBSDIR=$(pwd)/builds/android/arm64-v8a
       PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
-      CT0=$CG0 CT1=$CG1
+      CT0=$CG3 CT1=$CG6
       ;;
     aa7|arm-*android*eabi|arm-android)
       arch=arm-linux-androideabi
       host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android
       LIBSDIR=$(pwd)/builds/android/armeabi-v7a
       PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
-      CT0=$CG0 CT1=$CG1
+      CT0=$CG2 CT1=$CG5
       ;;
     a86|ax86|*86-*android)
       arch=i686-linux-android
@@ -1446,9 +1450,13 @@ case $cfg in
   *) unset build_tool;;
 esac
 
-$build_static && CSH="${cst1}" || CSH="${cst0}"
-$build_shared && CSH="${csh1} ${CSH}" || CSH="${csh0} ${CSH}"
-$build_bin && CBN="${cb1}" || CBN="${cb0}"
+if [ -z ${CSH+x} ];then
+  $build_static && CSH="${cst1}" || CSH="${cst0}"
+  $build_shared && CSH="${csh1} ${CSH}" || CSH="${csh0} ${CSH}"
+fi
+if [ -z ${CBN+x} ];then
+  $build_bin && CBN="${cb1}" || CBN="${cb0}"
+fi
 
 # reset presets, we don't need them anymore
 unset cst0 cst1 csh0 csh1 cb0 cb1 cstk cshk cbk

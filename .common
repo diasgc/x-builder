@@ -13,7 +13,7 @@ c="\u2714"
 C0="\e[0m" CW="\e[97m"  CD="\e[90m" CW2="\e[38;5;234m" CW3="\e[38;5;238m" CW4="\e[38;5;242m"  CW5="\e[38;5;246m" CW6="\e[38;5;250m"
 CR0="\e[31m" CR1="\e[91m" CR2="\e[38;5;52m" CR3="\e[38;5;88m" CR4="\e[38;5;124m" CR5="\e[38;5;160m"  CR6="\e[38;5;196m"
 CY0="\e[33m" CY1="\e[93m" CY2="\e[38;5;58m" CY3="\e[38;5;94m" CY4="\e[38;5;136m" CY5="\e[38;5;178m"  CY6="\e[38;5;220m"
-CG0="\e[32m" CG1="\e[92m" CG2="\e[38;5;46m" CG3="\e[38;5;82m" CG4="\e[38;5;118m" CG5="\e[38;5;154m"  CG6="\e[38;5;190m"
+CG0="\e[32m" CG1="\e[92m" CG2="\e[38;5;40m" CG3="\e[38;5;46m" CG4="\e[38;5;82m" CG5="\e[38;5;118m"  CG6="\e[38;5;154m"
 CC0="\e[36m" CC1="\e[96m" CC2="\e[38;5;49m" CC3="\e[38;5;85m" CC4="\e[38;5;122m" CC5="\e[38;5;123m"  CC6="\e[38;5;195m"
 CB0="\e[34m" CB1="\e[94m" CB2="\e[38;5;26m" CB3="\e[38;5;69m" CB4="\e[38;5;111m" CB5="\e[38;5;152m"  CB6="\e[38;5;153m"
 CM0="\e[35m" CM1="\e[95m" CM2="\e[38;5;54m" CM3="\e[38;5;91m" CM4="\e[38;5;126m" CM5="\e[38;5;162m"  CM6="\e[38;5;198m"
@@ -29,6 +29,21 @@ CT0=$CM0 CT1=$CM1 CS0=$CR0 CS1=$CR1 SSB=$C0
 logtime_start=
 indent=0
 
+hwinfoCountCoresReadable(){
+  case $(nproc) in
+    "1") echo "Single-Core";;
+    "2") echo "Dual-Core";;
+    "4") echo "Quad-Core";;
+    "6") echo "Hexa-Core";;
+    "8") echo "Octa-Core";;
+    *) echo "$n-Core";;
+  esac
+}
+
+hwinfoProcessor(){
+  cat /proc/cpuinfo | grep -Po 'model name\s+: \K(.*)' | head -n1
+}
+
 banner(){
     echo -ne "\n\n  ${CW}${1} for X-Builder ${vsh}${C0}\n  "
     echo -ne "Running on $(uname -m) $(uname -o) "
@@ -40,10 +55,15 @@ banner(){
     else
         echo -ne "${CD} "
     fi
-    echo -e "$(uname -r)${C0}\n"
+    echo -e "$(uname -r)${C0}"
+    echo -e "${CW}  $(hwinfoCountCoresReadable) $(hwinfoProcessor)${C0}"
 }
 
 ifdef_function(){
+  [ "$(type -t $1)" = 'function' ]
+}
+
+isfn_defined(){
   [ "$(type -t $1)" = 'function' ]
 }
 
@@ -208,7 +228,7 @@ log_progress(){
   IFS=$'\n'
   while read -r ln; do
     # $has_logfile && \
-    printf "%-10s: %s\n" $(time_elapsed) $ln >>${logfile}
+    printf "%-6s: %s\n" $(time_elapsed) $ln >>${logfile}
     str_contains $ln 'error: ' && printf $CR1
     sln=$(grep -oP '\d+%' <<< $ln)
     [ -n "$sln" ] && printf "\e[5D%-5s" $sln
@@ -232,32 +252,47 @@ log(){
 	echo -ne "${CD}${label}${C0}"
 	echo -e "\n$(time_elapsed): $@" >> "$logfile"
   if $progress; then
-    set -o pipefail
-	  ("$@" |& log_progress) || noerr || err ${logfile} "in ${act}:\n\n...\n$(tail -n5 ${logfile}${C0})"
+	  ("$@" |& log_progress) || err "in ${act}:\n\n...\n$(tail -n5 ${logfile}${C0})"
   else
-	  "$@" 2>> "$logfile" 1>> "$logfile" || noerr || err $logfile
+	  "$@" 2>> "$logfile" 1>> "$logfile" || err
   fi
 	echo -ne "\e[${#label}D${CT0}${label}${C0} "
 }
 
 log_init(){
-  logfile=${1}
+  export logfile=${1}
   [ -f "${1}" ] && rm -f $logfile
-  log_timestart=$(date +%s)
+  export log_timestart=$(date +%s)
+}
+
+logv(){
+  while [ -n "${1}" ]; do
+    echo "$1=${!1}" >>${logfile} 2>&1
+    shift
+  done
+  echo >>${logfile}
+}
+
+log_end(){
+  log_timestop=$(date +%s)
+  local secs=$(($log_timestop-$log_timestart))
+  local msg="${CT1} done ${CD}in $(secs2time ${secs})"
+  [ $secs -gt 60 ] && msg="$msg (${secs}s)"
+  #echo -e "$msg pkg/lib: ${pkgsize}/${libsize}kb${C0}"
+  echo -e "$msg"
 }
 
 err(){
-  if [ $# -gt 0];then
-    local logfile=$1; shift
+  if [ $# -gt 0 ];then
     echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
-    if [ -f $logfile ];then
+    if [ -f "${logfile}" ];then
       # todo
       #if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
       #  echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $logfile
       #  cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $logfile
       #fi
       echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
-      case $openlog in y*|Y*) nano $logfile;; esac
+      case $openlog in y*|Y*) nano ${logfile};; esac
     fi
   fi
   exit 1
@@ -266,8 +301,24 @@ err(){
 time_elapsed(){
   if [ -n "${log_timestart}" ] && [ ${log_timestart} -gt 0 ];then
     local dt=$(($(date +%s) - ${log_timestart}))
-    printf "+%-10s" $(date -u -d @${dt} +"%H:%m:%S")
+    printf "+%-10s" $(date -u -d @${dt} +"%m:%S")
   else
-    printf " --:--:-- "
+    printf " --:-- "
   fi
+}
+
+# usage: git_get_version srcdir
+git_local_version(){
+  local out;
+  if [ -d "${1}/.git" ];then
+    local d=$(pwd)
+    cd ${1}
+    out=$(git describe --abbrev=0 --tags 2>/dev/null)
+    cd ${d}
+  fi
+  echo $out
+}
+
+git_remote_version(){
+  echo $(git ls-remote --tags --refs --sort="v:refname" ${src} 2>/dev/null | tail -n1 | sed 's/.*\///')
 }
