@@ -12,6 +12,7 @@ trap err ERR
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
 [ -z ${ac_nohost+x} ] && ac_nohost=false
+[ -z ${lib_noshared+x} ] && lib_noshared=false
 
 cmake_build_type=Release
 cmake_toolchain_file=
@@ -125,7 +126,9 @@ start(){
   $update && rm -rf $SRCDIR
 
   ! $retry && [ "${BUILD_DIR}" != "$SRCDIR" ] && rm -rf ${BUILD_DIR}
-
+  
+  [ -z ${CONFIG_DIR+x} ] && CONFIG_DIR=${SRCDIR}
+  
   if [ ! -d $SRCDIR ];then
     
     # check whether to custom get source
@@ -147,23 +150,23 @@ start(){
       esac
     fi
 
-    pushdir $SRCDIR
+    pushdir $CONFIG_DIR
 
     # check whether to custom config source
     if [ "$(type -t source_config)" = 'function' ]; then
       doLog 'config' source_config
     elif [ -n "$automake_cmd" ];then
-      doLog 'automake' $SRCDIR/$automake_cmd
+      doLog 'automake' $automake_cmd
       unset automake_cmd
     else case $cfg in
-      ag) doAutogen $SRCDIR --noconfigure;;
-      ar) doAutoreconf $SRCDIR;;
+      ag) doAutogen $CONFIG_DIR --noconfigure;;
+      ar) doAutoreconf $CONFIG_DIR;;
       am|autom*)
-        if [ ! -f "${SRCDIR}/configure" ];then
-          if [ -f "${SRCDIR}/autogen.sh" ];then
-            doAutogen $SRCDIR --noconfigure
+        if [ ! -f "${CONFIG_DIR}/configure" ];then
+          if [ -f "${CONFIG_DIR}/autogen.sh" ];then
+            doAutogen $CONFIG_DIR --noconfigure
           else
-            doAutoreconf $SRCDIR
+            doAutoreconf $CONFIG_DIR
           fi
         fi
         ;;
@@ -183,17 +186,17 @@ start(){
 
   if [ -z "$BUILD_DIR" ];then
     case $build_tool in
-      cmake|meson) BUILD_DIR="${SRCDIR}/build_${arch}"
+      cmake|meson) BUILD_DIR="${CONFIG_DIR}/build_${arch}"
         [ -d "${BUILD_DIR}" ] && rm -rf ${BUILD_DIR}
         mkdir -p ${BUILD_DIR}
         ;;
-      *) BUILD_DIR=${SRCDIR};;
+      *) BUILD_DIR=${CONFIG_DIR};;
     esac
   fi
   
   popdir; pushdir ${BUILD_DIR}
 
-  log_vars dep PKG_CONFIG_LIBDIR
+  log_vars SRCDIR dep PKG_CONFIG_LIBDIR
   log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
@@ -217,14 +220,14 @@ start(){
         [ -z "$exec_config" ] && exec_config=${CMAKE_EXECUTABLE}
         [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${BUILD_DIR}
         [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-        doLog 'cmake' $exec_config ${SRCDIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+        doLog 'cmake' $exec_config ${CONFIG_DIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
         case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
         MAKE_EXECUTABLE=make
         ;;
       automake)
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
         ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
-        doLog 'configure' ${BUILD_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+        doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         MAKE_EXECUTABLE=make
         ;;
       meson)
@@ -236,7 +239,7 @@ start(){
         MAKE_EXECUTABLE=ninja
         doLog 'meson' ${MESON_EXEC} setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         ;;
-      mk)
+      make)
         mkf=$CFG
         MAKE_EXECUTABLE=make
         ;;
@@ -283,7 +286,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CSH CBN exec_config vrs
+  unset CONFIG_DIR CSH CBN exec_config vrs
   dec_tab
   echo
   exit 0
@@ -391,6 +394,8 @@ dep_add(){
 
 build_dependencies(){
   local pkgfile=
+  local o_csh
+  local o_cbh
   local cf
   local ldir
   local args
@@ -401,7 +406,12 @@ build_dependencies(){
     pkgfile=$(./${1}.sh ${arch} --get pc)
     libname=$(./${1}.sh --get libname)
     if [ ! -f "${pkgfile}" ]; then
+      o_csh=$CSH
+      o_cbh=$CBH
+      unset CSH CBH
       ./${1}.sh ${arch} ${args} || err
+      CSH=$o_csh
+      CBH=$o_cbh
     fi
     if [ -f "${pkgfile}" ]; then
       local cmi=$(./${1}.sh ${arch} --get cmake_include)
@@ -700,7 +710,10 @@ git_clone(){
 
 do_svn(){
   [ $(which svn) ] || aptInstall subversion || err
-  doLog 'clone' svn checkout $1 $2
+  local var="svn"
+  echo -ne "${CD}${var}"
+  svn checkout $1 $2 >/dev/null || err
+  logok $var
 }
 
 do_hg(){
@@ -1317,7 +1330,7 @@ while [ $1 ];do
     --refresh)  update=true;;
     --retry)    retry=true;;
     --rebuild)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
-    --shared)   build_shared=true;;
+    --shared)   $lib_noshared || build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
     --bin)      build_bin=true CBN="${cb1}";;
@@ -1446,7 +1459,7 @@ case $cfg in
     $build_shared && ! $build_static && CSH="-Ddefault_library=shared"
     $build_static && $build_shared && CSH="-Ddefault_library=both"
     ;;
-  mk) build_tool=mk;;
+  mk|make) build_tool=make;;
   *) unset build_tool;;
 esac
 
