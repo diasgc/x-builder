@@ -1,14 +1,30 @@
 #!/bin/bash
+#     Aa8 Aa7 A86 A64
+# NDK ++  ++  ++  ++  clang
+# GNU ++   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='brunsli'
-apt=''
 pkg='brunslienc-c'
 dsc='Practical JPEG Repacker'
 lic='MIT'
 src='https://github.com/google/brunsli.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='30'
+
+lst_inc='brunsli/jpeg_data_writer.h
+	brunsli/status.h
+	brunsli/brunsli_encode.h
+	brunsli/types.h
+	brunsli/decode.h
+	brunsli/brunsli_decode.h
+	brunsli/jpeg_data.h
+	brunsli/jpeg_data_reader.h
+	brunsli/encode.h'
+lst_lib='libbrunslidec-c libbrunslienc-c'
+lst_bin=''
+
+req_pcforlibs=$lst_lib
 
 . xbuilder.sh
 
@@ -33,11 +49,6 @@ build_pkgconfig_file(){
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   .   .   +   .   .   .   .  static
-#  +   +   +   +   .   .   +   .   .   .   .  shared
-#  -   -   -   -   .   .   -   .   .   .   .  bin
-
 # TODO -------------------------------------
 #  - missing 1 pc file (*dec) in package
 #  - no bin (?)
@@ -46,7 +57,6 @@ start
 
 # Filelist
 # --------
-
 # include/brunsli/jpeg_data_writer.h
 # include/brunsli/status.h
 # include/brunsli/brunsli_encode.h

@@ -30,8 +30,6 @@ lst_lib='libcares'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist

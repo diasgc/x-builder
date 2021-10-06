@@ -13,6 +13,8 @@ trap err ERR
 [ -z ${apt+x} ] && apt=${lib}
 [ -z ${ac_nohost+x} ] && ac_nohost=false
 [ -z ${lib_noshared+x} ] && lib_noshared=false
+[ -z ${ac_nosysroot+x} ] && ac_nosysroot=false
+[ -z ${ac_nopic+x} ] && ac_nopic=false
 
 cmake_build_type=Release
 cmake_toolchain_file=
@@ -132,7 +134,7 @@ start(){
   if [ ! -d $SRCDIR ];then
     
     # check whether to custom get source
-    if [ "$(type -t source_get)" = 'function' ]; then
+    if ifdef_function 'source_get'; then
       source_get
     else
       case $sty in
@@ -153,7 +155,7 @@ start(){
     pushdir $CONFIG_DIR
 
     # check whether to custom config source
-    if [ "$(type -t source_config)" = 'function' ]; then
+    if ifdef_function 'source_config'; then
       doLog 'config' source_config
     elif [ -n "$automake_cmd" ];then
       doLog 'automake' $automake_cmd
@@ -177,7 +179,7 @@ start(){
     check_xbautopatch
 
     # check whether to custom patch source
-    if [ "$(type -t source_patch)" = 'function' ]; then
+    if ifdef_function 'source_patch'; then
       doLog 'patch' source_patch
     fi
   fi
@@ -212,7 +214,7 @@ start(){
     [ -f "Makefile" ] && doLogNoErr 'clean' ${MAKE_EXECUTABLE} $mkc
   }
   
-  if [ "$(type -t build_config)" = 'function' ]; then
+  if ifdef_function 'build_config'; then
     build_config
   else
     case $build_tool in
@@ -226,7 +228,9 @@ start(){
         ;;
       automake)
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
-        ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG="--host=${arch} $CFG"
+        ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
+        ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
+        ! $ac_nopic && CFG+=" --with-pic=1"
         doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
         MAKE_EXECUTABLE=make
         ;;
@@ -264,10 +268,18 @@ start(){
   ifdef_function 'build_install' && doLog 'install' build_install || doLog 'install' ${MAKE_EXECUTABLE} ${mki}
 
   # check whether to create pkg-config .pc file
-  ifdef_function 'build_pkgconfig_file' && \
+  if [ -n "${req_pcforlibs+x}" ];then
+    local pcf
+    for l in $req_pcforlibs; do
+      pcf=$(echo $l | sed 's|^lib||')
+      create_pkgconfig_file $pcf "-l$pcf"
+    done
+  else
+    ifdef_function 'build_pkgconfig_file' && \
     doLog 'pkgcfg' build_pkgconfig_file || \
     [ -n "$pc_llib" ] && \
     doLog 'write_pc' create_pkgconfig_file $pkg $pc_llib
+  fi
 
   # create package
   $build_package && doLog 'tar' build_packages_bin
@@ -286,7 +298,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CONFIG_DIR CSH CBN exec_config vrs
+  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs
   dec_tab
   echo
   exit 0
@@ -315,7 +327,7 @@ create_pkgconfig_file(){
     [ -z "$pc_vrs" ] && {
       [ -d "${SRCDIR}/.git" ] && pc_vrs=$(git_getversion ${SRCDIR}) || pc_vrs=$vrs
     }
-    cat <<-EOF >$PKGDIR/${1}.pc
+    cat <<-EOF >$PKGDIR/${pc_file}.pc
 		prefix=$INSTALL_DIR
 		exec_prefix=\${prefix}
 		libdir=\${exec_prefix}/lib
@@ -332,7 +344,7 @@ create_pkgconfig_file(){
 		Cflags: ${pc_cflags}
   
 		EOF
-    pc_filelist="${1}.pc ${pc_filelist}"
+    pc_filelist="${pc_file}.pc ${pc_filelist}"
 }
 
 build_packages_getdistdir(){

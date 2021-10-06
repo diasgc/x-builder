@@ -19,6 +19,5 @@ lst_bin=''
 . xbuilder.sh
 
 SRCDIR="$SRCDIR/asio"
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 
 start

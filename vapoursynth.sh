@@ -18,7 +18,7 @@ mkc='distclean'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-python-module=no --enable-vspipe=no --enable-vsscript=no --enable-x86-asm=no"
+CFG="--enable-python-module=no --enable-vspipe=no --enable-vsscript=no --enable-x86-asm=no"
 
 start
 

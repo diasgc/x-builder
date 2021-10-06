@@ -38,7 +38,6 @@ lst_bin='dcraw_half
 . xbuilder.sh
 
 CPPFLAGS+=" -Wno-deprecated-register"
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 
 start
 

@@ -24,7 +24,7 @@ API=26 # required for frontends build
 # update latest version
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-gtktest --disable-decoder --disable-debug"
+CFG="--disable-gtktest --disable-decoder --disable-debug"
 [ "$host_os" == "mingw32" ] && CFG+=" --enable-expopt=full"
 # make shared executable so
 $build_shared && $build_bin && CBN="--enable-dynamic-frontends"

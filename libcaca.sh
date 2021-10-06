@@ -15,7 +15,7 @@ eta='80'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-doc --disable-imlib2 --disable-cppunit --disable-slang --disable-x11 --disable-gl \
+CFG="--disable-doc --disable-imlib2 --disable-cppunit --disable-slang --disable-x11 --disable-gl \
   --disable-cocoa --disable-csharp --disable-java --disable-ruby --disable-zzuf --disable-python"
 #--disable-cxx "
 

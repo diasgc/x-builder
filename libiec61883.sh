@@ -15,14 +15,12 @@ dep='libraw1394'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-[[ $arch = *mingw32 ]] && dep=''
+[ "${host_os}" == "mingw32" ] && dep=''
 
 start
 
 # Filelist
 # --------
-
 # include/libiec61883/iec61883.h
 # share/man/man1/plugctl.1
 # share/man/man1/plugreport.1

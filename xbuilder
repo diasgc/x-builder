@@ -17,6 +17,8 @@ init(){
   [ -z ${is_init+x} ] && is_init=false
   [ -z ${pkg+x} ] && pkg=${lib}
   [ -z ${apt+x} ] && apt=${lib}
+  [ -z ${ac_nohost+x} ] && ac_nohost=false
+  [ -z ${lib_noshared+x} ] && lib_noshared=false
 
   install_tree=false
   cmake_build_type=Release

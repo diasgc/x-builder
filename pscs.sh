@@ -21,7 +21,7 @@ lst_lib=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-libsystemd --disable-libudev"
+CFG="--disable-libsystemd --disable-libudev"
 
 source_config(){
     pushdir $SRCDIR

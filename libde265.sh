@@ -18,7 +18,6 @@ f_win_posix=true
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 case $arch in
   aarch64-*|arm-*) CFG="$CFG --disable-sse --disable-arm";;
   # remove '--disable-shared' to prevent 'multiple definitions' error in libstdc++.a and libstdc++.dll.a

@@ -19,8 +19,7 @@ cb1="--enable-extra-programs"
 . xbuilder.sh
 
 case $build_tool in
-  automake) [ -d $SRCDIR ] && [ ! -f $SRCDIR/configure ] && doAutogen $SRCDIR
-            CFG="--with-sysroot=${SYSROOT} --with-pic=1";;
+  automake) [ -d $SRCDIR ] && [ ! -f $SRCDIR/configure ] && doAutogen $SRCDIR;;
 esac
 
 start

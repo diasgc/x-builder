@@ -23,8 +23,6 @@ lst_oth=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 

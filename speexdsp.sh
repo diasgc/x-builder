@@ -15,8 +15,6 @@ eta='91'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist

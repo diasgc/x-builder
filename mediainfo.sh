@@ -24,7 +24,7 @@ lst_bin=''
 . xbuilder.sh
 
 CONFIG_DIR="$SRCDIR/Project/GNU/CLI"
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
+
 start
 
 # Filelist

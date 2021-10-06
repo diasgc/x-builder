@@ -24,10 +24,6 @@ case $cfg in
   cm|ccm|cmake|ccmake)
     CFG="-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF"
     ;;
-  ac|ag|ar|autotools)
-    #[ -d $SRCDIR ] && [ ! -f $SRCDIR/configure ] && doAutogen $SRCDIR
-    #CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-    ;;
 esac
 
 build_patch_config(){

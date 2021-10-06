@@ -16,7 +16,7 @@ cb1="--enable-examples"
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-doc"
+CFG="--disable-doc"
 
 start
 

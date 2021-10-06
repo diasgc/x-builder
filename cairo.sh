@@ -14,10 +14,8 @@ cfg='ag'
 dep='fontconfig'
 tls='build-dep cairo'
 eta='275'
+CFG="--enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
 
 . xbuilder.sh
-
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
-
 
 start

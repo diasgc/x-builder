@@ -17,7 +17,7 @@ mkc='distclean'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 CC_FOR_BUILD=cc"
+CFG="CC_FOR_BUILD=cc"
 unset ABI
 case $arch in *-mingw32) CFG="$CFG --enable-fat";; esac
 

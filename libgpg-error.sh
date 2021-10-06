@@ -16,7 +16,7 @@ eta='60'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-languages --disable-doc --disable-tests"
+CFG="--disable-languages --disable-doc --disable-tests"
 CPPFLAGS+=" -I${SRCDIR}/src"
 LDFLAGS+=" -L${SRCDIR}/src"
 

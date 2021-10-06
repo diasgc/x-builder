@@ -16,8 +16,6 @@ mki='install-strip'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist

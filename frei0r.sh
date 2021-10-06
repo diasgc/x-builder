@@ -22,7 +22,7 @@ eta='275'
 
 case $build_tool in
   cmake) CFG="-DWITHOUT_GAVL=ON -DWITHOUT_OPENCV=ON"; CSH="-DBUILD_SHARED_LIBS=ON";;
-  automake) CFG="--with-sysroot=${SYSROOT} --with-pic=1"; CSH="--enable-shared";;
+  automake) CSH="--enable-shared";;
 esac
 
 start

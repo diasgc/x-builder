@@ -19,8 +19,6 @@ cb1="--enable-binaries"
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist

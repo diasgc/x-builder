@@ -21,8 +21,6 @@ lst_lib=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 source_config(){
     pushdir $SRCDIR
     ./bootstrap.sh

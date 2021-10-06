@@ -30,7 +30,7 @@ lst_lib='libdvdread'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-apidoc"
+CFG="--disable-apidoc"
 
 start
 

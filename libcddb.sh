@@ -23,7 +23,7 @@ source_patch(){
     doAutoreconf $SRCDIR
 }
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --without-cdio"
+CFG="--without-cdio"
 CPPFLAGS="$CPPFLAGS -Wno-header-guard"
 
 start

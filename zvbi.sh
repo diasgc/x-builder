@@ -21,7 +21,7 @@ eta='60'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --without-doxygen --disable-nls --without-libiconv-prefix"
+CFG="--without-doxygen --disable-nls --without-libiconv-prefix"
 CPPFLAGS="-Wno-string-plus-int -Wno-invalid-source-encoding -Wno-deprecated-declarations -Wno-tautological-pointer-compare"
 
 start

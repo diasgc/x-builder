@@ -17,7 +17,6 @@ cb1="--enable-example"
 . xbuilder.sh
   
 case $build_tool in
-  automake) CFG="--with-sysroot=${SYSROOT} --with-pic=1";;
   cmake) cbk="BUILD_PROGRAMS";;
 esac
 

@@ -18,7 +18,7 @@ eta='172'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-apps --enable-maintainer-mode" #--enable-rpath --disable-dsd --enable-legacy 
+CFG="--enable-apps --enable-maintainer-mode" #--enable-rpath --disable-dsd --enable-legacy 
 case $arch in aarch64*|arm*) CFG="$CFG --disable-asm";;esac
 
 source_config(){

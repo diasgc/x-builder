@@ -23,7 +23,7 @@ case $cfg in
     ;;
   ac|ag|ar|autotools)
     [ ! -f "$SRCDIR/configure" ] && pushdir $SRCDIR && ./autogen.sh && popdir
-    CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-docs --disable-examples --disable-oggtest"
+    CFG="--disable-docs --disable-examples --disable-oggtest"
     ;;
 esac
 

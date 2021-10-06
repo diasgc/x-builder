@@ -16,7 +16,6 @@ cb1="--enable-cli"
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 case $arch in aarch64*|arm*) CFG="$CFG --disable-asm";;esac
 export AS=nasm
 

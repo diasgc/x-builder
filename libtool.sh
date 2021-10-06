@@ -16,9 +16,6 @@ pc_url="https://savannah.gnu.org/git/?group=libtool"
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
-
 source_config(){
     pushdir $SRCDIR
     ./bootstrap.sh

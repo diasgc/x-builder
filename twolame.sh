@@ -15,7 +15,7 @@ eta='225'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-maintainer-mode"
+CFG="--disable-maintainer-mode"
 
 source_patch(){
   	pushdir $SRCDIR

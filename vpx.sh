@@ -1,8 +1,9 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86 v1.10.0
-#  +   +   +   +   .   .   .   .   .   .   .  static
-#  X   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+
+#     Aa8 Aa7 A86 A64
+# NDK +X+  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='vpx'
 dsc='WebM Project VPx codec implementation'
@@ -15,11 +16,24 @@ mkc='distclean'
 cbk='able-examples'
 ac_nohost=true
 ac_nosysroot=true
+ac_nopic=true
 csh1=' ' # --enable-shared only supported on ELF, OS/2, and Darwin for now
+
+lst_inc='vpx/vpx_ext_ratectrl.h
+	vpx/vpx_frame_buffer.h
+	vpx/vpx_integer.h
+	vpx/vpx_decoder.h
+	vpx/vpx_image.h
+	vpx/vp8cx.h
+	vpx/vpx_codec.h
+	vpx/vpx_encoder.h
+	vpx/vp8.h
+	vpx/vp8dx.h'
+lst_lib='libvpx'
+lst_bin='vpxenc vpxdec'
 
 . xbuilder.sh
 
-#BUILD_DIR=$SOURCES/${lib}_${arch}
 _CFG="--disable-docs --disable-install-srcs --disable-install-docs --disable-examples --disable-tools \
   --enable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-vp9-temporal-denoising --enable-vp9-postproc \
   --enable-postproc --enable-onthefly-bitpacking --enable-multi-res-encoding --enable-better-hw-compatibility \
@@ -34,7 +48,7 @@ case $arch in
   x86_64-w64-mingw32 )    CFG="--target=x86_64-win64-gcc --disable-unit-tests $CFG";;
   i686-linux-gnu )        CFG="--target=x86-linux-gcc $CFG";;
   x86_64-linux-gnu )      CFG="--target=x86_64-linux-gcc $CFG";;
-  armv7-linux-gnu )       CFG="--target=armv7-linux-gcc $CFG";;
+  arm-linux-gnu )       CFG="--target=armv7-linux-gcc $CFG";;
   aarch64-linux-gnu )     CFG="--target=arm64-linux-gcc $CFG";;
 esac
 

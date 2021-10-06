@@ -21,8 +21,6 @@ lst_lib='libaribb24'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 build_patch_config(){
     # to build shared libs on mingw
     str_contains $arch mingw32 && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo

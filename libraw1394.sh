@@ -15,13 +15,10 @@ eta='30'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist
 # --------
-
 # include/libraw1394/ieee1394.h
 # include/libraw1394/raw1394.h
 # include/libraw1394/csr.h

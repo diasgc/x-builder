@@ -23,6 +23,7 @@ lst_bin=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --with-libgcrypt-prefix=${LIBSDIR} --with-libgpg-error-prefix=${LIBSDIR}"
+CFG="--with-libgcrypt-prefix=${LIBSDIR} --with-libgpg-error-prefix=${LIBSDIR}"
 export YACC='byacc' YFLAGS='--update'
+
 start

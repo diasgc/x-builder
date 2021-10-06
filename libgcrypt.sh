@@ -20,7 +20,7 @@ lst_bin='mpicalc libgcrypt-config dumpsexp hmac256'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-doc --with-libgpg-error-prefix=${LIBSDIR}"
+CFG="--disable-doc --with-libgpg-error-prefix=${LIBSDIR}"
 
 case $arch in
     aarch64*|arm*) CFG+=" --disable-aesni-support \
