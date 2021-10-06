@@ -12,9 +12,9 @@ sty='git'
 cfg='cm'
 eta='0'
 
-cshk=''
-cstk=''
-cbk=''
+#cshk=''
+#cstk=''
+#cbk=''
 
 lst_inc=''
 lst_lib=''
