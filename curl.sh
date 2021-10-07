@@ -16,14 +16,23 @@ dep='zlib libzstd brotli openssl'
 mki='install-strip'
 mkc='distclean'
 
-lst_inc=''
-lst_lib=''
-lst_bin=''
+lst_inc='curl/typecheck-gcc.h
+	curl/multi.h
+	curl/curl.h
+	curl/urlapi.h
+	curl/mprintf.h
+	curl/stdcheaders.h
+	curl/options.h
+	curl/easy.h
+	curl/curlver.h
+	curl/system.h'
+lst_lib='libcurl'
+lst_bin='curl curl-config'
 
 . xbuilder.sh
 
 # todo remove manual
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --with-openssl --disable-manual"
+CFG="--with-openssl --disable-manual"
 
 start
 

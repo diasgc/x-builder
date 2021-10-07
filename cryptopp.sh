@@ -1,6 +1,6 @@
 #!/bin/bash
 #     Aa8 Aa7 A86 A64
-# NDK  .   .   .   .  clang
+# NDK ++.  .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK  P   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='charls'
 apt='libcharls-dev'
@@ -13,6 +13,17 @@ cfg='cmake'
 eta='15'
 cbk="CHARLS_BUILD_SAMPLES"
 mki='install/strip'
+
+lst_inc='charls/charls_jpegls_decoder.h
+	charls/api_abi.h
+	charls/annotations.h
+	charls/jpegls_error.h
+	charls/public_types.h
+	charls/charls.h
+	charls/charls_jpegls_encoder.h
+	charls/version.h'
+lst_lib='libcharls'
+lst_bin=''
 
 . xbuilder.sh
 
