@@ -974,6 +974,11 @@ aptInstall(){
   done
 }
 
+set_ndk_api(){
+  API=${1}
+  loadToolchain
+}
+
 loadToolchain(){
 
   CMAKE_EXECUTABLE=cmake
@@ -1276,7 +1281,7 @@ while [ $1 ];do
       ;;
     la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*)
       arch=arm-linux-gnueabihf
-      host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=false; host_os=gnu
+      host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=true; host_os=gnu
       LIBSDIR=$(pwd)/builds/arm/armeabihf
       PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
       CT0=$CY0 CT1=$CY1
