@@ -8,14 +8,11 @@ lib='gnutls'
 dsc='GnuTLS implements the TLS/SSL (Transport Layer Security aka Secure Sockets Layer) protocol'
 lic='LGPL-2.1'
 src='https://gitlab.com/gnutls/gnutls.git'
-sty='git'
 cfg='ac'
 tls='gettext texinfo gperf autopoint'
 dep='libiconv gmp nettle'
-pkg='gnutls'
 eta='690'
-cb0='--disable-tools'
-cb1='--enable-tools'
+cbk='able-tools'
 
 . xbuilder.sh
 

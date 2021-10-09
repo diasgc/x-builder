@@ -12,9 +12,10 @@ lic='LGPL-2.1'
 src='https://code.videolan.org/videolan/libcloudstorage.git'
 cfg='ac'
 eta='60'
-dep='jsoncpp'
+dep='jsoncpp tinyxml2 libmega libcrypto++ libcurl'
 mki='install-strip'
 mkc='distclean'
+automake_cmd="./bootstrap"
 
 lst_inc=''
 lst_lib=''
@@ -22,7 +23,7 @@ lst_bin=''
 
 . xbuilder.sh
 
-source_config(){
+_source_config(){
     cd $SRCDIR
     ./bootstrap
 }

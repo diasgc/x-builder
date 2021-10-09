@@ -8,7 +8,7 @@ lib='libtool'
 dsc='A library for reading and writing audio files'
 lic='LGPL-3.0'
 src='git://git.savannah.gnu.org/libtool.git'
-cfg='am'
+cfg='ac'
 tls='help2man'
 eta='35'
 pc_llib="-ltdl"
@@ -18,7 +18,7 @@ pc_url="https://savannah.gnu.org/git/?group=libtool"
 
 source_config(){
     pushdir $SRCDIR
-    ./bootstrap.sh
+    ./bootstrap
     popdir
 }
 

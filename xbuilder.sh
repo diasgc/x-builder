@@ -15,10 +15,11 @@ trap err ERR
 [ -z ${lib_noshared+x} ] && lib_noshared=false
 [ -z ${ac_nosysroot+x} ] && ac_nosysroot=false
 [ -z ${ac_nopic+x} ] && ac_nopic=false
+[ -z ${banner+x} ] && banner=true
 
 cmake_build_type=Release
 cmake_toolchain_file=
-banner=true
+
 mingw_posix_suffix=
 update=false
 retry=false
