@@ -1,32 +1,39 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   .   .   +   +   .   .   .  static
-#  +   +   +   +   .   .   +   +   .   .   .  shared
-#  +   +   +   +   .   .   +   +   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++  .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='flac'
 dsc='Free Lossless Audio Codec'
 lic='BSD'
 src='https://github.com/xiph/flac.git'
-sty='git'
 cfg='ag'
 dep='ogg libiconv'
 eta='60'
 
-case $build_tool in
-  cmake) cbk="BUILD_PROGRAMS";;
-esac
+lst_inc='FLAC++/decoder.h FLAC++/metadata.h
+	FLAC++/export.h FLAC++/encoder.h
+	FLAC++/all.h
+  FLAC/metadata.h FLAC/format.h
+	FLAC/stream_decoder.h FLAC/stream_encoder.h
+	FLAC/export.h FLAC/callback.h
+	FLAC/ordinals.h FLAC/all.h
+	FLAC/assert.h'
+lst_lib='libFLAC libFLAC++'
+lst_bin='flac metaflac'
 
 . xbuilder.sh
 
 case $build_tool in
-  cmake) # -DOGG_INCLUDE_DIR=$LIBSDIR/include -DOGG_LIBRARY=$LIBSDIR/lib/libogg.a -DIconv_LIBRARY=$LIBSDIR/lib/libiconv.a -DIconv_INCLUDE_DIR=$LIBSDIR/include"
+  cmake)
     CFG="-DBUILD_CXXLIBS=ON -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF -DWITH_ASM=ON -DWITH_OGG=ON"
     [ "$PLATFORM" == "Windows" ] && LD=$CC; AS=nasm
+    $build_bin && CBH="-DBUILD_PROGRAMS=ON" || CBH="-DBUILD_PROGRAMS=OFF"
     ;;
   automake)
     CFG="--with-sysroot=${SYSROOT} --with-pic"
-    [[ "$arch" == "a"* ]] && CFG="$CFG --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
+    $host_arm && CFG+=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
     ;;
 esac
 

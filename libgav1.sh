@@ -1,43 +1,33 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# --------------------------------------------------
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
-# --------------------------------------------------
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='libgav1'
 apt='libgav1-dev'
 dsc='Main profile (0) & High profile (1) compliant AV1 decoder'
 lic='BSD'
 src='https://chromium.googlesource.com/codecs/libgav1'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='88'
-cmake_path='share/cmake'
+
+lst_inc='gav1/decoder.h
+	gav1/decoder_buffer.h
+	gav1/status_code.h
+	gav1/frame_buffer.h
+	gav1/version.h
+	gav1/symbol_visibility.h
+	gav1/decoder_settings.h'
+lst_lib='libgav1'
+lst_bin='gav1_decode'
 
 . xbuilder.sh
 
-source_patch(){
+source_config(){
     pushdir $SRCDIR
     git_clone https://github.com/abseil/abseil-cpp.git third_party/abseil-cpp
     popdir
 }
 
 start
-
-# Filelist
-# --------
-
-# include/gav1/decoder.h
-# include/gav1/decoder_buffer.h
-# include/gav1/status_code.h
-# include/gav1/frame_buffer.h
-# include/gav1/version.h
-# include/gav1/symbol_visibility.h
-# include/gav1/decoder_settings.h
-# lib/pkgconfig/libgav1.pc
-# lib/libgav1.so
-# lib/libgav1.a
-# share/cmake/libgav1-config.cmake
-# bin/gav1_decode
