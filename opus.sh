@@ -2,7 +2,7 @@
 #     Aa8 Aa7 A86 A64
 # NDK ++  ++  ++  ++  clang
 # GNU ++   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+# WIN  F   .   .   .  clang/gcc
 
 lib='opus'
 dsc='Opus is a codec for interactive speech and audio transmission over the Internet'
