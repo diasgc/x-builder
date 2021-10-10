@@ -12,14 +12,17 @@ lic='BSD-2c'
 src='https://github.com/MediaArea/MediaInfoLib.git'
 cfg='cmake'
 eta='10'
-
-lst_inc=''
-lst_lib=''
+dir_config='Project/CMake'
+lst_inc='MediaInfo/MediaInfoList.h
+	MediaInfo/MediaInfo_Events.h
+	MediaInfo/MediaInfo.h
+	MediaInfo/MediaInfo_Const.h
+	MediaInfoDLL/MediaInfoDLL_Static.h
+	MediaInfoDLL/MediaInfoDLL.h'
+lst_lib='libmediainfo'
 lst_bin=''
 
 . xbuilder.sh
-
-CONFIG_DIR="$SRCDIR/Project/CMake"
 
 start
 

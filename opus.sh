@@ -1,32 +1,35 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK ++  ++  ++  ++  clang
+# GNU ++   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='opus'
 dsc='Opus is a codec for interactive speech and audio transmission over the Internet'
 lic='BSD'
 src='https://github.com/xiph/opus.git'
-sty='git'
 cfg='ag'
 dep='ogg'
-pkg='opus'
-eta='208'
-cb0="--disable-extra-programs"
-cb1="--enable-extra-programs"
+eta='60'
+cbk="able-extra-programs"
+ac_nopic=true
+
+lst_inc='opus/opus_projection.h
+	opus/opus.h
+	opus/opus_multistream.h
+	opus/opus_types.h
+	opus/opus_defines.h'
+lst_lib='libopus'
+lst_bin=''
+CFG="--disable-doc"
 
 . xbuilder.sh
 
-case $build_tool in
-  automake) [ -d $SRCDIR ] && [ ! -f $SRCDIR/configure ] && doAutogen $SRCDIR;;
-esac
-
 start
+
 
 # Filelist
 # --------
-
 # include/opus/opus_projection.h
 # include/opus/opus.h
 # include/opus/opus_multistream.h

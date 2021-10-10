@@ -32,7 +32,6 @@ case $build_tool in
     $build_bin && CBH="-DBUILD_PROGRAMS=ON" || CBH="-DBUILD_PROGRAMS=OFF"
     ;;
   automake)
-    CFG="--with-sysroot=${SYSROOT} --with-pic"
     $host_arm && CFG+=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
     ;;
 esac

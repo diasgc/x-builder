@@ -4,8 +4,11 @@
 # ................................................
 [ -z ${vsh+x} ] && . .common
 
+set -o pipefail
+
 trap err ERR
 
+sudo=$(which sudo)
 [ -z ${debug+x} ] && debug=false
 [ -z ${nodev+x} ] && nodev=false
 [ -z ${is_init+x} ] && is_init=false
@@ -16,6 +19,10 @@ trap err ERR
 [ -z ${ac_nosysroot+x} ] && ac_nosysroot=false
 [ -z ${ac_nopic+x} ] && ac_nopic=false
 [ -z ${banner+x} ] && banner=true
+[ -z ${req_update_deps+x} ] && req_update_deps=false
+[ -z ${update+x} ] && update=false
+
+$req_update_deps && update=true
 
 cmake_build_type=Release
 cmake_toolchain_file=
@@ -43,7 +50,7 @@ shell_dstack=
 aptInstallBr(){
   while [ -n "$1" ];do
     echo -ne "${ind}${CT0}install $1${C0} "
-    sudo apt -qq install $1 -y >/dev/null 2>&1
+    $sudo apt -qq install $1 -y >/dev/null 2>&1
     echo -e "${C0}ok ${CT1}done${C0} $(apt-cache show $1 | grep Version)"
     shift
   done
@@ -102,8 +109,13 @@ main(){
 
 start(){
   
-  # if pkgconfig.pc file exists and not for update, it's done
-  ! $update && [ -f "${PKGDIR}/${pkg}.pc" ] && exit
+  # check whether to update source of main lib and dependencies
+  if $update; then
+    rm -rf "${SOURCES}/${lib}"
+    ! $req_update_deps && update=false
+  else
+    [ -f "${PKGDIR}/${pkg}.pc" ] && exit
+  fi
   
   # Reset LOGFILE
   [ -f "${LOGFILE}" ] && rm -f $LOGFILE
@@ -112,8 +124,6 @@ start(){
   mkdir -p $PKGDIR
   export PKG_CONFIG_LIBDIR="$PKGDIR:$PKG_CONFIG_LIBDIR"
 
-
-  # Check Tools and Dependencies
   check_tools $tls
   pushvar_f old_vrs $vrs
   build_dependencies $dep
@@ -126,12 +136,13 @@ start(){
   $build_bin && echo -ne "${bss}${SSB}[bin]${C0} " || echo -ne "${bss}${CD}[bin]${C0} "
   cd $SOURCES
 
-  $update && rm -rf $SRCDIR
-
   ! $retry && [ "${BUILD_DIR}" != "$SRCDIR" ] && rm -rf ${BUILD_DIR}
   
+  # deprecated
   [ -z ${CONFIG_DIR+x} ] && CONFIG_DIR=${SRCDIR}
-  
+  # use this instead
+  [ -n "${dir_config+x}" ] && CONFIG_DIR="${SOURCES}/${lib}/${dir_config}"
+
   if [ ! -d $SRCDIR ];then
     
     # check whether to custom get source
@@ -289,6 +300,8 @@ start(){
 
   logver "$PKGDIR/${pkg}.pc"
 
+  ifdef_function 'on_end' && on_end
+
   #stat_savestats
   end_script
 }
@@ -318,10 +331,13 @@ check_xbautopatch(){
   popdir
 }
 
-# usage create_pkgconfig_file <pkg>.pc <llibds>
+# usage create_pkgconfig_file <pkg>.pc [llibds][INSTALL_DIR]
 create_pkgconfig_file(){
     [ -z "${1}" ] && pc_file=${lib} || pc_file=${1}
     [ -z "${2}" ] && pc_llib="-l${pc_file}" || pc_llib=${2}
+    [ -z "${3}" ] && pc_prefix=${INSTALL_DIR} || pc_prefix=${3}
+    [ -z "$pc_libdir" ] && pc_libdir="/lib"
+    [ -z "$pc_incdir" ] && pc_incdir="/include"
     [ -z "$pc_cflags" ] && pc_cflags="-I\${includedir}"
     [ -z "$pc_libs" ] && pc_libs="-L\${libdir}"
     [ -z "$pc_url" ] && pc_url=$(dirname $src)
@@ -329,23 +345,24 @@ create_pkgconfig_file(){
       [ -d "${SRCDIR}/.git" ] && pc_vrs=$(git_getversion ${SRCDIR}) || pc_vrs=$vrs
     }
     cat <<-EOF >$PKGDIR/${pc_file}.pc
-		prefix=$INSTALL_DIR
+		prefix=${pc_prefix}
 		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
+		libdir=\${exec_prefix}${pc_libdir}
+		includedir=\${prefix}${pc_incdir}
 
 		Name: ${lib}
 		Description: ${dsc}
 		URL: ${pc_url}
 		Version: ${pc_vrs}
-    Requires: ${pc_requires}
-    Requires.private: ${pc_requiresprivate}
+		Requires: ${pc_requires}
+		Requires.private: ${pc_requiresprivate}
 		Libs: ${pc_libs} ${pc_llib}
-    Libs.private: ${pc_libsprivate}
+		Libs.private: ${pc_libsprivate}
 		Cflags: ${pc_cflags}
   
 		EOF
     pc_filelist="${pc_file}.pc ${pc_filelist}"
+    unset pc_libdir pc_incdir pc_cflags pc_libs pc_url
 }
 
 build_packages_getdistdir(){
@@ -548,7 +565,7 @@ check_tools(){
 chkAutotools(){
   if [ -z $(which automake) ];then
     tput sc
-    sudo apt -qq install automake autogen autoconf m4 libtool-bin -y >/dev/null 2>&1 
+    $sudo apt -qq install automake autogen autoconf m4 libtool-bin -y >/dev/null 2>&1 
     tput rc
   fi
 }
@@ -658,7 +675,6 @@ doLogP() {
   local var=$1; shift
   echo -ne "${CD}${var}"
   echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  set -o pipefail
   ("$@" |& tee -a $LOGFILE | topct) || doErr "in ${var}:\n\n...\n$(tail -n5 $LOGFILE)${C0}"
   logok $var
 }
@@ -900,7 +916,7 @@ checkUrl(){
 }
 
 checkCmd(){
-  [ -z "$(which $1)"] sudo apt -qq install $1 -y >/dev/null 2>&1
+  [ -z "$(which $1)"] $sudo apt -qq install $1 -y >/dev/null 2>&1
 }
 
 downloadP(){
@@ -941,7 +957,7 @@ patch_ndk_librt(){
 }
 
 # usage: patch_zlib_createpc <sysroot-prefix>
-patch_zlib_createpc(){
+_patch_zlib_createpc(){
   [ -d "$LIBSDIR/lib/pkgconfig" ] && mkdir -p "$LIBSDIR/lib/pkgconfig"
   cat <<-EOF >$LIBSDIR/lib/pkgconfig/zlib.pc
   prefix=${1}
@@ -966,7 +982,7 @@ aptInstall(){
       echo -ne "${CY1}"
       tput sc
       tput cup "$((y - 1))" 0
-      sudo apt -qq install $1 -y >/dev/null 2>&1
+      $sudo apt -qq install $1 -y >/dev/null 2>&1
       echo -ne "${C0}"
       tput rc
     }
@@ -1016,8 +1032,8 @@ loadToolchain(){
 
       ${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
       YASM=${TOOLCHAIN}/bin/yasm
-      PKG_CONFIG_LIBDIR=${ANDROID_NDK_HOME}/pkgconfig
-      [ ! -f "$LIBSDIR/lib/pkgconfig/zlib.pc" ] && patch_zlib_createpc "${SYSROOT}/usr"
+      #PKG_CONFIG_LIBDIR=${ANDROID_NDK_HOME}/pkgconfig
+      #[ ! -f "$LIBSDIR/lib/pkgconfig/zlib.pc" ] && patch_zlib_createpc "${SYSROOT}/usr"
       ;;
     Linux)
       local cross
@@ -1340,6 +1356,7 @@ while [ $1 ];do
     --clean ) clean && exit 0;;
     --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
     --update )  update=true;;
+    --updateall )  update=true; req_update_deps=true;;
     --vrep)     getGitLastTag $src && exit 0;;
     --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
     --checkPkg) checkPkg && exit 0;;
@@ -1436,9 +1453,9 @@ if [ -z "$ISRUNNING" ]; then
   showBanner
   export ISRUNNING=1
 fi
-if ! sudo -n true 2>/dev/null; then
+if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  sudo echo -ne "\r"
+  ${sudo} echo -ne "\r"
 fi
 
 

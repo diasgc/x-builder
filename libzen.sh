@@ -12,14 +12,40 @@ lic='Zlib'
 src='https://github.com/MediaArea/ZenLib.git'
 cfg='cmake'
 eta='10'
-
-lst_inc=''
-lst_lib=''
+dir_config='Project/CMake'
+lst_inc='ZenLib/BitStream_LE.h
+	ZenLib/int128u.h
+	ZenLib/Translation.h
+	ZenLib/Dir.h
+	ZenLib/ZtringListList.h
+	ZenLib/BitStream.h
+	ZenLib/Trace.h
+	ZenLib/int128s.h
+	ZenLib/Format/Html/Html_Handler.h
+	ZenLib/Format/Html/Html_Request.h
+	ZenLib/Format/Http/Http_Cookies.h
+	ZenLib/Format/Http/Http_Request.h
+	ZenLib/Format/Http/Http_Utils.h
+	ZenLib/Format/Http/Http_Handler.h
+	ZenLib/File.h
+	ZenLib/Ztring.h
+	ZenLib/CriticalSection.h
+	ZenLib/ZtringList.h
+	ZenLib/MemoryDebug.h
+	ZenLib/Utils.h
+	ZenLib/OS_Utils.h
+	ZenLib/InfoMap.h
+	ZenLib/Conf_Internal.h
+	ZenLib/ZtringListListF.h
+	ZenLib/Conf.h
+	ZenLib/BitStream_Fast.h
+	ZenLib/Thread.h
+	ZenLib/FileName.h
+	ZenLib/PreComp.h'
+lst_lib='libzen'
 lst_bin=''
 
 . xbuilder.sh
-
-CONFIG_DIR="$SRCDIR/Project/CMake"
 
 start
 

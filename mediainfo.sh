@@ -16,14 +16,12 @@ dep='libmediainfo'
 mki='install-strip'
 mkc='distclean'
 lib_noshared=true
-
+dir_config='Project/GNU/CLI'
 lst_inc=''
 lst_lib=''
 lst_bin=''
 
 . xbuilder.sh
-
-CONFIG_DIR="$SRCDIR/Project/GNU/CLI"
 
 start
 

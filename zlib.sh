@@ -1,36 +1,53 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   +   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK SYS------------ clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='zlib'
 apt='zlib1g'
 dsc='zlib compression library'
-lic='zlib'
+lic='Zlib'
 src='https://github.com/madler/zlib.git'
-cfg='cm'
+cfg='cmake'
 eta='22'
 cbk="BUILD_TOOLS"
 mkc='distclean'
 
-lst_inc='zlib.h'
+lst_inc='zlib.h zconf.h'
 lst_lib='libz'
 lst_pc='zlib.pc'
 
 . xbuilder.sh
 
-source_patch(){
-    # Is it a bug?
-    sed -i '/^set(INSTALL_PKGCONFIG_DIR.*/s/share/lib/'  $SRCDIR/CMakeLists.txt
+on_end(){
+    [ "$host_os" == "mingw32" ] && {
+        ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a 2>/dev/null
+        ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a 2>/dev/null
+    }
 }
-str_contains $arch "mingw32" && {
-    [ ! -f "$INSTALL_DIR/lib/libz.a" ] && [ -f "$INSTALL_DIR/lib/libzlib.dll.a" ] && ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a
-    [ ! -f "$INSTALL_DIR/lib/libzstatic.a" ] && [ -f "$INSTALL_DIR/lib/libzlibstatic.a" ] && ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a
-}
-start
 
+if [ "$host_os" == "android" ];then
+    pc_libdir="/lib/${arch}"
+    create_pkgconfig_file zlib '-lz' "${SYSROOT}/usr"
+else
+    start
+fi
 
+<<'XB_PATCH_CMAKELISTS'
+--- CMakeLists.old	2021-10-10 20:18:11.063314400 +0100
++++ CMakeLists.txt	2021-10-09 20:20:36.918086800 +0100
+@@ -12,7 +12,7 @@
+ set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
+ set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
+ set(INSTALL_MAN_DIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Installation directory for manual pages")
+-set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
++set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
+ 
+ include(CheckTypeSize)
+ include(CheckFunctionExists)
+
+XB_PATCH_CMAKELISTS
 
 # Filelist
 # --------
