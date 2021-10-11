@@ -52,7 +52,6 @@ CFLAGS="-Wno-address-of-packed-member $CFLAGS"
 
 . xbuilder.sh
 
-case $arch in *mingw32|a*gnu*) dep="zlib $dep";; esac
 
 case $build_tool in
     automake) CFG="--disable-fast-install";;

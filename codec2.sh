@@ -11,8 +11,7 @@ dsc='A speech codec for 2400 bit/s and below'
 #vrs='1.0.0'
 lic='LGPL-2.1'
 src='https://github.com/drowe67/codec2.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='80'
 
 lst_inc='codec2/modem_stats.h codec2/codec2_cohpsk.h codec2/fsk.h \
@@ -29,7 +28,7 @@ CFG="-DUNITTEST=FALSE"
 unset LDFLAGS
 
 build_patch_config(){
-    str_contains $arch mingw32 && {
+    $host_mingw && {
         sed -i "s|include|# include|" $BUILD_DIR/cmake/GetDependencies.cmake
         sed -i "s|get_prerequisites|# get_prerequisites|" $BUILD_DIR/cmake/GetDependencies.cmake
     }

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #             a8  a7  x86 x64
 # ndk-clang   ++. ++. ++. ++.
 # linux-gnu   ++. ++. ++. ++.
@@ -23,7 +22,7 @@ lst_lib='libaribb24'
 
 build_patch_config(){
     # to build shared libs on mingw
-    str_contains $arch mingw32 && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo
+    $host_mingw && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo
 }
 
 start

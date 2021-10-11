@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #             a8  a7  x86 x64
 # ndk-clang   +++ +++ +++ +++
 # linux-gnu   +++ +++ ... ...
@@ -31,8 +30,9 @@ lst_bin='aomdec aomenc'
 . xbuilder.sh
 
 cmake_toolchain_file="${SRCDIR}/build/cmake/toolchains/${arch}.cmake"
-str_contains $host_arch android && CFG+=" -DAOM_ANDROID_NDK_PATH=${ANDROID_NDK_HOME}"
-! str_contains $host_arch mingw32 && CFG+=" -DCONFIG_PIC=1"
+
+[ "$host_os" == "android" ] && CFG+=" -DAOM_ANDROID_NDK_PATH=${ANDROID_NDK_HOME}"
+$host_mingw && CFG+=" -DCONFIG_PIC=1"
 
 source_patch(){
   

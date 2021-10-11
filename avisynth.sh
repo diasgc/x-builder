@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #     Aa8 Aa7 A86 A64
 # NDK  P   P   F   P  clang
 # GNU  P   P   .   .  gcc
@@ -34,7 +33,7 @@ lst_bin=''
 . xbuilder.sh
 
 # dont pass LT_SYS_LIBRARY_PATH to avoid redefinition error
-case $arch in *-mingw32) unset PKG_CONFIG_LIBDIR;; esac
+$host_mingw && unset PKG_CONFIG_LIBDIR
 
 start
 

@@ -25,7 +25,7 @@ API=26 # required for frontends build
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
 CFG="--disable-gtktest --disable-decoder --disable-debug"
-[ "$host_os" == "mingw32" ] && CFG+=" --enable-expopt=full"
+$host_mingw && CFG+=" --enable-expopt=full"
 # make shared executable so
 $build_shared && $build_bin && CBN="--enable-dynamic-frontends"
 [ "$host_os" == "android" ] && [ $API -lt 26 ] && unset CBN
@@ -40,7 +40,6 @@ start
 
 # Filelist
 # --------
-
 # include/lame/lame.h
 # lib/pkgconfig/lame.pc
 # lib/libmp3lame.so

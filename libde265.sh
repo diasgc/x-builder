@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   .   +   .   .   .   .  static
-#  +   +   .   .   .   .   +   .   .   .   .  shared
-#  +   +   .   .   .   .   +   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++  .   .  clang
+# GNU +++  .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='libde265'
 apt='libde265-dev'
@@ -18,12 +18,10 @@ f_win_posix=true
 
 . xbuilder.sh
 
-case $arch in
-  aarch64-*|arm-*) CFG="$CFG --disable-sse --disable-arm";;
-  # remove '--disable-shared' to prevent 'multiple definitions' error in libstdc++.a and libstdc++.dll.a
+$host_arm && CFG+=" --disable-sse --disable-arm"
+# remove '--disable-shared' to prevent 'multiple definitions' error in libstdc++.a and libstdc++.dll.a
   # see similar https://github.com/opencv/opencv/pull/9052
-  *-mingw32) CSH=${CSH/"--disable-shared "};;
-esac
+$host_mingw && CSH=${CSH/"--disable-shared "}
 
 start
 

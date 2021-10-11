@@ -9,7 +9,6 @@ apt="${lib}-dev"
 dsc='An isochronous streaming media library for IEEE 1394'
 lic='LGPL-2.1'
 src='https://github.com/Distrotech/libiec61883.git'
-sty='git'
 cfg='ar'
 dep='libraw1394'
 

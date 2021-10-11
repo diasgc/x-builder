@@ -1,31 +1,61 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
+
+# run with --nodev option
 
 lib='sdl2'
 apt='libsdl2-dev'
 dsc='Simple Directmedia Layer'
 lic='BSD'
-# src='https://github.com/libsdl-org/SDL.git'
-# sty='git'
-vrs='2.0.16'
-src="https://github.com/libsdl-org/SDL/archive/refs/tags/release-${vrs}.tar.gz"
-sty='tgz'
-cfg='cm'
+src='https://github.com/libsdl-org/SDL.git'
+cfg='cmake'
 eta='60'
-cst1='-DSDL_STATIC=ON -DSDL_STATIC_PIC=ON'
+cstk='SDL_STATIC'
+CFG="-DRPATH=OFF -DASAN=ON -DASSEMBLY=ON"
+
+lst_inc='SDL2/SDL_test_random.h SDL2/SDL_timer.h
+    SDL2/SDL_audio.h SDL2/SDL_loadso.h SDL2/SDL_power.h
+    SDL2/SDL.h SDL2/SDL_video.h SDL2/SDL_scancode.h
+    SDL2/SDL_joystick.h SDL2/SDL_gamecontroller.h SDL2/SDL_test_md5.h
+    SDL2/SDL_config_iphoneos.h SDL2/SDL_keycode.h SDL2/SDL_log.h
+    SDL2/SDL_gesture.h SDL2/SDL_sensor.h SDL2/SDL_revision.h
+    SDL2/SDL_clipboard.h SDL2/SDL_metal.h SDL2/SDL_thread.h
+    SDL2/SDL_surface.h SDL2/SDL_opengles.h SDL2/SDL_touch.h
+    SDL2/SDL_config_android.h SDL2/SDL_copying.h SDL2/SDL_bits.h
+    SDL2/SDL_atomic.h SDL2/SDL_config_psp.h SDL2/SDL_opengl.h
+    SDL2/SDL_haptic.h SDL2/SDL_test_fuzzer.h SDL2/SDL_opengles2_gl2ext.h
+    SDL2/SDL_config_os2.h SDL2/SDL_error.h SDL2/SDL_test_log.h
+    SDL2/SDL_mutex.h SDL2/SDL_render.h SDL2/SDL_config_macosx.h
+    SDL2/SDL_rwops.h SDL2/SDL_rect.h SDL2/SDL_config_wiz.h
+    SDL2/SDL_events.h SDL2/SDL_config_windows.h SDL2/SDL_test.h
+    SDL2/SDL_opengl_glext.h SDL2/SDL_main.h SDL2/SDL_pixels.h
+    SDL2/SDL_hints.h SDL2/SDL_version.h SDL2/SDL_vulkan.h
+    SDL2/SDL_system.h SDL2/SDL_types.h SDL2/SDL_keyboard.h
+    SDL2/SDL_test_memory.h SDL2/SDL_mouse.h SDL2/SDL_test_compare.h
+    SDL2/SDL_filesystem.h SDL2/SDL_misc.h SDL2/SDL_locale.h
+    SDL2/SDL_config_minimal.h SDL2/SDL_opengles2.h SDL2/SDL_quit.h
+    SDL2/SDL_name.h SDL2/SDL_test_crc32.h SDL2/SDL_blendmode.h
+    SDL2/SDL_test_harness.h SDL2/SDL_config.h SDL2/SDL_assert.h
+    SDL2/SDL_opengles2_khrplatform.h SDL2/SDL_test_common.h SDL2/SDL_platform.h
+    SDL2/SDL_test_images.h SDL2/begin_code.h SDL2/SDL_opengles2_gl2.h
+    SDL2/SDL_cpuinfo.h SDL2/SDL_config_pandora.h SDL2/SDL_test_font.h
+    SDL2/SDL_opengles2_gl2platform.h SDL2/SDL_syswm.h SDL2/SDL_test_assert.h
+    SDL2/close_code.h SDL2/SDL_messagebox.h SDL2/SDL_config_winrt.h
+    SDL2/SDL_stdinc.h SDL2/SDL_shape.h SDL2/SDL_endian.h
+    SDL2/SDL_egl.h'
+lst_lib='libSDL2main libSDL2 libhidapi'
+lst_bin='sdl2-config'
 
 . xbuilder.sh
 
-CFG="-DRPATH=OFF -DASAN=ON -DASSEMBLY=ON"
+[ "$host_os" == "android" ] && CFG+=" -DANDROID=ON"
+$host_arm && CFG+=" -DARMNEON=ON -DARMSIMD=ON -DMMX=OFF"
+$host_mingw && CFG+=" -DCMAKE_COMPILER_IS_MINGW=TRUE" || CFG+=" -DSDL_STATIC_PIC=ON"
 
-case $arch in
-    aarch64*|arm*) CFG="$CFG -DARMNEON=ON -DARMSIMD=ON -DMMX=OFF";;
-esac
-
-source_get(){
+_source_get(){
     pushdir $SOURCES
     wget_tar SDL
     popdir
@@ -35,7 +65,6 @@ start
 
 # Filelist
 # --------
-
 # include/SDL2/SDL_test_random.h
 # include/SDL2/SDL_timer.h
 # include/SDL2/SDL_audio.h

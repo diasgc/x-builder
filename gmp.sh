@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='gmp'
 apt='libgmp-dev'
@@ -14,16 +14,18 @@ tls='mercurial'
 cfg='ac'
 eta='272'
 mkc='distclean'
-
+lst_inc='gmp.h'
+lst_lib='libgmp'
+lst_bin=''
 . xbuilder.sh
 
 CFG="CC_FOR_BUILD=cc"
 unset ABI
-case $arch in *-mingw32) CFG="$CFG --enable-fat";; esac
+$host_mingw && CFG+=" --enable-fat"
 
 source_config(){
   # from bootstrap:
-  pushdir $SRCDIR
+  cd $SRCDIR
   rm -rf autom4te.cache
   autoreconf -i -s >/dev/null 2>&1
   cat >doc/version.texi <<-EOF
@@ -32,14 +34,12 @@ source_config(){
   @set EDITION 12.35
   @set VERSION 12.35
 	EOF
-  popdir
 }
 
 start
 
 # Filelist
 # --------
-
 # include/gmp.h
 # lib/pkgconfig/gmp.pc
 # lib/libgmp.la
