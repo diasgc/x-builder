@@ -11,7 +11,7 @@ lic='LGPL-2.1'
 src='https://github.com/freedesktop/cairo.git'
 cfg='ag'
 dep='fontconfig'
-tls='build-dep cairo'
+tls='build-dep'
 eta='275'
 CFG="--enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
 
