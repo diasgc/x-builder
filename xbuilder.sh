@@ -63,7 +63,7 @@ init(){
     ./xsetup.sh
     . .config || doErr 'Unable to initialize config file'
   fi
-  export is_init=true indent=0
+  export is_init=true indent=0 ind
 }
 
 ! $is_init && init
@@ -239,6 +239,8 @@ start(){
         MAKE_EXECUTABLE=make
         ;;
       automake)
+        [ -z "${mki+x}" ] && mki="install-strip"
+        [ -z "${mkc+x}" ] && mkc="distclean"
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
         ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
         ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
@@ -312,7 +314,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs
+  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki
   dec_tab
   echo
   exit 0
@@ -1472,6 +1474,7 @@ case $cfg in
     [ -z "$csh1" ] && csh1="-DBUILD_SHARED_LIBS=ON"
     
     [ -n "$cbk" ] && cb0="-D${cbk}=OFF" cb1="-D${cbk}=ON"
+
     ;;
   am|ac|ar|ag|auto*)
     build_tool=automake

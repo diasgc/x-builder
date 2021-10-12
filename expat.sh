@@ -7,17 +7,13 @@ src='https://github.com/libexpat/libexpat.git'
 sty='git'
 cfg='ac'
 eta='77'
-
+dir_config="expat"
 case $cfg in
-    a*) cb0="--without-examples" CFG="--without-tests --without-docbook --without-xmlwf --disable-fast-install --with-pic" mkc='distclean';;
+    a*) cb0="--without-examples" CFG="--without-tests --without-docbook --without-xmlwf --disable-fast-install";;
     c*) cshk="EXPAT_SHARED_LIBS" cbk="EXPAT_BUILD_TOOLS" CFG="-DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF";;
 esac
 
 . xbuilder.sh
-
-SRCDIR=$SRCDIR/expat
-
-[ "$build_tool" == "automake" ] && CFG="--with-sysroot=${SYSROOT} $CFG"
 
 source_patch(){
     pushdir $SRCDIR

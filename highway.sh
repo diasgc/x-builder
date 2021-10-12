@@ -4,7 +4,7 @@ lib='highway'
 dsc='Performance-portable, length-agnostic SIMD with runtime dispatch'
 lic='Apache2.0'
 src='https://github.com/google/highway.git'
-cfg='cm'
+cfg='cmake'
 eta='10'
 
 . xbuilder.sh

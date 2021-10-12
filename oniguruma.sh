@@ -1,18 +1,19 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
+
 
 lib='oniguruma'
 dsc='Regular expression library'
 lic='BSD-2c'
 src='https://github.com/kkos/oniguruma.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='22'
-mkc='distclean'
-mki='install-strip'
+lst_inc='oniggnu.h oniguruma.h'
+lst_lib='libonig'
+lst_bin='onig-config'
 
 . xbuilder.sh
 

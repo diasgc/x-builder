@@ -8,22 +8,22 @@ lib='turingcodec'
 dsc='HEVC software encoder optimised for fast encoding of large resolution video content'
 lic='GLP-2.0'
 src='https://github.com/bbc/turingcodec.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 pkg='libturing'
-
 eta='1095'
+#CFG="-DUSE_SYSTEM_BOOST=OFF"
 
 . xbuilder.sh
-CFG="-DUSE_SYSTEM_BOOST=OFF"
-#CPPFLAGS="$CPPFLAGS -I$SRCDIR/havoc/ -I$SRCDIR/boost"
-#CFLAGS="$CFLAGS -I$SRCDIR/havoc/ -I$SRCDIR/boost"
-CXXFLAGS="$CXXFLAGS -I$SRCDIR/havoc/ -I$SRCDIR/boost"
+
+nodev=true
+
 
 source_patch(){
-    pushdir $SRCDIR
-    doLog 'checkout' git checkout stabley
-    popdir
+    cd $SRCDIR
+    # update cmakelists version to 3.1
+    for c in $(find . -name "CMakeLists.txt"); do
+        sed -i 's/VERSION 2.8/VERSION 3.1/g' $c
+    done
 }
 
 start

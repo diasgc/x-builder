@@ -1,25 +1,27 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  .   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 lib='jq'
 dsc='Lightweight and flexible command-line JSON processor'
 lic='Other'
 vrs='jq-1.6' # latest
 src='https://github.com/stedolan/jq.git'
-sty='git'
 cfg='ar'
 dep='oniguruma'
-eta='22'
-mkc='distclean'
-mki='install-strip'
+eta='575'
+pc_llib='-ljq'
+lst_inc='jv.h jq.h'
+lst_lib='libjq'
+lst_bin='jq'
+lst_lic='share/doc/jq/COPYING'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
-CSH=0
+CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
+unset CSH
 
 _source_patch(){
     pushdir $SRCDIR
@@ -28,3 +30,17 @@ _source_patch(){
 }
 
 start
+
+# Filelist
+# --------
+# include/jv.h
+# include/jq.h
+# lib/libjq.so
+# lib/libjq.la
+# lib/libjq.a
+# share/man/man1/jq.1
+# share/doc/jq/AUTHORS
+# share/doc/jq/README.md
+# share/doc/jq/COPYING
+# share/doc/jq/README
+# bin/jq

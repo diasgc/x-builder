@@ -322,3 +322,28 @@ git_local_version(){
 git_remote_version(){
   echo $(git ls-remote --tags --refs --sort="v:refname" ${src} 2>/dev/null | tail -n1 | sed 's/.*\///')
 }
+
+github_getjson(){
+  local s=$(echo "$1" | sed 's/https:\/\///g; s/\// /g; s/\.git$//')
+  set -- $s
+  if [ "$1" == "github.com" ];then
+    echo -e "$(curl https://api.github.com/repos/${2}/${3} 2>/dev/null)"
+  else
+    echo
+  fi
+}
+
+github_json_desc(){
+  echo "${1}" | jq .description | sed 's/"//g'
+}
+
+github_jq(){
+  echo "${1}" | jq "${2}" | sed 's/"//g'
+}
+
+# .language
+# .homepage
+# .size
+# .licence.key
+# .licence.name
+# .licence.spdx_id
