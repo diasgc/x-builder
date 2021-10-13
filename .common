@@ -323,11 +323,27 @@ git_remote_version(){
   echo $(git ls-remote --tags --refs --sort="v:refname" ${src} 2>/dev/null | tail -n1 | sed 's/.*\///')
 }
 
-github_getjson(){
+git_api_tojson(){
   local s=$(echo "$1" | sed 's/https:\/\///g; s/\// /g; s/\.git$//')
   set -- $s
   if [ "$1" == "github.com" ];then
     echo -e "$(curl https://api.github.com/repos/${2}/${3} 2>/dev/null)"
+  elif [ "${1}" != "${1#gitlab}" ];then
+    echo -e "$(curl -XGET -H "Content-Type: application/json" "https://${1}/api/v4/projects/${2}%2F${3}" 2>/dev/null)"
+  else
+    echo
+  fi
+}
+
+gitlab_licence(){
+  local s=$(echo "$1" | sed 's/https:\/\///g; s/\// /g; s/\.git$//')
+  set -- $s
+  if [ "$1" == "github.com" ];then
+    echo -e "$(curl https://api.github.com/repos/${2}/${3} 2>/dev/null)"
+  elif [ "${1}" != "${1#gitlab}" ];then
+    local json=$(curl -XGET -H "Content-Type: application/json" "https://${1}/api/v4/projects/${2}%2F${3}" 2>/dev/null)
+    local id=$(echo "$json" | jq .id)
+    echo ${id} "curl --request GET https://${1}/api/v4/licence/${id}"
   else
     echo
   fi
