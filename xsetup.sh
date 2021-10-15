@@ -56,7 +56,7 @@ check4Pkg(){
         shift
         local v0=$(dpkg-query -W ${2} 2>/dev/null | cut -f2)
         if [ -n "${v0}" ];then
-            local v1=$(apt-cache madison ${2} | cut -d'|' -f2 | xargs)
+            local v1=$(apt-cache madison ${2} | head -n1 | cut -d'|' -f2 | xargs)
             if [ $v0=$v1 ]; then
                 echo -e "${CC0}  ${b} ${1}${C0}\t\t${v0} ${CC0}${c}${C0}"
             else
@@ -69,7 +69,7 @@ check4Pkg(){
     else
         if [ $(which $2) ];then
             local v0=$(dpkg-query -W ${3} 2>/dev/null | cut -f2)
-            local v1=$(apt-cache madison ${3} | cut -d'|' -f2 | xargs)
+            local v1=$(apt-cache madison ${3} | head -n1 | cut -d'|' -f2 | xargs)
             #local v0=$(apt-cache policy ${3} | grep -Po '(Installed:).\K.*')
             #local v1=$(apt-cache policy ${3} | grep -Po '(Candidate:).\K.*')
             if [ "$v0" == "$v1" ]; then
@@ -232,7 +232,9 @@ writeConfig(){
            PKG_CONFIG="$(which pkg-config)" \\
            HOST_NPROC="$(nproc)" \\
            LLVM_MINGW_HOME="${llvm_mingw}" \\
+           LLVM_MINGW_REL="${llvm_mingw_rel}" \\
            xv_llvm_mingw="${xv_llvm_mingw}" \\
+           llvm_mingw_rel="${llvm_mingw_rel}" \\
            xv_aarch64_gnu="${xv_aarch64_gnu}" \\
            xv_armeabi_gnu="${xv_armeabi_gnu}" \\
            xv_x86_gnu="${xv_x86_gnu}" \\
@@ -242,6 +244,31 @@ writeConfig(){
            
            
 	EOF
+}
+
+check_llvm_mingw(){
+    if [ -z ${LLVM_MINGW_HOME+x} ] || [ ! -d "${LLVM_MINGW_HOME}" ]; then
+        find_llvm_mingw
+        if [ -z ${llvm_mingw} ];then
+            install_llvm_mingw ~
+        else
+            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw (found at ~/${LLVM_MINGW_HOME#"$HOME"/})"
+            export LLVM_MINGW_HOME=${llvm_mingw}
+        fi
+    else
+        local latest_rel=$(git_remote_version 'https://github.com/mstorsjo/llvm-mingw.git')
+        if [ "${latest_rel}" != "${llvm_mingw_rel}" ];then
+            local d=$(pwd)
+            echo -ne "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw updating..."
+            cd $LLVM_MINGW_HOME; cd ..
+            rm -rf $LLVM_MINGW_HOME
+            install_llvm_mingw $(pwd)
+            echo -e "\b\b\b${CC1} done (release ${llvm_mingw_rel})${C0}"
+            cd $d
+        else
+            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw latest release ${llvm_mingw_rel}"
+        fi
+    fi
 }
 
 find_llvm_mingw(){
@@ -257,6 +284,21 @@ find_llvm_mingw(){
     echo -ne "not found"
 }
 
+install_llvm_mingw(){
+    local d
+    [ -z $1 ] && d=~ || d=$1
+    if [ -d "$1" ];then
+        local od=$(pwd)
+        cd $1
+        export llvm_mingw_rel=$(git_remote_version 'https://github.com/mstorsjo/llvm-mingw.git')
+        [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
+        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
+        export LLVM_MINGW_HOME="$(pwd)/llvm-mingw"
+        export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
+        cd $od
+    fi
+}
+
 banner 'Setup Utility'
 
 # load config
@@ -266,7 +308,7 @@ echo -e "${CC1}${b} Toolchains${C0}"
 #ANDROID NDK
 check4Ndk
 
-[ ! -d "$LLVM_MINGW_HOME" ] && find_llvm_mingw || echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw (found at ~/${LLVM_MINGW_HOME#"$HOME"/}) "
+check_llvm_mingw
 
 #MINGW
 check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'

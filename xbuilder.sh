@@ -95,6 +95,11 @@ main(){
   export PKGDIST LIBSDIR SOURCES SRCDIR INSTALL_DIR PKGDIR
   [ -d "${SOURCES}" ] || mkdir -p ${SOURCES}
 
+  gitjson=$(git_api_tojson $src)
+  [ -n "${gitjson}" ] && {
+    lic=$(echo "$gitjson" | jq .licence)
+    dsc=$(echo "$gitjson" | jq .description)
+  }
   # show package info
   [ ! -f "${PKGDIR}/${pkg}.pc" ] && ${banner} && pkgInfo
 
@@ -106,6 +111,8 @@ main(){
 # mkc: rule for clean 'make $mkclean' (default: clean)
 # mkf: additional rule for make
 # no_host  : while using autotools, no host will be set for cross-compile if no_host is not empty
+
+gitjson=
 
 start(){
   
@@ -142,6 +149,7 @@ start(){
   [ -z ${CONFIG_DIR+x} ] && CONFIG_DIR=${SRCDIR}
   # use this instead
   [ -n "${dir_config+x}" ] && CONFIG_DIR="${SOURCES}/${lib}/${dir_config}"
+
 
   if [ ! -d $SRCDIR ];then
     
@@ -759,14 +767,6 @@ set_git_version(){
   popdir
 }
 
-getGitLastTag(){
-  if [ "$sty"=="git" ];then
-    echo $(git -c 'versionsort.suffix=-' ls-remote --refs --tags --sort='v:refname' $src | tail -n1 | cut -d'/' -f3)
-  else
-    echo "n/a"
-  fi
-}
-
 githubLatestTarGz(){
   case $src in
     *github.*)
@@ -777,7 +777,7 @@ githubLatestTarGz(){
       ;;
     *gitlab.*|*code.videolan.org*)
       local dst=$(echo $src | sed -e 's|\.git||g')
-      local v=$(getGitLastTag $src)
+      local v=$(git_remote_version $src)
       echo "$dst/-/archive/${v}/${lib}-${v}.tar.gz"
       ;;
     *.googlesource.*)
@@ -802,6 +802,7 @@ wget_tarxx(){
     *.tar.gz|*.tgz) args="-xvz";;
     *.tar.xz) args="-xvJ";;
   esac
+
   [ -d "tmp" ] && rm -rf tmp
   mkdir tmp
   wget -qO- $1 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
@@ -1152,7 +1153,7 @@ pkgInfo(){
   [ -n "$tls" ] && DP="${CT0}tools: ${C0}$tls "
   [ -n "$dep" ] && DP="${DP}${CT0}dependencies: ${C0}$dep"
   if [ "$sty" == "git" ];then
-    local vgit=$(getGitLastTag $src)
+    local vgit=$(git_remote_version $src)
     if [ -d $SRCDIR ];then
       set_git_version
       VS="${CT0}vrs: ${C0}$vrs "
@@ -1359,7 +1360,7 @@ while [ $1 ];do
     --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
     --update )  update=true;;
     --updateall )  update=true; req_update_deps=true;;
-    --vrep)     getGitLastTag $src && exit 0;;
+    --vrep)     git_remote_version $src && exit 0;;
     --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
     --checkPkg) checkPkg && exit 0;;
     --libName)  echo $lib && exit 0;;

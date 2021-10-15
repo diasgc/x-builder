@@ -320,19 +320,36 @@ git_local_version(){
 }
 
 git_remote_version(){
-  echo $(git ls-remote --tags --refs --sort="v:refname" ${src} 2>/dev/null | tail -n1 | sed 's/.*\///')
+  echo $(git ls-remote --tags --refs --sort="v:refname" ${1} 2>/dev/null | tail -n1 | sed 's/.*\///')
 }
 
 git_api_tojson(){
   local s=$(echo "$1" | sed 's/https:\/\///g; s/\// /g; s/\.git$//')
   set -- $s
-  if [ "$1" == "github.com" ];then
-    echo -e "$(curl https://api.github.com/repos/${2}/${3} 2>/dev/null)"
-  elif [ "${1}" != "${1#gitlab}" ];then
-    echo -e "$(curl -XGET -H "Content-Type: application/json" "https://${1}/api/v4/projects/${2}%2F${3}" 2>/dev/null)"
-  else
-    echo
-  fi
+  case ${1} in
+    github*) echo -e "$(curl https://api.github.com/repos/${2}/${3} 2>/dev/null)";;
+    gitlab*) echo -e "$(curl -XGET -H "Content-Type: application/json" "https://${1}/api/v4/projects/${2}%2F${3}" 2>/dev/null)";;
+    *) echo;;
+  esac
+}
+
+wget_untar(){
+  local args
+  case $1 in
+    *.tar.lz) 
+      [ -z $(which lzip) ] || exit 1
+      args="--lzip -xv"
+      ;;
+    *.tar.gz|*.tgz) args="-xvz";;
+    *.tar.xz) args="-xvJ";;
+  esac
+  [ -d "$tmp" ] && rm -rf $tmp
+  mkdir tmp
+  wget -qO- $1 2>log_progress | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || exit 1
+  cd tmp
+  mv * $2 && mv $2 ..
+  cd ..
+  rm -rf tmp
 }
 
 gitlab_licence(){

@@ -1,21 +1,18 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='speex'
-apt='speex'
 dsc='Speex is an audio codec tuned for speech'
 lic='BSD'
 src='https://github.com/xiph/speex.git'
-sty='git'
 cfg='ag'
 dep='ogg speexdsp'
 eta='39'
 eta='51'
-cb0="--disable-binaries"
-cb1="--enable-binaries"
+cbk="able-binaries"
 
 . xbuilder.sh
 
