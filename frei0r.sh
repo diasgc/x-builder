@@ -17,6 +17,7 @@ sty='git'
 cfg='ag'
 xdp='gavl opencv libcairo'
 eta='275'
+mki='install'
 
 . xbuilder.sh
 

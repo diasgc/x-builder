@@ -96,10 +96,10 @@ main(){
   [ -d "${SOURCES}" ] || mkdir -p ${SOURCES}
 
   gitjson=$(git_api_tojson $src)
-  [ -n "${gitjson}" ] && {
-    lic=$(echo "$gitjson" | jq .licence)
-    dsc=$(echo "$gitjson" | jq .description)
-  }
+  if [ -n "${gitjson}" ];then
+    [ -z "${lic}" ] && lic=$(echo "$gitjson" | jq .licence)
+    [ -z "${dsc}" ] && dsc=$(echo "$gitjson" | jq .description)
+  fi
   # show package info
   [ ! -f "${PKGDIR}/${pkg}.pc" ] && ${banner} && pkgInfo
 

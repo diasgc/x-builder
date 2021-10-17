@@ -320,7 +320,7 @@ git_local_version(){
 }
 
 git_remote_version(){
-  echo $(git ls-remote --tags --refs --sort="v:refname" ${1} 2>/dev/null | tail -n1 | sed 's/.*\///')
+  echo $(git ls-remote --tags --refs --sort="v:refname" ${1} 2>/dev/null | head -n1 | sed 's/.*\///')
 }
 
 git_api_tojson(){
@@ -343,9 +343,9 @@ wget_untar(){
     *.tar.gz|*.tgz) args="-xvz";;
     *.tar.xz) args="-xvJ";;
   esac
-  [ -d "$tmp" ] && rm -rf $tmp
+  [ -d "tmp" ] && rm -rf tmp
   mkdir tmp
-  wget -qO- $1 2>log_progress | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || exit 1
+  wget -qO- $1 2>/dev/null | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || exit 1
   cd tmp
   mv * $2 && mv $2 ..
   cd ..

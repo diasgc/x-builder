@@ -3,6 +3,9 @@
 # setup util 1.0 2021-diasgc
 # ................................................
 [ -z ${vsh+x} ] && . .common
+# load config
+[ -f ".config" ] && . .config
+install=false
 
 clear
 echo -ne "$CY1  Request to sudo apt update "; sudo apt update |& prt_progress
@@ -220,7 +223,7 @@ writeConfig(){
 
     cat <<-EOF >${1}
     #!/bin/bash
-    export config_lastupdate=${ldate} \\
+    export config_lastupdate=$(date +%s) \\
            ROOTDIR="$(pwd)" \\
            build_arch="${build_arch}" \\
            ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \\
@@ -250,29 +253,29 @@ check_llvm_mingw(){
     if [ -z ${LLVM_MINGW_HOME+x} ] || [ ! -d "${LLVM_MINGW_HOME}" ]; then
         find_llvm_mingw
         if [ -z ${llvm_mingw} ];then
-            install_llvm_mingw ~
+            install_llvm_mingw
         else
             echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw (found at ~/${LLVM_MINGW_HOME#"$HOME"/})"
             export LLVM_MINGW_HOME=${llvm_mingw}
         fi
     else
-        local latest_rel=$(git_remote_version 'https://github.com/mstorsjo/llvm-mingw.git')
+        local latest_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
         if [ "${latest_rel}" != "${llvm_mingw_rel}" ];then
             local d=$(pwd)
-            echo -ne "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw updating..."
+            echo -ne "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw release ${llvm_mingw_rel} upgrading to ${latest_rel}..."
             cd $LLVM_MINGW_HOME; cd ..
             rm -rf $LLVM_MINGW_HOME
             install_llvm_mingw $(pwd)
             echo -e "\b\b\b${CC1} done (release ${llvm_mingw_rel})${C0}"
             cd $d
         else
-            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw latest release ${llvm_mingw_rel}"
+            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw release ${llvm_mingw_rel} (latest)"
         fi
     fi
 }
 
 find_llvm_mingw(){
-    echo -ne "searching..."
+    echo -ne "searching... "
     llvm_mingw=$(find ~ -name "aarch64-w64-mingw32-clang")
     [ -f "$llvm_mingw" ] && {
         xv_llvm_mingw="$(${llvm_mingw} --version | grep -oP '\d*\.\d*.\d* (?=\()')"
@@ -285,14 +288,14 @@ find_llvm_mingw(){
 }
 
 install_llvm_mingw(){
-    local d
+    export llvm_mingw_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
+    echo -ne "installing... "
     [ -z $1 ] && d=~ || d=$1
-    if [ -d "$1" ];then
+    if [ -d "$d" ];then
         local od=$(pwd)
-        cd $1
-        export llvm_mingw_rel=$(git_remote_version 'https://github.com/mstorsjo/llvm-mingw.git')
+        cd $d
         [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
-        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
+        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
         export LLVM_MINGW_HOME="$(pwd)/llvm-mingw"
         export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
         cd $od
@@ -301,18 +304,17 @@ install_llvm_mingw(){
 
 banner 'Setup Utility'
 
-# load config
-[ -f ".config" ] && . .config
-
-echo -e "${CC1}${b} Toolchains${C0}"
+echo -e "\n${CC1}${b} Toolchains${C0}"
 #ANDROID NDK
 check4Ndk
 
 check_llvm_mingw
 
+# https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+
 #MINGW
-check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
-check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
+#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
+#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
 
 #CROSS-ARCH-GNU
 check4Pkg 'i686-GNU' 'i686-linux-gnu-gcc' 'gcc-i686-linux-gnu' 'g++-i686-linux-gnu'
@@ -352,6 +354,8 @@ check4Pkg --pkg 'Patch    ' 'patch'
 check4Pkg --pkg 'Jq       ' 'jq'
 
 echo -ne "\n  ${CC0}Writing config... "
+
 writeConfig .config
+
 echo -e "Done${C0}\n"
 

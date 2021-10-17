@@ -43,6 +43,10 @@ if(XB_OS STREQUAL "android")
         ${XB_SYSROOT}/usr/lib/${XB_HOST}
         ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API}
         ${XB_INSTALL})
+    
+    set(ZLIB_INCLUDE_DIRS ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include)
+    set(ZLIB_LIBRARIES ${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/${XB_HOST})
+    set(ZLIB_VERSION_STRING 1.2.11)
     include(${ANDROID_NDK}/build/cmake/android.toolchain.cmake)
     
 elseif(XB_OS STREQUAL "gnu")

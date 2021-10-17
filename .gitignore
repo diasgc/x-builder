@@ -4,3 +4,4 @@ packages/*
 .config
 xstat.json
 .vscode
+android_device_vendor_lib64.lst
