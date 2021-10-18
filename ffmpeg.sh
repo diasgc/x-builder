@@ -27,34 +27,54 @@ lst_bin=''
 #dav1d kvazaar libtheora libvpx libwebp vid.stab x264 x265 xvidcore
 #libiconv libxml2 zlib bzip2
 #MediaCodec jni OpenCL
-
-include_pkg(){
-     extlibs+=" $1"
-     dep+=" $2"
-}
-
+dep='zlib bzip2 gmp libiconv lzma libxml2'
+ffmpeg_audio_filters='--enable-avisynth --enable-chromaprint --enable-libbs2b --enable-libflite --enable-librubberband --enable-lv2'
+ffmpeg_audio_codecs='--enable-libcelt --enable-libcodec2 --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-libmp3lame'
+ffmpeg_video_filters='--enable-frei0r --enable-libglslang --enable-liblensfun'
+ffmpeg_video_codecs='--enable-libaom --enable-libdav1d  --enable-libdavs2 --enable-libdc1394 --enable-libkvazaar'
+ffmpeg_net='--enable-gcrypt --enable-gnutls'
+ffmpeg_subs='--enable-libaribb24 --enable-libass --enable-libcaca --enable-libfontconfig --enable-libfreetype --enable-libfribidi'
+ffmpeg_inputs='--enable-libbluray --enable-libcdio --enable-libiec61883 --enable-libjack'
+#--enable-jni
 extraOpts(){
-     if [ -f "${1}.sh" ];then
-          extlibs+=" --enable-${1}"
-          dep+=" $1"
-     elif [ -f "lib${1}.sh" ]
      case $1 in
-          aom|libaom) extlibs+=" --enable-libaom"; dep+=" aom";;
-          aribb24|libaribb24) extlibs+=" --enable-libaribb24"; dep+=" aribb24";;
-          celt|libcelt
-          *) [ -f "${1}.sh" ] && extlibs+=" --enable-${1}"; dep+=" $1";;
+          --audio) dep+=" lame libilbc libvorbis opencore-amr opus shine snappy soxr speex twolame vo-amrwbenc";;
+          --video) dep+=" aom kvazaar theora libvpx libwebp vidstab x264 x265 xvidcore";;
      esac
-
 }
-
 . xbuilder.sh
 
-$build_shared && CSH="--enable-shared --disable-static" || CSH="--disable-shared --enable-static"
-extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-jni --enable-frei0r --enable-gpl --enable-version3"
-CFG="--arch=$CPU --target-os=${PLATFORM,,} --cc=$CC --ar=$AR --strip=$STRIP --enable-cross-compile --disable-inline-asm \
-     --enable-lto --enable-runtime-cpudetect --disable-doc --disable-htmlpages --disable-ffplay --enable-opencl --enable-pic $extlibs" # --enable-opengl
+for d in $dep; do
+     case $d in
+          lame) extlibs+=" --enable-libmp3lame";;
+          aom|flite|) extlibs+=" --enable-lib${d}";;
+     esac
+done
 
-[ "$host_os" == "android" ] && CPPFLAGS+=" -Ofast -fPIC -fPIE"
+$build_shared && CSH="--enable-shared --disable-static" || CSH="--disable-shared --enable-static"
+extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-frei0r --enable-gpl --enable-version3"
+
+case $host_os in
+     android) CPPFLAGS+=" -Ofast -fPIC -fPIE"
+          extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-pic"
+          ;;
+esac
+
+CFG="--arch=$CPU \
+     --target-os=${PLATFORM,,} \
+     --cc=$CC \
+     --ar=$AR \
+     --strip=$STRIP \
+     --enable-cross-compile \
+     --disable-inline-asm \
+     --enable-lto \
+     --enable-runtime-cpudetect \
+     --disable-doc \
+     --disable-htmlpages \
+     --disable-ffplay \
+     $extopts \
+     $extlibs"
+
 # make the log cleaner
 CPPFLAGS+=" -Wno-implicit-const-int-float-conversion -Wno-deprecated-declarations"
 

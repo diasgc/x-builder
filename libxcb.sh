@@ -4,14 +4,16 @@
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
-lib='libxbc'
+lib='libxcb'
+apt='libxcb1-dev'
 dsc='C interface to the X Window System protocol, which replaces the traditional Xlib interface.'
 lic='GLP-2.0'
-src='https://gitlab.freedesktop.org/xorg/lib/libxcb.git'
-sty='git'
+vrs='1.12'
+src='https://github.com/freedesktop/xcb-libxcb.git'
 cfg='ag'
 eta='0'
-CFG='--enable-devel-docs'
+dep='xcb-proto xcb-pthread-stubs libxau libxdmcp'
+#CFG='--enable-devel-docs'
 #cshk=''
 #cstk=''
 #cbk=''

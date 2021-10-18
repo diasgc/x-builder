@@ -1032,6 +1032,7 @@ loadToolchain(){
       else
         LDFLAGS="-L${SYSROOT}/usr/lib/${arch} -L${SYSROOT}/usr/lib/${arch}/${API} ${LDFLAGS}"
       fi
+      CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch}"
 
       ${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
       YASM=${TOOLCHAIN}/bin/yasm
@@ -1107,7 +1108,7 @@ loadToolchain(){
   WINDRES=${CROSS_PREFIX}windres
   [ -z ${GCOV+x} ] && GCOV=${CROSS_PREFIX}gcov
 
-  pushvar_f CPPFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
+  CPPFLAGS+=" -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
   #pushvar_f CFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
   #pushvar_f CXXFLAGS "-I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
 
