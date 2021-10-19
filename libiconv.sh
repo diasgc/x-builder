@@ -10,14 +10,15 @@ dsc='Character set conversion library'
 lic='LGPL2.1'
 vrs='1.16'
 #src='https://git.savannah.gnu.org/git/libiconv.git' sty='git'
-src="https://ftp.gnu.org/gnu/libiconv/libiconv-${vrs}.tar.gz" sty='tgz'
+src="https://ftp.gnu.org/gnu/libiconv/libiconv-${vrs}.tar.gz"
 cfg='ac'
 eta='90'
 pc_llib="-liconv"
 pc_url="https://www.gnu.org/software/libiconv"
 
 . xbuilder.sh
-CFG=" --enable-extra-encodings --enable-relocatable"
+CFG=" --enable-extra-encodings" #--enable-relocatable"
+$build_static && CSH="--enable-static --disable-shared"
 export RC=$WINDRES # for a*-w64-mingw32
 # don't use git or it will download gnulib
 source_patch(){

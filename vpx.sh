@@ -17,6 +17,7 @@ cbk='able-examples'
 ac_nohost=true
 ac_nosysroot=true
 ac_nopic=true
+mki='install'
 csh1=' ' # --enable-shared only supported on ELF, OS/2, and Darwin for now
 
 lst_inc='vpx/vpx_ext_ratectrl.h

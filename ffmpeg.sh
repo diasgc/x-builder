@@ -27,36 +27,105 @@ lst_bin=''
 #dav1d kvazaar libtheora libvpx libwebp vid.stab x264 x265 xvidcore
 #libiconv libxml2 zlib bzip2
 #MediaCodec jni OpenCL
+lst_opts_aud='avisynth chromaprint libbs2b
+libcelt libfdk-aac libflite libgme libgsm libilbc
+libmodplug libmp3lame libopencore-amrnb libopencore-amrwb
+libopus libpulse librubberband libshine libsnappy libsoxr
+libspeex libtwolame libvo-amrwbenc libvorbis lv2
+pocketsphinx vapoursynth'
+lst_opts_vid='frei0r libaom libcodec2
+libdav1d libdavs2 libglslang libiec61883 libkvazaar
+liblensfun libmysofa libopencv
+libopenh264 libopenjpeg libopenmpt librav1e
+librist librsvg libsvtav1 libtheora libuavs3d libvidstab
+libvmaf libvpx libwebp libx264 libx265 libxavs libxavs2
+libxcb libxcb-shape libxcb-shm libxcb-xfixes libxvid libzimg libzvbi'
+lst_opts_sub='libaribb24 libass libcaca libfontconfig libfreetype libfribidi
+libtesseract'
+lst_opts_net='gcrypt gmp gnutls librabbitmq librtmp libsmbclient
+libsrt libssh libtls libzmq openssl'
+lst_opts_io='decklink jni ladspa libdc1394 libjack libklvanc libopenvino
+librist librsvg libtensorflow libtesseract libv4l2 libvidstab
+libvmaf libvo-amrwbenc libvorbis libvpx
+libwebp libx264 libx265 libxavs libxavs2
+libxcb libxcb-shape libxcb-shm libxcb-xfixes
+libxml2 libxvid libzimg libzmq libzvbi lv2
+mbedtls mediacodec mediafoundation openal
+opencl opengl openssl pocketsphinx
+vapoursynth vulkan'
+lst_opts='avisynth chromaprint decklink
+frei0r gcrypt gmp gnutls jni ladspa
+libaom libaribb24 libass libbluray libbs2b
+libcaca libcdio libcelt libcodec2
+libdav1d libdavs2 libdc1394 libfdk-aac
+libflite libfontconfig libfreetype libfribidi
+libglslang libgme libgsm libiec61883
+libilbc libjack libklvanc libkvazaar
+liblensfun libmodplug libmp3lame libmysofa
+libopencore-amrnb libopencore-amrwb libopencv
+libopenh264 libopenjpeg libopenmpt libopenvino
+libopus libpulse librabbitmq librav1e
+librist librsvg librtmp librubberband
+libshine libsmbclient libsnappy libsoxr
+libspeex libsrt libssh libsvtav1
+libtensorflow libtesseract libtheora libtls
+libtwolame libuavs3d libv4l2 libvidstab
+libvmaf libvo-amrwbenc libvorbis libvpx
+libwebp libx264 libx265 libxavs libxavs2
+libxcb libxcb-shape libxcb-shm libxcb-xfixes
+libxml2 libxvid libzimg libzmq libzvbi lv2
+mbedtls mediacodec mediafoundation openal
+opencl opengl openssl pocketsphinx
+vapoursynth vulkan'
+
 dep='zlib bzip2 gmp libiconv lzma libxml2'
-ffmpeg_audio_filters='--enable-avisynth --enable-chromaprint --enable-libbs2b --enable-libflite --enable-librubberband --enable-lv2'
-ffmpeg_audio_codecs='--enable-libcelt --enable-libcodec2 --enable-libgme --enable-libgsm --enable-libilbc --enable-libmodplug --enable-libmp3lame'
-ffmpeg_video_filters='--enable-frei0r --enable-libglslang --enable-liblensfun'
-ffmpeg_video_codecs='--enable-libaom --enable-libdav1d  --enable-libdavs2 --enable-libdc1394 --enable-libkvazaar'
-ffmpeg_net='--enable-gcrypt --enable-gnutls'
-ffmpeg_subs='--enable-libaribb24 --enable-libass --enable-libcaca --enable-libfontconfig --enable-libfreetype --enable-libfribidi'
-ffmpeg_inputs='--enable-libbluray --enable-libcdio --enable-libiec61883 --enable-libjack'
-#--enable-jni
+
 extraOpts(){
      case $1 in
-          --audio) dep+=" lame libilbc libvorbis opencore-amr opus shine snappy soxr speex twolame vo-amrwbenc";;
-          --video) dep+=" aom kvazaar theora libvpx libwebp vidstab x264 x265 xvidcore";;
+          --audio) dep+=" lame libvorbis opus fdk-aac";;
+          --video) dep+=" aom libvpx libwebp vidstab x264 x265 xvidcore";;
+          --net) dep+=" libressl";;
+          --*) [ -f "${1:2}.sh" ] && dep+=" ${1:2}"
+               ;;
      esac
 }
+
 . xbuilder.sh
+
+nonfree=false
+gpl=false
+v3=false
 
 for d in $dep; do
      case $d in
           lame) extlibs+=" --enable-libmp3lame";;
-          aom|flite|) extlibs+=" --enable-lib${d}";;
+          fdk-aac) extlibs+=" --enable-libfdkaac" nonfree=true;;
+          openssl) extlibs+=" --enable-openssl" nonfree=true;;
+          frei0r) extlibs+=' --enable-frei0r' gpl=true;;
+          libcdio) extlibs+=' --enable-frei0r' gpl=true;;
+          librubberband) extlibs+=' --enable-frei0r' gpl=true;;
+          vidstab) extlibs+=' --enable-frei0r' gpl=true;;
+          x264) extlibs+=' --enable-frei0r' gpl=true;;
+          x265) extlibs+=' --enable-frei0r' gpl=true;;
+          xavs) extlibs+=' --enable-frei0r' gpl=true;;
+          xvidcore) extlibs+=' --enable-libxvid' gpl=true;;
+          opencore-amr) extlibs+=" --enable-libopencore-amrnb --enable-libopencore-amrwb";;
+          *) if [ -z "${lst_opts##*${1}*}" ] || [ -z "${lst_opts##*lib${1}*}" ]; then
+                    extlibs+=" --enable-${1}"
+               fi
+               ;;
      esac
 done
-
+$nonfree && extlibs+=' --enable-nonfree'
+$gpl && extlibs+=' --enable-gpl'
+$v3 && extlibs+=' --enable-version3'
 $build_shared && CSH="--enable-shared --disable-static" || CSH="--disable-shared --enable-static"
-extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-frei0r --enable-gpl --enable-version3"
+
+#extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-frei0r --enable-gpl"
 
 case $host_os in
      android) CPPFLAGS+=" -Ofast -fPIC -fPIE"
-          extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-pic"
+          extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-pic --enable-cross-compile --disable-inline-asm"
           ;;
 esac
 
@@ -65,8 +134,6 @@ CFG="--arch=$CPU \
      --cc=$CC \
      --ar=$AR \
      --strip=$STRIP \
-     --enable-cross-compile \
-     --disable-inline-asm \
      --enable-lto \
      --enable-runtime-cpudetect \
      --disable-doc \

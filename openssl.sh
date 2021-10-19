@@ -15,7 +15,7 @@ src='https://github.com/openssl/openssl.git'
 sty='git'
 cfg='other'
 tls='nasm perl'
-pkg='openssl'
+dep='cryptopp'
 eta='360'
 
 csh0="-static no-shared pic"

@@ -4,13 +4,13 @@
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
-lib='opencl-headers'
+lib='opencl'
 dsc='Khronos OpenCL-Headers'
 lic='Apache-2.0'
 src='https://github.com/KhronosGroup/OpenCL-Headers.git'
 cfg='cmake'
 eta='0'
-pc_llib='-lOpenCL'
+#pc_llib='-lOpenCL'
 #cshk=''
 #cstk=''
 #cbk=''

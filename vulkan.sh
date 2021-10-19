@@ -4,7 +4,7 @@
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
-lib='vulkan-headers'
+lib='vulkan'
 dsc='Khronos Vulkan-Headers'
 lic='Apache-2.0'
 src='https://github.com/KhronosGroup/Vulkan-Headers.git'

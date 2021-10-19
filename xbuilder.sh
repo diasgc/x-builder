@@ -1484,6 +1484,9 @@ case $cfg in
     [ -z "$cst1" ] && cst1="--enable-static"
     [ -z "$csh0" ] && csh0="--disable-shared"
     [ -z "$csh1" ] && csh0="--enable-shared"
+    $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
+    $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
+    $build_static && $build_shared && CSH="${cst1} ${csh1}"
     [ -n "$cbk" ] && {
       case $cbk in
         --enable-*) cb0="${cbk}=0"; cb1="${cbk}=1";;
@@ -1503,10 +1506,6 @@ case $cfg in
   *) unset build_tool;;
 esac
 
-if [ -z ${CSH+x} ];then
-  $build_static && CSH="${cst1}" || CSH="${cst0}"
-  $build_shared && CSH="${csh1} ${CSH}" || CSH="${csh0} ${CSH}"
-fi
 if [ -z ${CBN+x} ];then
   $build_bin && CBN="${cb1}" || CBN="${cb0}"
 fi

@@ -11,9 +11,9 @@ lic='GPL-2.0'
 src='https://github.com/videolan/x265.git'
 cfg='cmake'
 tls='yasm libnuma-dev'
-eta='720'
+eta='360'
 cbk="ENABLE_CLI"
-dir_config='sources'
+dir_config='source'
 
 CFG='-DHIGH_BIT_DEPTH=ON'
 
@@ -24,7 +24,6 @@ lst_oth=''
 
 . xbuilder.sh
 
-SRCDIR+='/source'
 $build_bin && CFG+=" -DSTATIC_LINK_CRT=ON"
 [ "$host_os" == "mingw32" ] && CFG+=" -DENABLE_PIC=OFF"
 $host_arm && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF"

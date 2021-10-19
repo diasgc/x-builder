@@ -8,20 +8,22 @@ lib='aom'
 apt='libaom0'
 dsc='Alliance for Open Media AV1 codec'
 lic='BSD 2-clause'
-src='https://aomedia.googlesource.com/aom'
+src='https://aomedia.googlesource.com/aom' sty='git'
 cfg='cmake'
 tls='perl'
 eta='200'
-cstk="CONFIG_STATIC"
-cshk="CONFIG_SHARED"
+cst0="-DCONFIG_STATIC=0"
+cst1="-DCONFIG_STATIC=1"
+csh0="-DCONFIG_SHARED=0"
+csh1="-DCONFIG_SHARED=1"
 cbk='ENABLE_EXAMPLES'
-CFG='-DENABLE_TESTS=OFF \
-     -DENABLE_TOOLS=OFF \
-     -DENABLE_TESTDATA=OFF \
+CFG='-DENABLE_TESTS=OFF
+     -DENABLE_TOOLS=OFF
+     -DENABLE_TESTDATA=OFF
      -DENABLE_DOCS=OFF'
 
-lst_inc='aom/aom_decoder.h aom/aom_integer.h aom/aom_external_partition.h \
-         aom/aom_frame_buffer.h aom/aom_image.h aom/aom.h aom/aom_encoder.h \
+lst_inc='aom/aom_decoder.h aom/aom_integer.h aom/aom_external_partition.h
+         aom/aom_frame_buffer.h aom/aom_image.h aom/aom.h aom/aom_encoder.h
          aom/aomcx.h aom/aom_codec.h aom/aomdx.h'
 lst_lib='libaom'
 lst_bin='aomdec aomenc'
