@@ -14,7 +14,7 @@ tls='yasm libnuma-dev'
 eta='360'
 cbk="ENABLE_CLI"
 dir_config='source'
-
+cshk='ENABLE_SHARED'
 CFG='-DHIGH_BIT_DEPTH=ON'
 
 lst_inc='x265.h x265_config.h'
@@ -25,8 +25,9 @@ lst_oth=''
 . xbuilder.sh
 
 $build_bin && CFG+=" -DSTATIC_LINK_CRT=ON"
+$build_shared && CSH="-DENABLE_SHARED=ON" || CSH="-DENABLE_SHARED=OFF"
 [ "$host_os" == "mingw32" ] && CFG+=" -DENABLE_PIC=OFF"
-$host_arm && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF"
+$host_arm && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF" || CFG+=" -DCMAKE_ASM_NASM_FLAGS=-w-macro-params-legacy"
 
 start
 

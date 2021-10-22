@@ -132,9 +132,14 @@ start(){
   export PKG_CONFIG_LIBDIR="$PKGDIR:$PKG_CONFIG_LIBDIR"
 
   check_tools $tls
-  pushvar_f old_vrs $vrs
+  o_vrs=$vrs
+  o_csh=$CSH
+  o_cbn=$CBN
+  unset vrs CSH CBN
   build_dependencies $dep
-  vrs=$(popvar_f old_vrs)
+  vrs=$o_vrs
+  CSH=$o_csh
+  CBN=$o_cbn
 
   log_start $arch ${eta}s
   local bss=
@@ -1443,6 +1448,7 @@ done
 
 # Set default Host
 if [ -z "${arch}" ];then
+  host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
   arch="x86_64-linux-gnu"
   LIBSDIR=$(pwd)/builds/linux/x86_64
   SYSTEM_NAME="Android"
@@ -1468,12 +1474,14 @@ case $cfg in
   cm|ccm|cmake|ccmake)
     build_tool=cmake
     [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
-    [ -z "$cst0" ] && cst0="-DBUILD_STATIC_LIBS=OFF"
-    [ -z "$cst1" ] && cst1="-DBUILD_STATIC_LIBS=ON"
-
     [ -n "$cshk" ] && csh0="-D${cshk}=OFF" csh1="-D${cshk}=ON"
-    [ -z "$csh0" ] && csh0="-DBUILD_SHARED_LIBS=OFF"
+    
+    [ -z "$cst1" ] && cst1="-DBUILD_SHARED_LIBS=OFF"
     [ -z "$csh1" ] && csh1="-DBUILD_SHARED_LIBS=ON"
+    
+    $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
+    $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
+    $build_static && $build_shared && CSH="${cst1} ${csh1}"
     
     [ -n "$cbk" ] && cb0="-D${cbk}=OFF" cb1="-D${cbk}=ON"
 

@@ -12,7 +12,8 @@ src='https://github.com/FFmpeg/FFmpeg.git'
 cfg='ac'
 eta='777'
 mki='install'
-cbk='able-programs'
+#cbk='able-programs'
+
 ac_nohost=true
 ac_nosysroot=true
 ac_nopic=true
@@ -78,7 +79,7 @@ mbedtls mediacodec mediafoundation openal
 opencl opengl openssl pocketsphinx
 vapoursynth vulkan'
 
-dep='zlib bzip2 gmp libiconv lzma libxml2'
+#dep='zlib bzip2 gmp libiconv lzma libxml2'
 
 extraOpts(){
      case $1 in
@@ -105,9 +106,9 @@ for d in $dep; do
           libcdio) extlibs+=' --enable-frei0r' gpl=true;;
           librubberband) extlibs+=' --enable-frei0r' gpl=true;;
           vidstab) extlibs+=' --enable-frei0r' gpl=true;;
-          x264) extlibs+=' --enable-frei0r' gpl=true;;
-          x265) extlibs+=' --enable-frei0r' gpl=true;;
-          xavs) extlibs+=' --enable-frei0r' gpl=true;;
+          x264) extlibs+=' --enable-libx264' gpl=true;;
+          x265) extlibs+=' --enable-libx265' gpl=true;;
+          xavs) extlibs+=' --enable-libxavs' gpl=true;;
           xvidcore) extlibs+=' --enable-libxvid' gpl=true;;
           opencore-amr) extlibs+=" --enable-libopencore-amrnb --enable-libopencore-amrwb";;
           *) if [ -z "${lst_opts##*${1}*}" ] || [ -z "${lst_opts##*lib${1}*}" ]; then
@@ -122,11 +123,14 @@ $v3 && extlibs+=' --enable-version3'
 $build_shared && CSH="--enable-shared --disable-static" || CSH="--disable-shared --enable-static"
 
 #extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-frei0r --enable-gpl"
+extopts='--pkg-config-flags=--static --enable-lto --enable-runtime-cpudetect'
+
 
 case $host_os in
      android) CPPFLAGS+=" -Ofast -fPIC -fPIE"
           extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-pic --enable-cross-compile --disable-inline-asm"
           ;;
+     gnu) extopts+=" --enable-opencl --enable-nvenc --enable-opengl --enable-pic" LDFLAGS+=" -ldl -lstdc++";;
 esac
 
 CFG="--arch=$CPU \
@@ -134,17 +138,16 @@ CFG="--arch=$CPU \
      --cc=$CC \
      --ar=$AR \
      --strip=$STRIP \
-     --enable-lto \
-     --enable-runtime-cpudetect \
      --disable-doc \
      --disable-htmlpages \
      --disable-ffplay \
+     --extra-libs=-lpthread \
      $extopts \
      $extlibs"
 
 # make the log cleaner
 CPPFLAGS+=" -Wno-implicit-const-int-float-conversion -Wno-deprecated-declarations"
-
+NPROC=16
 start
 
 <<'OPTIONS'
