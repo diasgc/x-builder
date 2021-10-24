@@ -142,3 +142,7 @@ colorgrid(){
         printf '\r\n'
     done
 }
+
+host_isAndroid(){
+  [ "$cpu_id" -lt 4 ] && return 0 || return 1
+}

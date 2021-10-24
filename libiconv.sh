@@ -17,9 +17,10 @@ pc_llib="-liconv"
 pc_url="https://www.gnu.org/software/libiconv"
 
 . xbuilder.sh
-CFG=" --enable-extra-encodings" #--enable-relocatable"
+CFG=" --enable-extra-encodings"
 $build_static && CSH="--enable-static --disable-shared"
 export RC=$WINDRES # for a*-w64-mingw32
+
 # don't use git or it will download gnulib
 source_patch(){
 	if [ $sty = 'git' ];then

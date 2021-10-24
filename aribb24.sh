@@ -12,8 +12,6 @@ src='https://github.com/nkoriyama/aribb24.git'
 cfg='ar'
 dep='libpng'
 eta='10'
-mki='install-strip'
-mkc='distclean'
 
 lst_inc='aribb24/parser.h aribb24/decoder.h aribb24/bits.h aribb24/aribb24.h'
 lst_lib='libaribb24'

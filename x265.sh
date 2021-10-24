@@ -26,7 +26,7 @@ lst_oth=''
 
 $build_bin && CFG+=" -DSTATIC_LINK_CRT=ON"
 $build_shared && CSH="-DENABLE_SHARED=ON" || CSH="-DENABLE_SHARED=OFF"
-[ "$host_os" == "mingw32" ] && CFG+=" -DENABLE_PIC=OFF"
+$host_mingw && CFG+=" -DENABLE_PIC=OFF"
 $host_arm && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF" || CFG+=" -DCMAKE_ASM_NASM_FLAGS=-w-macro-params-legacy"
 
 start

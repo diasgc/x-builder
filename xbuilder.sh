@@ -1265,95 +1265,94 @@ showBanner(){
 
 
 
-
 # main
 
 while [ $1 ];do
   case $1 in
-    aa64|aa8|a*64-*android|android )
-      arch=aarch64-linux-android
+    aa64|aa8|a*64-*android|android ) cpu_id=0 
+      arch='aarch64-linux-android' PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
+      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
       LIBSDIR=$(pwd)/builds/android/arm64-v8a
-      PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
       CT0=$CG3 CT1=$CG6
       ;;
-    aa7|arm-*android*eabi|arm-android)
-      arch=arm-linux-androideabi
+    aa7|arm-*android*eabi|arm-android) cpu_id=1
+      arch='arm-linux-androideabi' PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
       host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
+      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
       LIBSDIR=$(pwd)/builds/android/armeabi-v7a
-      PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
       CT0=$CG2 CT1=$CG5
       ;;
-    a86|ax86|*86-*android)
-      arch=i686-linux-android
+    a86|ax86|*86-*android) cpu_id=2
+      arch='i686-linux-android' PLATFORM="Android" CPU="i686" ABI="x86" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
+      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=true
       LIBSDIR=$(pwd)/builds/android/x86
-      PLATFORM="Android" CPU="i686" ABI="x86" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
-    a64|ax64|*64-*android)
-      arch=x86_64-linux-android
+    a64|ax64|*64-*android) cpu_id=3
+      arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
+      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
       LIBSDIR=$(pwd)/builds/android/x86_64
-      PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CG0 CT1=$CG1
       ;;
-    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*)
-      arch=aarch64-linux-gnu
+    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4
+      arch='aarch64-linux-gnu' PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      LIBSDIR=$(pwd)/builds/arm/aarch64
-      PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
+      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
+      LIBSDIR=$(pwd)/builds/linux/aarch64
       CT0=$CM0 CT1=$CM1
       ;;
-    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*)
-      arch=arm-linux-gnueabihf
+    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5
+      arch='arm-linux-gnueabihf' PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
       host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      LIBSDIR=$(pwd)/builds/arm/armeabihf
-      PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
+      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
+      LIBSDIR=$(pwd)/builds/linux/armeabihf
       CT0=$CY0 CT1=$CY1
       ;;
-    l86|lx86|*86-linux*|linux*32 )
-      arch=i686-linux-gnu
+    l86|lx86|*86-linux*|linux*32 ) cpu_id=6
+      arch='i686-linux-gnu' PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
+      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=false
       LIBSDIR=$(pwd)/builds/linux/i686
-      PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
       CT0=$CM0 CT1=$CM1
       ;;
-    l64|lx64|*64-linux*|linux*64|linux )
-      arch=x86_64-linux-gnu
+    l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7
+      arch='x86_64-linux-gnu' PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
+      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
       LIBSDIR=$(pwd)/builds/linux/x86_64
-      PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
       CT0=$CM0 CT1=$CM1
       ;;
-    wa8|a*64-w64*|a*64-*mingw*)
+    wa8|a*64-w64*|a*64-*mingw*) cpu_id=8
       [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for aarch64-w64-mingw32 is not installed"
-      arch='aarch64-w64-mingw32'
+      arch='aarch64-w64-mingw32' PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
+      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
       LIBSDIR=$(pwd)/builds/windows/aarch64
-      PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
-    wa7|arm*-w64*|arm*-*mingw*)
+    wa7|arm*-w64*|arm*-*mingw*) cpu_id=9
       [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
-      arch=armv7-w64-mingw32
+      arch='armv7-w64-mingw32' PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
+      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
       LIBSDIR=$(pwd)/builds/windows/armv7
-      PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
       CT0=$CC0 CT1=$CC1
       ;;
-    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64)
-      arch=x86_64-w64-mingw32
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      LIBSDIR=$(pwd)/builds/windows/x86_64
-      PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
+    w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10
+      arch='i686-w64-mingw32' PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
+      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
+      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=win32; host_clang=true
+      LIBSDIR=$(pwd)/builds/windows/i686
       CT0=$CB0 CT1=$CB1
       ;;
-    w86|wx86|*86-win*|*86-*mingw*|w*32)
-      arch=i686-w64-mingw32
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      LIBSDIR=$(pwd)/builds/windows/i686
-      PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
+    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11
+      arch='x86_64-w64-mingw32' PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
+      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
+      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=win32; host_clang=true
+      LIBSDIR=$(pwd)/builds/windows/x86_64
       CT0=$CB0 CT1=$CB1
       ;;
     --api) shift && export API=$1;;
@@ -1373,7 +1372,7 @@ while [ $1 ];do
     --getVar)   shift && echo $($1) && exit 0;;
     --refresh)  update=true;;
     --retry)    retry=true;;
-    --rebuild)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
+    --rebuild|--force)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
     --shared)   $lib_noshared || build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
@@ -1448,13 +1447,11 @@ done
 
 # Set default Host
 if [ -z "${arch}" ];then
-  host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
   arch="x86_64-linux-gnu"
+  host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
+  host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
   LIBSDIR=$(pwd)/builds/linux/x86_64
-  SYSTEM_NAME="Android"
-  CPU="x86_64"
-  ABI="x86_64"
-  EABI=
+  SYSTEM_NAME="Linux" CPU="x86_64" ABI="x86_64" EABI=
 fi
 
 loadToolchain

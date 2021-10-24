@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ ... ... ... CLANG
+# GNU +++ ... ... ... GCC
+# WIN  F  ... ... ... CLANG/GCC
 
 lib='libiec61883'
 apt="${lib}-dev"
@@ -11,10 +11,11 @@ lic='LGPL-2.1'
 src='https://github.com/Distrotech/libiec61883.git'
 cfg='ar'
 dep='libraw1394'
+eta='15'
 
 . xbuilder.sh
 
-[ "${host_os}" == "mingw32" ] && dep=''
+#$host_mingw && unset dep
 
 start
 

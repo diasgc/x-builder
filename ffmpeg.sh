@@ -12,7 +12,7 @@ src='https://github.com/FFmpeg/FFmpeg.git'
 cfg='ac'
 eta='777'
 mki='install'
-#cbk='able-programs'
+cb0='--disable-programs'
 
 ac_nohost=true
 ac_nosysroot=true
@@ -28,6 +28,7 @@ lst_bin=''
 #dav1d kvazaar libtheora libvpx libwebp vid.stab x264 x265 xvidcore
 #libiconv libxml2 zlib bzip2
 #MediaCodec jni OpenCL
+
 lst_opts_aud='avisynth chromaprint libbs2b
 libcelt libfdk-aac libflite libgme libgsm libilbc
 libmodplug libmp3lame libopencore-amrnb libopencore-amrwb
@@ -117,18 +118,27 @@ for d in $dep; do
                ;;
      esac
 done
+
+extopts="--pkg-config-flags=--static --enable-lto --enable-runtime-cpudetect --disable-symver --cross-prefix=${CROSS_PREFIX}-"
+
 $nonfree && extlibs+=' --enable-nonfree'
 $gpl && extlibs+=' --enable-gpl'
 $v3 && extlibs+=' --enable-version3'
-$build_shared && CSH="--enable-shared --disable-static" || CSH="--disable-shared --enable-static"
+
+if $build_shared; then
+     CSH="--enable-shared --disable-static"
+else
+     CSH="--disable-shared --enable-static"
+fi
 
 #extlibs="--enable-libmp3lame --enable-libvorbis --enable-libx265 --enable-libopus --enable-libaom --enable-frei0r --enable-gpl"
-extopts='--pkg-config-flags=--static --enable-lto --enable-runtime-cpudetect'
 
+$host_arm && extopts+=' --enable-neon'
+$host_x86 && extopts+=' --disable-asm'
 
 case $host_os in
      android) CPPFLAGS+=" -Ofast -fPIC -fPIE"
-          extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-pic --enable-cross-compile --disable-inline-asm"
+          extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-cross-compile "
           ;;
      gnu) extopts+=" --enable-opencl --enable-nvenc --enable-opengl --enable-pic" LDFLAGS+=" -ldl -lstdc++";;
 esac

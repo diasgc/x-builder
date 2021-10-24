@@ -4,8 +4,7 @@ lib='bzip2'
 dsc='Lossless, block-sorting data compression'
 lic='Other'
 src='https://gitlab.com/bzip2/bzip2.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='20'
 cstk="ENABLE_STATIC_LIB"
 cshk="ENABLE_SHARED_LIB"
@@ -16,10 +15,10 @@ CFG="-DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF"
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   .   .   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
+#             a8  a7  x86 x64
+# ndk-clang   +++ +++ ... ...
+# linux-gnu   ... ... ... ...
+# mingw-llvm  ... ... ... ...
 
 # Filelist
 # --------

@@ -18,7 +18,7 @@ eta='100'
 . xbuilder.sh
 
 CFG='-DBUILD_TESTS=OFF'
-case $arch in a*) CFG="-DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON $CFG";; esac
+$host_arm && CFG="-DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON $CFG"
 
 start
 

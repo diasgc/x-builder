@@ -98,18 +98,19 @@ getAndroidNdkLatestAvailableVersion(){
 }
 
 getAndroidNdkLatestDownloadUrl(){
-    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..-linux.zip"
+    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip"
 }
 
 # usage installNdk <version>
 installNdk(){
+    local url=$(getAndroidNdkLatestDownloadUrl)
     [ $(which unzip) ] || sudo apt -qq install unzip -y >/dev/null 2>&1
-    echo -ne "${CM0} downloading... ${C0}"
+    echo -ne "${CM0} downloading... ${url}${C0}"
     tput sc && echo -ne "\e[$(tput lines);0H${CY1}"
     [ -z "$ANDROID_HOME" ] && ANDROID_HOME="~/Android"
     [ ! -d "$ANDROID_HOME" ] && mkdir -p $ANDROID_HOME
     pushd $ANDROID_HOME >/dev/null
-    wget --progress=dot $1 -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
+    wget --progress=dot $url -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
     tput rc
     echo -ne "${CM0} decompressing... ${C0}"
     unzip tmp.zip >/dev/null 2>&1
@@ -303,6 +304,12 @@ install_llvm_mingw(){
 }
 
 banner 'Setup Utility'
+
+if [ "$1" == "--ndk" ]; then
+    rm -rf ${ANDROID_NDK_HOME}
+    installNdk $(getAndroidNdkLatestDownloadUrl)
+    exit 0
+fi
 
 echo -e "\n${CC1}${b} Toolchains${C0}"
 #ANDROID NDK
