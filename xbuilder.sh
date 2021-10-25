@@ -638,14 +638,16 @@ log_start(){
 }
 
 log_end(){
-  logtime_end=$(date +%s)
-  #local pkgsize=$(du -sk ${INSTALL_DIR} | cut -f1)
-  #local libsize=$(du -sk ${INSTALL_DIR}/lib | cut -f1)
-  local secs=$(($logtime_end-$logtime_start))
-  local msg="${CT1} done ${CD}in $(secs2time ${secs})"
-  [ $secs -gt 60 ] && msg="$msg (${secs}s)"
-  #echo -e "$msg pkg/lib: ${pkgsize}/${libsize}kb${C0}"
-  echo -e "$msg"
+  if [ -n "${logtime_start}" ]; then
+    logtime_end=$(date +%s)
+    #local pkgsize=$(du -sk ${INSTALL_DIR} | cut -f1)
+    #local libsize=$(du -sk ${INSTALL_DIR}/lib | cut -f1)
+    local secs=$(($logtime_end-$logtime_start))
+    local msg="${CT1} done ${CD}in $(secs2time ${secs})"
+    [ $secs -gt 60 ] && msg="$msg (${secs}s)"
+    #echo -e "$msg pkg/lib: ${pkgsize}/${libsize}kb${C0}"
+    echo -e "$msg"
+  fi
 }
 
 log(){
@@ -674,8 +676,10 @@ doErr(){
 }
 
 err(){
-  logtime_end=$(date +%s)
-  echo -e "${CR1} fail ${CR0}[$(secs2time $(($logtime_end-$logtime_start)))]${C0}\n"
+  if [ -n "${logtime_start}" ]; then
+    logtime_end=$(date +%s)
+    echo -e "${CR1} fail ${CR0}[$(secs2time $(($logtime_end-$logtime_start)))]${C0}\n"
+  fi
   if [ -f $LOGFILE ];then
     if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
       echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
@@ -1395,7 +1399,7 @@ while [ $1 ];do
     --getVar)   shift && echo $($1) && exit 0;;
     --refresh)  update=true;;
     --retry)    retry=true;;
-    --rebuild|--force)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
+    --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
     --shared)   $disable_shared || build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;

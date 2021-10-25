@@ -15,118 +15,48 @@ eta='60'
 cbk='BUILD_EXAMPLES'
 
 lst_pc='taglib.pc taglib_c.pc'
-lst_inc='taglib/id3v2framefactory.h \
-	taglib/id3v2extendedheader.h \
-	taglib/taglib.h \
-	taglib/mp4item.h \
-	taglib/vorbisproperties.h \
-	taglib/relativevolumeframe.h \
-	taglib/s3mfile.h \
-	taglib/speexproperties.h \
-	taglib/mpegfile.h \
-	taglib/mp4tag.h \
-	taglib/chapterframe.h \
-	taglib/rifffile.h \
-	taglib/mpcproperties.h \
-	taglib/mp4file.h \
-	taglib/modfile.h \
-	taglib/tfilestream.h \
-	taglib/unsynchronizedlyricsframe.h \
-	taglib/mpegheader.h \
-	taglib/apefile.h \
-	taglib/mp4atom.h \
-	taglib/id3v2.h \
-	taglib/tlist.tcc \
-	taglib/generalencapsulatedobjectframe.h \
-	taglib/unknownframe.h \
-	taglib/opusfile.h \
-	taglib/eventtimingcodesframe.h \
-	taglib/modproperties.h \
-	taglib/oggflacfile.h \
-	taglib/trueaudiofile.h \
-	taglib/wavpackproperties.h \
-	taglib/aifffile.h \
-	taglib/apeitem.h \
-	taglib/commentsframe.h \
-	taglib/tableofcontentsframe.h \
-	taglib/mp4properties.h \
-	taglib/modtag.h \
-	taglib/tmap.tcc \
-	taglib/podcastframe.h \
-	taglib/taglib_export.h \
-	taglib/fileref.h \
-	taglib/textidentificationframe.h \
-	taglib/tstring.h \
-	taglib/vorbisfile.h \
-	taglib/flacmetadatablock.h \
-	taglib/asfpicture.h \
-	taglib/attachedpictureframe.h \
-	taglib/tfile.h \
-	taglib/tbytevectorstream.h \
-	taglib/tmap.h \
-	taglib/tstringlist.h \
-	taglib/flacfile.h \
-	taglib/tdebuglistener.h \
-	taglib/audioproperties.h \
-	taglib/xiphcomment.h \
-	taglib/id3v1tag.h \
-	taglib/mpcfile.h \
-	taglib/oggfile.h \
-	taglib/urllinkframe.h \
-	taglib/asfattribute.h \
-	taglib/wavfile.h \
-	taglib/aiffproperties.h \
-	taglib/apeproperties.h \
-	taglib/id3v1genres.h \
-	taglib/tag_c.h \
-	taglib/privateframe.h \
-	taglib/mp4coverart.h \
-	taglib/flacproperties.h \
-	taglib/uniquefileidentifierframe.h \
-	taglib/xmproperties.h \
-	taglib/id3v2frame.h \
-	taglib/flacpicture.h \
-	taglib/trefcounter.h \
-	taglib/itfile.h \
-	taglib/infotag.h \
-	taglib/synchronizedlyricsframe.h \
-	taglib/ownershipframe.h \
-	taglib/asffile.h \
-	taglib/wavpackfile.h \
-	taglib/id3v2tag.h \
-	taglib/asftag.h \
-	taglib/tlist.h \
-	taglib/s3mproperties.h \
-	taglib/tiostream.h \
-	taglib/id3v2synchdata.h \
-	taglib/tag.h \
-	taglib/asfproperties.h \
-	taglib/id3v2header.h \
-	taglib/popularimeterframe.h \
-	taglib/trueaudioproperties.h \
-	taglib/id3v2footer.h \
-	taglib/itproperties.h \
-	taglib/apefooter.h \
-	taglib/xmfile.h \
-	taglib/tpropertymap.h \
-	taglib/opusproperties.h \
-	taglib/oggpage.h \
-	taglib/oggpageheader.h \
-	taglib/wavproperties.h \
-	taglib/modfilebase.h \
-	taglib/speexfile.h \
-	taglib/mpegproperties.h \
-	taglib/taglib_config.h \
-	taglib/apetag.h \
-	taglib/xingheader.h \
-	taglib/tbytevector.h \
-	taglib/tbytevectorlist.h'
-lst_lib='libtag libtag_c'
-lst_bin='tagreader \
-  taglib-config \
-  strip-id3v1 \
-  framelist \
-  tagreader_c \
+lst_inc='taglib/id3v2framefactory.h taglib/id3v2extendedheader.h 
+	taglib/taglib.h taglib/mp4item.h taglib/vorbisproperties.h 
+	taglib/relativevolumeframe.h taglib/s3mfile.h taglib/speexproperties.h 
+	taglib/mpegfile.h taglib/mp4tag.h taglib/chapterframe.h 
+	taglib/rifffile.h taglib/mpcproperties.h taglib/mp4file.h 
+	taglib/modfile.h taglib/tfilestream.h taglib/unsynchronizedlyricsframe.h 
+	taglib/mpegheader.h taglib/apefile.h taglib/mp4atom.h 
+	taglib/id3v2.h taglib/tlist.tcc taglib/generalencapsulatedobjectframe.h 
+	taglib/unknownframe.h taglib/opusfile.h taglib/eventtimingcodesframe.h 
+	taglib/modproperties.h taglib/oggflacfile.h taglib/trueaudiofile.h 
+	taglib/wavpackproperties.h taglib/aifffile.h taglib/apeitem.h 
+	taglib/commentsframe.h taglib/tableofcontentsframe.h taglib/mp4properties.h 
+	taglib/modtag.h taglib/tmap.tcc taglib/podcastframe.h 
+	taglib/taglib_export.h taglib/fileref.h taglib/textidentificationframe.h 
+	taglib/tstring.h taglib/vorbisfile.h taglib/flacmetadatablock.h 
+	taglib/asfpicture.h taglib/attachedpictureframe.h taglib/tfile.h 
+	taglib/tbytevectorstream.h taglib/tmap.h taglib/tstringlist.h 
+	taglib/flacfile.h taglib/tdebuglistener.h taglib/audioproperties.h 
+	taglib/xiphcomment.h taglib/id3v1tag.h taglib/mpcfile.h 
+	taglib/oggfile.h taglib/urllinkframe.h taglib/asfattribute.h 
+	taglib/wavfile.h taglib/aiffproperties.h taglib/apeproperties.h 
+	taglib/id3v1genres.h taglib/tag_c.h taglib/privateframe.h 
+	taglib/mp4coverart.h taglib/flacproperties.h taglib/uniquefileidentifierframe.h 
+	taglib/xmproperties.h taglib/id3v2frame.h taglib/flacpicture.h 
+	taglib/trefcounter.h taglib/itfile.h taglib/infotag.h 
+	taglib/synchronizedlyricsframe.h taglib/ownershipframe.h taglib/asffile.h 
+	taglib/wavpackfile.h taglib/id3v2tag.h taglib/asftag.h 
+	taglib/tlist.h taglib/s3mproperties.h taglib/tiostream.h 
+	taglib/id3v2synchdata.h taglib/tag.h taglib/asfproperties.h 
+	taglib/id3v2header.h taglib/popularimeterframe.h taglib/trueaudioproperties.h 
+	taglib/id3v2footer.h taglib/itproperties.h taglib/apefooter.h 
+	taglib/xmfile.h taglib/tpropertymap.h taglib/opusproperties.h 
+	taglib/oggpage.h taglib/oggpageheader.h taglib/wavproperties.h 
+	taglib/modfilebase.h taglib/speexfile.h taglib/mpegproperties.h 
+	taglib/taglib_config.h taglib/apetag.h taglib/xingheader.h 
+	taglib/tbytevector.h taglib/tbytevectorlist.h'
+st_lib='libtag libtag_c'
+lst_bin='tagreader 
+  taglib-config 
+  strip-id3v1 
+  framelist 
+  tagreader_c 
   tagwriter'
 
 . xbuilder.sh

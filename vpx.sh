@@ -2,8 +2,8 @@
 
 #     Aa8 Aa7 A86 A64
 # NDK +X+  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+# GNU +..  .   .   .  gcc
+# WIN +..  .   .   .  clang/gcc
 
 lib='vpx'
 dsc='WebM Project VPx codec implementation'
@@ -12,14 +12,12 @@ src='https://chromium.googlesource.com/webm/libvpx'
 sty='git'
 cfg='ac'
 eta='240'
-mkc='distclean'
+mki='install'
 cbk='able-examples'
-
 ac_nohost=true
 ac_nosysroot=true
 ac_nopic=true
-mki='install'
-csh1=' ' # --enable-shared only supported on ELF, OS/2, and Darwin for now
+disable_shared=true # --enable-shared only supported on ELF, OS/2, and Darwin for now
 
 lst_inc='vpx/vpx_ext_ratectrl.h
 	vpx/vpx_frame_buffer.h
@@ -36,15 +34,14 @@ lst_bin='vpxenc vpxdec'
 
 . xbuilder.sh
 
-_CFG="--disable-docs --disable-install-srcs --disable-install-docs --disable-examples --disable-tools \
-  --enable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-vp9-temporal-denoising --enable-vp9-postproc \
-  --enable-postproc --enable-onthefly-bitpacking --enable-multi-res-encoding --enable-better-hw-compatibility \
-  --enable-webm-io --enable-libyuv --enable-experimental --enable-pic --disable-unit-tests"
+CFG="--disable-docs --disable-install-srcs --disable-install-docs --disable-tools --disable-unit-tests"
+  #--enable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-vp9-temporal-denoising --enable-vp9-postproc \
+  #--enable-postproc --enable-onthefly-bitpacking --enable-multi-res-encoding --enable-better-hw-compatibility \
+  #--enable-webm-io --enable-libyuv --enable-experimental --enable-pic "
 
 t0=(arm64 armv7 x86 x86_64)
 $host_x86 && t1=(android linux win32) || t1=(android linux win64)
-target="${t0[`expr $cpu_id % 4`]}-${t1[`expr $cpu_id / 4`]}-gcc"
-CFG="--target=${target}"
+CFG+=" --target=${t0[`expr ${cpu_id} % 4`]}-${t1[`expr ${cpu_id} / 4`]}-gcc"
 $host_arm && CFG+=' --enable-neon'
 $host_arm32 && CFG+=' --disable-neon-asm'
 AS=$YASM
