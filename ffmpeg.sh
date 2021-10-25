@@ -29,56 +29,30 @@ lst_bin=''
 #libiconv libxml2 zlib bzip2
 #MediaCodec jni OpenCL
 
-lst_opts_aud='avisynth chromaprint libbs2b
-libcelt libfdk-aac libflite libgme libgsm libilbc
-libmodplug libmp3lame libopencore-amrnb libopencore-amrwb
-libopus libpulse librubberband libshine libsnappy libsoxr
-libspeex libtwolame libvo-amrwbenc libvorbis lv2
-pocketsphinx vapoursynth'
-lst_opts_vid='frei0r libaom libcodec2
-libdav1d libdavs2 libglslang libiec61883 libkvazaar
-liblensfun libmysofa libopencv
-libopenh264 libopenjpeg libopenmpt librav1e
-librist librsvg libsvtav1 libtheora libuavs3d libvidstab
-libvmaf libvpx libwebp libx264 libx265 libxavs libxavs2
-libxcb libxcb-shape libxcb-shm libxcb-xfixes libxvid libzimg libzvbi'
-lst_opts_sub='libaribb24 libass libcaca libfontconfig libfreetype libfribidi
-libtesseract'
+lst_opts_aud='avisynth chromaprint libbs2b libcelt libfdk-aac 
+libflite libgme libgsm libilbc libmodplug libmp3lame 
+libopencore-amrnb libopencore-amrwb libopus libpulse 
+librubberband libshine libsnappy libsoxr libspeex libtwolame 
+libvo-amrwbenc libvorbis lv2 pocketsphinx vapoursynth'
+
+lst_opts_vid='frei0r libaom libcodec2 libdav1d libdavs2 
+libglslang libiec61883 libkvazaar liblensfun libmysofa 
+libopencv libopenh264 libopenjpeg libopenmpt librav1e librist 
+librsvg libsvtav1 libtheora libuavs3d libvidstab libvmaf libvpx 
+libwebp libx264 libx265 libxavs libxavs2 libxcb libxcb-shape 
+libxcb-shm libxcb-xfixes libxvid libzimg libzvbi'
+
+lst_opts_sub='libaribb24 libass libcaca libfontconfig libfreetype 
+libfribidi libtesseract'
+
 lst_opts_net='gcrypt gmp gnutls librabbitmq librtmp libsmbclient
-libsrt libssh libtls libzmq openssl'
+libsrt libssh libtls libzmq mbedtls openssl'
+
 lst_opts_io='decklink jni ladspa libdc1394 libjack libklvanc libopenvino
-librist librsvg libtensorflow libtesseract libv4l2 libvidstab
-libvmaf libvo-amrwbenc libvorbis libvpx
-libwebp libx264 libx265 libxavs libxavs2
-libxcb libxcb-shape libxcb-shm libxcb-xfixes
-libxml2 libxvid libzimg libzmq libzvbi lv2
-mbedtls mediacodec mediafoundation openal
-opencl opengl openssl pocketsphinx
-vapoursynth vulkan'
-lst_opts='avisynth chromaprint decklink
-frei0r gcrypt gmp gnutls jni ladspa
-libaom libaribb24 libass libbluray libbs2b
-libcaca libcdio libcelt libcodec2
-libdav1d libdavs2 libdc1394 libfdk-aac
-libflite libfontconfig libfreetype libfribidi
-libglslang libgme libgsm libiec61883
-libilbc libjack libklvanc libkvazaar
-liblensfun libmodplug libmp3lame libmysofa
-libopencore-amrnb libopencore-amrwb libopencv
-libopenh264 libopenjpeg libopenmpt libopenvino
-libopus libpulse librabbitmq librav1e
-librist librsvg librtmp librubberband
-libshine libsmbclient libsnappy libsoxr
-libspeex libsrt libssh libsvtav1
-libtensorflow libtesseract libtheora libtls
-libtwolame libuavs3d libv4l2 libvidstab
-libvmaf libvo-amrwbenc libvorbis libvpx
-libwebp libx264 libx265 libxavs libxavs2
-libxcb libxcb-shape libxcb-shm libxcb-xfixes
-libxml2 libxvid libzimg libzmq libzvbi lv2
-mbedtls mediacodec mediafoundation openal
-opencl opengl openssl pocketsphinx
-vapoursynth vulkan'
+librist librsvg libtensorflow libv4l2 libxcb libxcb-shape libxcb-shm libxcb-xfixes
+libxml2 mediacodec mediafoundation openal opencl opengl vulkan'
+
+lst_opts="$lst_opts_aud $lst_opts_vid $lst_opts_sub $lst_opts_net $lst_opts_io"
 
 #dep='zlib bzip2 gmp libiconv lzma libxml2'
 
@@ -135,9 +109,9 @@ fi
 
 $host_arm && extopts+=' --enable-neon'
 $host_x86 && extopts+=' --disable-asm'
-
+$build_arch
 case $host_os in
-     android) CPPFLAGS+=" -Ofast -fPIC -fPIE"
+     android) CPPFLAGS+=" -Ofast -fPIC -fPIE  -Wno-implicit-const-int-float-conversion -Wno-deprecated-declarations"
           extopts+=" --disable-alsa --enable-opencl --enable-jni --enable-vulkan --enable-opengl --enable-cross-compile "
           ;;
      gnu) extopts+=" --enable-opencl --enable-nvenc --enable-opengl --enable-pic" LDFLAGS+=" -ldl -lstdc++";;
@@ -156,7 +130,7 @@ CFG="--arch=$CPU \
      $extlibs"
 
 # make the log cleaner
-CPPFLAGS+=" -Wno-implicit-const-int-float-conversion -Wno-deprecated-declarations"
+
 NPROC=16
 start
 

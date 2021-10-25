@@ -9,6 +9,7 @@ set -o pipefail
 trap err ERR
 
 sudo=$(which sudo)
+# defvar debug=false 
 [ -z ${debug+x} ] && debug=false
 [ -z ${nodev+x} ] && nodev=false
 [ -z ${is_init+x} ] && is_init=false
@@ -26,7 +27,6 @@ $req_update_deps && update=true
 
 cmake_build_type=Release
 cmake_toolchain_file=
-
 mingw_posix_suffix=
 update=false
 retry=false
@@ -47,6 +47,29 @@ pc_filelist=
 
 shell_dstack=
 
+# variables defined in .config file
+# config_lastupdate
+# ROOTDIR path
+# build_arch (x86_64-linux-gnu)
+# ANDROID_NDK_HOME path
+# xv_ndk (23.1.7779620)
+# xv_ndk_major (23)
+# MAKE_EXECUTABLE path
+# CMAKE_EXECUTABLE path
+# NASM_EXECUTABLE path
+# PKG_CONFIG path
+# HOST_NPROC (4)
+# LLVM_MINGW_HOME path
+# LLVM_MINGW_REL (20211002)
+# xv_llvm_mingw (13.0.0)
+# llvm_mingw_rel (20211002)
+# xv_aarch64_gnu (11)
+# xv_armeabi_gnu (10)
+# xv_x86_gnu (10)
+# xv_x64_gnu (10)
+# xv_x64_mingw (10)
+# 
+xv_x86_mingw="10"
 aptInstallBr(){
   while [ -n "$1" ];do
     echo -ne "${ind}${CT0}install $1${C0} "
@@ -1453,6 +1476,9 @@ if [ -z "${arch}" ];then
   LIBSDIR=$(pwd)/builds/linux/x86_64
   SYSTEM_NAME="Linux" CPU="x86_64" ABI="x86_64" EABI=
 fi
+
+# is cross-compile?
+[ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
 
 loadToolchain
 

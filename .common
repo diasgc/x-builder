@@ -91,6 +91,14 @@ str_uppercase(){
   echo ${1} | tr '[:lower:]' '[:upper:]'
 }
 
+defvar(){
+  local k
+  while [ -n "${1}" ]; do
+    k=${1%=*}
+    [ -z ${k+x} ] && eval $k=${1#*=}
+  done
+}
+
 pushvar_f(){
   var_addl $@
 }
