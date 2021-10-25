@@ -13,8 +13,6 @@ src='https://github.com/curl/curl.git'
 cfg='ar'
 eta='130'
 dep='zlib libzstd brotli openssl'
-mki='install-strip'
-mkc='distclean'
 
 lst_inc='curl/typecheck-gcc.h
 	curl/multi.h

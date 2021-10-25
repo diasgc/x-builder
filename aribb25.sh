@@ -13,8 +13,6 @@ src='https://code.videolan.org/videolan/aribb25.git'
 cfg='ar'
 eta='10'
 dep='pscs'
-mki='install-strip'
-mkc='distclean'
 
 lst_inc=''
 lst_lib=''

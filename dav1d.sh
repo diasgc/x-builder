@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  P   +   .   +   +   .   .   .   .   .   .  static
-#  P   .   .   .   +   .   .   .   .   .   .  shared
-#  +   .   .   .   +   .   .   .   .   .   .  bin
+#             a8  a7  x86 x64
+# ndk-clang   PP+ ... ... ...
+# linux-gnu   ... ... ... ...
+# mingw-llvm  ... ... ... ...
 
 lib='dav1d'
 apt='libdav1d-dev'

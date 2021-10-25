@@ -32,7 +32,7 @@ $host_arm && CFG+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF" || CFG+=" -DCM
 start
 
 #cpu patch for arm-mingw archs
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- source/CMakeLists.old	2021-10-10 18:46:32.455000000 +0100
 +++ source/CMakeLists.txt	2021-10-10 18:52:19.083314400 +0100
 @@ -219,9 +219,9 @@
@@ -90,7 +90,7 @@ start
  #include <setjmp.h>
  static sigjmp_buf jmpbuf;
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

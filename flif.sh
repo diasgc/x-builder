@@ -30,7 +30,7 @@ SRCDIR=$SRCDIR/src
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- CMakeLists.txt	2021-10-09 14:39:20.783000000 +0100
 +++ CMakeLists.txt	2021-10-09 14:41:14.801780300 +0100
 @@ -5,6 +5,7 @@
@@ -69,7 +69,7 @@ start
    typedef unsigned __int8  uint8_t;
    typedef unsigned __int16 uint16_t;
    typedef unsigned __int32 uint32_t;
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

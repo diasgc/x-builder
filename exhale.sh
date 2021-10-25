@@ -19,7 +19,7 @@ CFG="-DBUILD_TESTS=OFF -DCMAKE_DL_LIBS=ON"
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- src/lib/CMakeLists.txt	2021-10-07 15:53:38.150000000 +0100
 +++ src/lib/CMakeLists.txt	2021-10-07 16:08:33.300000000 +0100
 @@ -7,51 +7,39 @@
@@ -133,7 +133,7 @@ start
  
  0 ICON "exhaleApp.ico"
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 
 # Filelist

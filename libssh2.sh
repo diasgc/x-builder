@@ -24,7 +24,7 @@ lst_bin=''
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- CMakeLists.txt	2021-10-18 21:46:27.045000000 +0100
 +++ CMakeLists.txt	2021-10-18 21:47:11.454859100 +0100
 @@ -50,6 +50,7 @@
@@ -45,7 +45,7 @@ start
  
  feature_summary(WHAT ALL)
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

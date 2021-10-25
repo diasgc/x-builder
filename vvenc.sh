@@ -30,7 +30,7 @@ _source_patch(){
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- CMakeLists.txt	2021-10-08 16:12:02.198000000 +0100
 +++ CMakeLists.txt	2021-10-08 16:12:41.200000000 +0100
 @@ -12,8 +12,8 @@
@@ -65,7 +65,7 @@ start
    malloc_trim(0);   // free unused heap memory
  #endif
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

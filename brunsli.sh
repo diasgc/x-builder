@@ -38,7 +38,7 @@ source_patch(){
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- brunsli.cmake	2021-10-06 22:13:05.628152000 +0100
 +++ brunsli.cmake	2021-10-06 22:13:09.258152000 +0100
 @@ -74,7 +74,8 @@
@@ -70,7 +70,7 @@ start
  
  include(GoogleTest)
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

@@ -23,7 +23,7 @@ lst_bin=''
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- src/CMakeLists.old	2021-10-18 01:06:17.763176300 +0100
 +++ src/CMakeLists.txt	2021-10-18 01:06:16.193176300 +0100
 @@ -10,9 +10,12 @@
@@ -43,4 +43,4 @@ start
  # get version
  set (CONFIG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH

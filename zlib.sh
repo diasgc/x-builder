@@ -34,7 +34,7 @@ else
     start
 fi
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- CMakeLists.old	2021-10-10 20:18:11.063314400 +0100
 +++ CMakeLists.txt	2021-10-09 20:20:36.918086800 +0100
 @@ -12,7 +12,7 @@
@@ -47,7 +47,7 @@ fi
  include(CheckTypeSize)
  include(CheckFunctionExists)
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

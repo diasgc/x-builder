@@ -30,7 +30,7 @@ _source_patch(){
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- CMakeLists.txt	2021-10-08 15:19:13.053000000 +0100
 +++ CMakeLists.txt	2021-10-08 15:35:29.110000000 +0100
 @@ -12,8 +12,8 @@
@@ -56,7 +56,7 @@ start
    malloc_trim(0);
  #endif
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

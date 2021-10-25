@@ -22,7 +22,7 @@ lst_lic='share/doc/libsoxr/LICENCE'
 
 start
 
-<<'XB_PATCH_CMAKELISTS'
+<<'XB_APPLY_PATCH'
 --- src/CMakeLists.old	2021-10-12 17:52:50.319000000 +0100
 +++ src/CMakeLists.txt	2021-10-12 18:07:42.453128100 +0100
 @@ -84,6 +84,12 @@
@@ -60,7 +60,7 @@ start
    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
 
-XB_PATCH_CMAKELISTS
+XB_APPLY_PATCH
 
 # Filelist
 # --------

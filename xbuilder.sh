@@ -16,7 +16,7 @@ sudo=$(which sudo)
 [ -z ${pkg+x} ] && pkg=${lib}
 [ -z ${apt+x} ] && apt=${lib}
 [ -z ${ac_nohost+x} ] && ac_nohost=false
-[ -z ${lib_noshared+x} ] && lib_noshared=false
+[ -z ${disable_shared+x} ] && disable_shared=false
 [ -z ${ac_nosysroot+x} ] && ac_nosysroot=false
 [ -z ${ac_nopic+x} ] && ac_nopic=false
 [ -z ${banner+x} ] && banner=true
@@ -364,7 +364,7 @@ check_xbautopatch(){
   echo -e "\npatch this: \n$block" >>$LOGFILE
   case $match in
     XB_CREATE_CMAKELISTS) echo "${block}" >$SRCDIR/CMakeLists.txt;;
-    XB_PATCH_CMAKELISTS) pushdir $SRCDIR; patch -p0 <<<$(echo "${block}") 2>&1 >$LOGFILE; popdir;;
+    XB_APPLY_PATCH) pushdir $SRCDIR; patch -p0 <<<$(echo "${block}") 2>&1 >$LOGFILE; popdir;;
   esac
   popdir
 }
@@ -1396,7 +1396,7 @@ while [ $1 ];do
     --refresh)  update=true;;
     --retry)    retry=true;;
     --rebuild|--force)  rm $LIBSDIR/lib/pkgconfig/${pkg}.pc >/dev/null 2>&1;;
-    --shared)   $lib_noshared || build_shared=true;;
+    --shared)   $disable_shared || build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
     --bin)      build_bin=true CBN="${cb1}";;
