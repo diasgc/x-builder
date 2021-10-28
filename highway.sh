@@ -13,7 +13,7 @@ case $arch in arm*) CFG+="-DHWY_CMAKE_ARM7=ON";; esac
 
 start
 
-#     Aa8 Aa7 A86 A64
+# cpu av8 av7 x86 x64
 # NDK ... ... ... ... CLANG
 # GNU ... ... ... ... GCC
 # WIN ... ... ... ... CLANG/GCC

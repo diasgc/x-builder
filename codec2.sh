@@ -1,9 +1,8 @@
 #!/bin/bash
-
-#             a8  a7  x86 x64
-# ndk-clang   ++o ++o +++ ++o
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ++o ... ... ...
+# cpu av8 av7 x86 x64
+# NDK ++. ++. ++. ++. clang
+# GNU  .   .   .   .  gcc
+# WIN ++.  .   .   .  clang/gcc
 
 lib='codec2'
 apt='libcodec2-0.9'
@@ -37,7 +36,7 @@ build_patch_config(){
 start
 
 <<'XB_APPLY_PATCH'
---- src/CMakeLists.bak	2021-09-26 11:40:43.625147200 +0100
+--- src/CMakeLists.txt	2021-09-26 11:40:43.625147200 +0100
 +++ src/CMakeLists.txt	2021-09-26 12:51:15.365147200 +0100
 @@ -71,6 +71,7 @@
         BUILD_COMMAND ${CMAKE_COMMAND} --build . --target generate_codebook

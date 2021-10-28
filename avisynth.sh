@@ -1,5 +1,5 @@
 #!/bin/bash
-#     Aa8 Aa7 A86 A64
+# cpu av8 av7 x86 x64
 # NDK  P   P   F   P  clang
 # GNU  P   P   .   .  gcc
 # WIN  .   .   .   F  clang/gcc

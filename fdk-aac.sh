@@ -1,7 +1,7 @@
 #!/bin/bash
-#     Aa8 Aa7 A86 A64
+# cpu av8 av7 x86 x64
 # NDK +++ +++ +++ +++ clang
-# GNU  .   .   .   .  gcc
+# GNU  .  +++  .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
 lib='fdk-aac'
