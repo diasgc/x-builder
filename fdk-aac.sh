@@ -1,15 +1,14 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   .   .   .   .   .   .   .  static
-#  +   +   +   +   .   .   .   .   .   .   .  shared
-#  +   +   +   +   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++ +++ +++ +++ clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='fdk-aac'
 apt='fdkaac'
 dsc='A standalone library of the Fraunhofer FDK AAC code from Android'
 lic='Fraunhofer'
 src='https://github.com/mstorsjo/fdk-aac.git'
-sty='git'
 cfg='ag'
 eta='180'
 cb1="--enable-example"
@@ -24,7 +23,7 @@ source_patch(){
 	local logd="${SRCDIR}/libSBRdec/include/log"
 	if [ ! -f "${logd}/log.h" ];then
 		mkdir -p ${logd}
-		curl "https://android.googlesource.com/platform/system/bt/+/master/linux_include/log/log.h?format=TEXT" | base64 --decode >${logd}/log.h
+		curl "https://android.googlesource.com/platform/system/bt/+/master/linux_include/log/log.h?format=TEXT" | base64 --decode | sed 's/OS_GENERIC/__ANDROID__/' >${logd}/log.h
 	fi
 }
 
