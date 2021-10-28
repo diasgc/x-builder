@@ -247,7 +247,6 @@ start(){
   popdir; pushdir ${BUILD_DIR}
 
   log_vars SRCDIR dep PKG_CONFIG_LIBDIR
-  log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
   ifdef_function 'build_all' && {
@@ -261,7 +260,7 @@ start(){
     [ -z "$mkc" ] && mkc="clean"
     [ -f "Makefile" ] && doLogNoErr 'clean' ${MAKE_EXECUTABLE} $mkc
   }
-  
+
   if ifdef_function 'build_config'; then
     build_config
   else
@@ -305,11 +304,12 @@ start(){
 
   ifdef_function 'build_patch_config' && doLog 'patch' build_patch_config
 
-  case $CC in *clang) $build_static && pushvar_f LDFLAGS "-all-static";; esac
+  $build_static && LDFLAGS="-all-static $LDFLAGS"
   # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
-  
 
+  log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
+  
   ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
 
   ifdef_function 'patch_install' && patch_install
@@ -1059,11 +1059,12 @@ loadToolchain(){
       # change cross_prefix for bin tools in ndk > r23
       [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
       LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
-      if $build_shared;then
-        LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      else
-        LDFLAGS="-L${SYSROOT}/usr/lib/${arch} -L${SYSROOT}/usr/lib/${arch}/${API} ${LDFLAGS}"
-      fi
+      LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+      #if $build_shared;then
+      #  LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+      #else
+      #  LDFLAGS="-L${SYSROOT}/usr/lib/${arch} -L${SYSROOT}/usr/lib/${arch}/${API} ${LDFLAGS}"
+      #fi
       CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch}"
 
       ${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
@@ -1095,7 +1096,7 @@ loadToolchain(){
       LD=${CROSS_PREFIX}ld
       # local ltsdir=$(ls -t /usr/lib/gcc${cross}/${arch} 2>/dev/null | head -n1)
       [ -n "$ltsdir" ] && LT_SYS_LIBRARY_PATH="/usr/lib/gcc${cross}/${arch}/${ltsdir}"
-      LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+      LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       ;;
     Windows)
       local ltsdir
@@ -1403,8 +1404,8 @@ while [ $1 ];do
     --shared)   $disable_shared || build_shared=true;;
     --shared-only ) build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
-    --bin)      build_bin=true CBN="${cb1}";;
-    --nobin)    build_bin=false CBN="${cb0}";;
+    --bin)      build_bin=true;;
+    --nobin)    build_bin=false;;
     --nodist)   bdist=false;;
     --clear) shift
       while [ -n "$1" ];do
@@ -1541,7 +1542,7 @@ case $cfg in
   *) unset build_tool;;
 esac
 
-if [ -z ${CBN+x} ];then
+if [ -z "${CBN}" ];then
   $build_bin && CBN="${cb1}" || CBN="${cb0}"
 fi
 

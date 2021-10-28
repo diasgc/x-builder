@@ -13,15 +13,14 @@ src='https://github.com/libusb/libusb.git'
 cfg='ac'
 eta='10'
 dep='systemd'
-mki='install-strip'
-mkc='distclean'
+automake_cmd='./bootstrap.sh'
 
 lst_inc=''
 lst_lib=''
 
 . xbuilder.sh
 
-source_config(){
+_source_config(){
     pushdir $SRCDIR
     ./bootstrap.sh
     popdir

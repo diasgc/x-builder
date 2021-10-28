@@ -46,19 +46,6 @@ $host_arm && CFG+=' --enable-neon'
 $host_arm32 && CFG+=' --disable-neon-asm'
 AS=$YASM
 
-#case $arch in
-#  aarch64-linux-android ) CFG="--target=arm64-android-gcc --disable-unit-tests $CFG";;
-#  arm-linux-androideabi ) CFG="--target=armv7-android-gcc $CFG --enable-neon --disable-neon-asm";;
-#  i686-linux-android )    CFG="--target=x86-android-gcc $CFG";;
-#  x86_64-linux-android )  CFG="--target=x86_64-android-gcc $CFG";;
-#  i686-w64-mingw32 )      CFG="--target=x86-win32-gcc --disable-unit-tests $CFG";;
-#  x86_64-w64-mingw32 )    CFG="--target=x86_64-win64-gcc --disable-unit-tests $CFG";;
-#  i686-linux-gnu )        CFG="--target=x86-linux-gcc $CFG";;
-#  x86_64-linux-gnu )      CFG="--target=x86_64-linux-gcc $CFG";;
-#  arm-linux-gnu )         CFG="--target=armv7-linux-gcc $CFG";;
-#  aarch64-linux-gnu )     CFG="--target=arm64-linux-gcc $CFG";;
-#esac
-
 start
 
 # Filelist

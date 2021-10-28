@@ -11,7 +11,7 @@ dsc='The systemd System and Service Manager'
 lic='GPL-2.0'
 src='https://github.com/systemd/systemd.git'
 cfg='meson'
-dep='crypt'
+#dep='crypt'
 eta='60'
 
 lst_inc=''

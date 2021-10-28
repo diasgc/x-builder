@@ -21,9 +21,10 @@ case $build_tool in
 esac
 
 source_patch(){
-	if [ ! -d $SRCDIR/libSBRdec/include/log ];then
-		mkdir -p $SRCDIR/libSBRdec/include/log
-		printf "#pragma once\n#include <cstdint>\ninline int android_errorWriteLog(int, const char*) { return 0; };\ninline int android_errorWriteWithInfoLog(int tag, const char* subTag, int32_t uid, const char* data, uint32_t dataLen) { return 0; };" >> $SRCDIR/libSBRdec/include/log/log.h
+	local logd="${SRCDIR}/libSBRdec/include/log"
+	if [ ! -f "${logd}/log.h" ];then
+		mkdir -p ${logd}
+		curl "https://android.googlesource.com/platform/system/bt/+/master/linux_include/log/log.h?format=TEXT" | base64 --decode >${logd}/log.h
 	fi
 }
 
@@ -31,7 +32,6 @@ start
 
 # Filelist
 # --------
-
 # include/fdk-aac/FDK_audio.h
 # include/fdk-aac/genericStds.h
 # include/fdk-aac/aacdecoder_lib.h

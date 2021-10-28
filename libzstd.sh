@@ -1,27 +1,26 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   .   .   .   .   .   .  static
-#  +   .   .   .   +   .   .   .   .   .   .  shared
-#  +   .   .   .   +   .   .   .   .   .   .  bin
-# PKGINFO-------------------------------------
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU +..  .   .   .  gcc
+# WIN +..  .   .   .  clang/gcc
+
 lib='libzstd'
 apt='libzstd-dev'
 dsc='Zstandard - Fast real-time compression algorithm'
-lic='BSD/GPL-2.0'
+lic='BSD GPL-2.0'
 src='https://github.com/facebook/zstd.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='134'
 cstk="ZSTD_BUILD_STATIC"
 cshk="ZSTD_BUILD_SHARED"
 cbk="ZSTD_BUILD_PROGRAMS"
-cmake_path='lib/cmake/zstd'
+dir_config='build/cmake'
 
 . xbuilder.sh
 
 nodev=false
 
-SRCDIR=$SRCDIR/build/cmake/
+#SRCDIR=$SRCDIR/build/cmake/
 
 start
 

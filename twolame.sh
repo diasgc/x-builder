@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .  clang
+# GNU ...  .   .   .  gcc
+# WIN ...  .   .   .  clang/gcc
 
 lib='twolame'
 dsc='MPEG Audio Layer 2 (MP2) encoder'
@@ -26,8 +26,6 @@ source_patch(){
 }
 
 start
-
-
 
 # Filelist
 # --------

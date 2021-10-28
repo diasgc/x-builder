@@ -1,0 +1,24 @@
+#!/bin/bash
+#     Aa8 Aa7 A86 A64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
+lib='mesa'
+dsc='Mesa 3D graphics library'
+lic='Free'
+src='https://gitlab.freedesktop.org/mesa/mesa.git'
+cfg='meson'
+eta='0'
+
+#cshk=''
+#cstk=''
+#cbk=''
+
+lst_inc=''
+lst_lib=''
+lst_bin=''
+
+. xbuilder.sh
+
+start

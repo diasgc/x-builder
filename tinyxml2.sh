@@ -1,9 +1,8 @@
 #!/bin/bash
-
-#             a8  a7  x86 x64
-# ndk-clang   ++  ... ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
+#     Aa8 Aa7 A86 A64
+# NDK ++.  .   .   .  clang
+# GNU ...  .   .   .  gcc
+# WIN ...  .   .   .  clang/gcc
 
 lib='tinyxml2'
 apt="${lib}-dev"

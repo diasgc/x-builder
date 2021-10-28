@@ -1,30 +1,34 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+#     Aa8 Aa7 A86 A64
+# NDK +++  .   .   .   clang
+# GNU  .   .   .  ++++ gcc
+# WIN  .   .   .  +++F clang/gcc
 
 lib='libavif'
 dsc='Library for encoding and decoding .avif files'
 lic='BSD?'
 src='https://github.com/AOMediaCodec/libavif.git'
-sty='git'
-cfg='cm'
-dep='aom libjpeg libpng'
+vrs='0.9.3'
+cfg='cmake'
+dep='libpng libjpeg libyuv aom'
 pkg='libavif'
 eta='30'
 cbk='AVIF_BUILD_APPS'
-cmake_path='lib/cmake/libavif'
+
+lst_inc='avif/avif.h'
+lst_lib='libavif'
+lst_bin='avifenc avifdec'
 
 . xbuilder.sh
 
 CFG="-DAVIF_BUILD_EXAMPLES=OFF -DAVIF_BUILD_TESTS=OFF -DAVIF_CODEC_AOM=ON"
+$host_mingw && CPPFLAGS+=" -D__USE_MINGW_ANSI_STDIO=1"
+LDFLAGS+=" -lpthread"
 
 start
 
 # Filelist
 # --------
-
 # include/avif/avif.h
 # lib/pkgconfig/libavif.pc
 # lib/cmake/libavif/libavif-config-release.cmake

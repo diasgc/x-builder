@@ -8,7 +8,6 @@ lib='ffnvcodec'
 dsc='FFmpeg nvidia headers'
 lic='GLP-2.0'
 src='https://git.videolan.org/git/ffmpeg/nv-codec-headers.git'
-sty='git'
 cfg='make'
 eta='0'
 

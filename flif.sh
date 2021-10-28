@@ -1,13 +1,13 @@
 #!/bin/bash
 #     Aa8 Aa7 A86 A64
 # NDK +++ +++  .   .  clang
-# GNU  .   .   .   .  gcc
+# GNU +++  .   .   .  gcc
 # WIN +++  .   .   .  clang/gcc
 # warning: Warning static builds of getopt violate the Lesser GNU Public License
 
 lib='flif'
 dsc='Free Lossless Image Format'
-lic='BSD-2c'
+lic='BSD-2c Apache-2.0 GPL-2.0 LGPL-2.1'
 src='https://github.com/FLIF-hub/FLIF.git'
 cfg='cmake'
 dep='libpng'
@@ -23,10 +23,12 @@ lst_lic='share/licenses/FLIF/LICENSE_Apache2
     share/licenses/FLIF/FLIF-CLA-template.txt'
 
 req_pcforlibs=$lst_lib
+dir_config='src'
 
 . xbuilder.sh
 
-SRCDIR=$SRCDIR/src
+CPPFLAGS="-Wno-sign-compare -Wno-type-limits $CPPFLAGS"
+HOST_NPROC=16
 
 start
 
@@ -79,10 +81,10 @@ XB_APPLY_PATCH
 # include/flif_common.h
 # lib/pkgconfig/flif_dec.pc
 # lib/pkgconfig/flif.pc
-# lib/libflif.dll.a
-# lib/libflif_dec.dll.a
+# lib/libflif.so.0
 # lib/libflif.a
 # lib/libflif_dec.a
+# lib/libflif_dec.so.0
 # share/FLIF/flif.magic
 # share/man/man1/flif.1
 # share/mime/packages/flif-mime.xml
@@ -91,9 +93,7 @@ XB_APPLY_PATCH
 # share/licenses/FLIF/LICENSE_GPL
 # share/licenses/FLIF/LICENSE_LGPL
 # share/licenses/FLIF/FLIF-CLA-template.txt
-# bin/libflif_dec.dll
+# bin/flif
 # bin/apng2flif
 # bin/gif2flif
-# bin/flif.exe
-# bin/dflif.exe
-# bin/libflif.dll
+# bin/dflif

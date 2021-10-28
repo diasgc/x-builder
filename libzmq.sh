@@ -2,7 +2,7 @@
 #     Aa8 Aa7 A86 A64
 # NDK +++  .   .   .  clang
 # GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+# WIN  F   .   .   F  clang/gcc
 
 lib='libzmq'
 dsc=''
@@ -10,6 +10,7 @@ lic='GLP-2.0'
 src='https://github.com/zeromq/libzmq.git'
 cfg='ag'
 eta='0'
+dep='libsodium'
 
 #cshk=''
 #cstk=''
@@ -21,6 +22,8 @@ lst_bin=''
 
 . xbuilder.sh
 
+CFG='--disable-Werror --with-libsodium'
+
 start
 
 # Filelist
@@ -31,4 +34,4 @@ start
 # lib/libzmq.la
 # lib/libzmq.a
 # lib/libzmq.so
-# bin/curve_keygen
+# bin/curve_keyge

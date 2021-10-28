@@ -2,7 +2,7 @@
 #     Aa8 Aa7 A86 A64
 # NDK  .   .   .   .  clang
 # GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+# WIN ++   .   .   .  clang/gcc
 
 lib='libsodium'
 dsc='A modern, portable, easy to use crypto library.'
@@ -21,7 +21,6 @@ lst_lib=''
 lst_bin=''
 
 . xbuilder.sh
-CFG="--with-sysroot=${SYSROOT} -with-pic=1"
 
 start
 
