@@ -16,9 +16,10 @@ dir_config="libvmaf"
 #cstk=''
 #cbk=''
 CFG='-Denable_docs=false -Denable_tests=false'
-lst_inc=''
-lst_lib=''
-lst_bin=''
+lst_inc='libvmaf/model.h libvmaf/feature.h libvmaf/picture.h
+    libvmaf/libvmaf.h libvmaf/version.h libvmaf/compute_vmaf.h'
+lst_lib='libvmaf'
+lst_bin='vmaf'
 
 . xbuilder.sh
 

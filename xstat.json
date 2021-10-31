@@ -1,3 +1,0 @@
-{
-    "sources":{ "ImageCodecs": "https://pypi.org/project/imagecodecs/", "spdx": "https://github.com/spdx/license-list-XML.git", "cmake_template": "https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-jxrlib/CMakeLists.txt" }
-}

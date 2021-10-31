@@ -39,6 +39,8 @@ if(XB_OS STREQUAL "android")
     set(ANDROID_ABI ${XB_ABI})
     set(ANDROID_PLATFORM ${XB_NDK_API})
     set(ANDROID_NDK $ENV{ANDROID_NDK_HOME})
+    set(CMAKE_C_COMPILER $ENV{CC})
+    set(CMAKE_CXX_COMPILER $ENV{CXX})
     set(CMAKE_FIND_ROOT_PATH ${XB_SYSROOT}/usr
         ${XB_SYSROOT}/usr/lib/${XB_HOST}
         ${XB_SYSROOT}/usr/lib/${XB_HOST}/${XB_NDK_API}

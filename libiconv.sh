@@ -13,6 +13,7 @@ vrs='1.16'
 src="https://ftp.gnu.org/gnu/libiconv/libiconv-${vrs}.tar.gz"
 cfg='ac'
 eta='90'
+mki='install'
 pc_llib="-liconv"
 pc_url="https://www.gnu.org/software/libiconv"
 

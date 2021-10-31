@@ -10,7 +10,6 @@ apt='libglib2.0-dev'
 dsc='GLib is a library containing many useful C routines for things such as trees, hashes, lists, and strings'
 lic='LGPL-2.1'
 src='https://github.com/GNOME/glib.git'
-sty='git'
 dep='libiconv'
 cfg='meson'
 eta='140'
@@ -22,7 +21,6 @@ MAKE_EXECUTABLE=ninja
 build_patch_config(){
     mkf="-C $BUILD_DIR"
     mki="$mkf install"
-
 }
 
 build_make_package(){

@@ -17,7 +17,7 @@ lst_bin=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} -with-pic=1 --disable-install-examples"
+CFG="--disable-install-examples"
 
 start
 

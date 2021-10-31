@@ -7,11 +7,20 @@
 lib='fdk-aac'
 apt='fdkaac'
 dsc='A standalone library of the Fraunhofer FDK AAC code from Android'
-lic='Fraunhofer'
+lic='Other'
 src='https://github.com/mstorsjo/fdk-aac.git'
 cfg='ag'
 eta='180'
 cb1="--enable-example"
+
+lst_inc=' fdk-aac/FDK_audio.h
+	fdk-aac/genericStds.h
+	fdk-aac/aacdecoder_lib.h
+	fdk-aac/aacenc_lib.h
+	fdk-aac/syslib_channelMapDescr.h
+	fdk-aac/machine_type.h'
+lst_lib='libfdk-aac'
+lst_bin='aac-enc'
 
 . xbuilder.sh
   

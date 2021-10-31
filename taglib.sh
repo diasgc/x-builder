@@ -1,9 +1,8 @@
 #!/bin/bash
-
-#             a8  a7  x86 x64
-# ndk-clang   PP+ PP+ ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  PP+ ... ... ...
+# cpu av8 av7 x86 x64
+# NDK PP  PP   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='taglib'
 apt='libtag1v5'

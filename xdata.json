@@ -1,0 +1,63 @@
+{
+    "aom":{
+        "apt":"libaom0",
+        "dsc":"Alliance for Open Media AV1 codec",
+        "lic":"BSD-2c",
+        "src":"https://aomedia.googlesource.com/aom",
+        "src_type":"git",
+        "build_dep": "perl",
+        "build_sys": {
+            "cmake" : {
+                "cfg_values": [0,1],
+                "cfg_static_key":"CONFIG_STATIC",
+                "cfg_shared_key":"CONFIG_SHARED",
+                "cfg_bin_key": "ENABLE_EXAMPLES",
+                "cmd": ["-DENABLE_TESTS=OFF","-DENABLE_TOOLS=OFF","-DENABLE_TESTDATA=OFF","-DENABLE_DOCS=OFF"],
+                "on_arm": "CFG+=\" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=$AS\"",
+                "on_arm64": "CFG+=' -DAOM_NEON_INTRIN_FLAG='",
+                "on_arm32": "CFG+=' -DAOM_NEON_INTRIN_FLAG=-mfpu=neon'",
+                "on_x86": "CFG+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'",
+                "on_mingw": "CFG+=' -DCONFIG_PIC=1'"
+            }
+        },
+        "package":{
+            "include":["aom/aom_decoder.h","aom/aom_integer.h","aom/aom_external_partition.h","aom/aom_frame_buffer.h",
+                "aom/aom_image.h","aom/aom.h","aom/aom_encoder.h","aom/aomcx.h","aom/aom_codec.h","aom/aomdx.h"],
+            "lib":["libaom"],
+            "bin":["aomdec","aomenc"]
+        }
+    },
+    "aribb24":{
+        "apt":"libaribb24-dev",
+        "dsc":"A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream",
+        "lic":"LGPL-3.0",
+        "src":"https://github.com/nkoriyama/aribb24.git",
+        "lib_dep": "libpng",
+        "build_sys": {
+            "automake" : {
+                "build_patch_config": "$host_mingw && sed -i 's/\\$(AM_LDFLAGS) \\$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile",
+                "gen": "autoreconf -fi"
+            }
+        },
+        "package":{
+            "include":["aribb24/parser.h aribb24/decoder.h aribb24/bits.h aribb24/aribb24.h"],
+            "lib":["libaribb24"]
+        }
+    },
+    "aribb25":{
+        "apt":"libaribb24-dev",
+        "dsc":"Basic implementation of the ARIB STD-B25 public standard",
+        "lic":"ISC",
+        "src":"https://code.videolan.org/videolan/aribb25.git",
+        "lib_dep": "pscs",
+        "build_sys": {
+            "automake" : {
+                "gen": "autoreconf -fi"
+            }
+        },
+        "package":{
+            "include":[""],
+            "lib":[""]
+        }
+    }
+}

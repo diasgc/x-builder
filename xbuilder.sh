@@ -120,13 +120,48 @@ main(){
 
   gitjson=$(git_api_tojson $src)
   if [ -n "${gitjson}" ];then
+    #echo -ne "${CY1}${b}${C0}"
     [ -z "${lic}" ] && lic=$(echo "$gitjson" | jq .licence)
     [ -z "${dsc}" ] && dsc=$(echo "$gitjson" | jq .description)
   fi
   # show package info
-  [ ! -f "${PKGDIR}/${pkg}.pc" ] && ${banner} && pkgInfo
+  [ -f "${PKGDIR}/${pkg}.pc" ] || pkgInfo
 
   LOGFILE=$LIBSDIR/${lib}.log
+}
+
+pkgInfo(){
+  local DP=
+  local VS=
+  local longdesc=$(aptLongDesc)
+  [ -z "$(echo $longdesc | xargs 2>/dev/null)" ] && unset longdesc
+  [ -n "${tls}" ] && DP="${CT0}build deps: ${C0}$tls "
+  [ -n "${dep}" ] && DP="${DP}${CT0}lib deps: ${C0}$dep"
+  if [ "$sty" == "git" ];then
+    local vgit=$(git_remote_version $src)
+    if [ -d $SRCDIR ];then
+      pushdir $SRCDIR
+      local vrep=$(git describe --abbrev=0 --tags 2>/dev/null)
+      popdir
+      VS="${CT0}vrs: ${C0}$vrep "
+      str_contains $vgit $vrs && \
+        pushvar_l VS 'updated' || \
+        pushvar_l VS "$VS ${CT0}latest: ${CT1}${vgit}${C0}"
+    else
+      VS="${CT0}vrs: ${C0}${vgit}"
+    fi
+  fi
+  [ -n "${dsc}" ] && echo -e "\n${CW}${ind}${lib^^} - ${C0}${dsc}"
+  [ -n "${longdesc}" ] && echo -e "${CD}${longdesc}" | sed 's|\*|\u2605|g; s|\..\..|. |g' # sed 's|^|'${ind}|g'
+  echo -e "${CT0}${ind}Licence ${C0}$lic ${DP} ${VS}"
+}
+
+aptLongDesc(){
+  [ -n "$apt" ] && echo -e $(apt-cache show ${apt} 2>/dev/null | \
+    grep -E "Description-..^|^ " | \
+    sed $'s/\*/\u2605/g' | \
+    sed '/^ *This package contains.*\./d') | fold -s -w120 | sed 's/^/'"${ind}"'/g'
+  return 0
 }
 
 # Variables
@@ -258,7 +293,7 @@ start(){
 
   ifdef_function 'build_clean' && build_clean || {
     [ -z "$mkc" ] && mkc="clean"
-    [ -f "Makefile" ] && doLogNoErr 'clean' ${MAKE_EXECUTABLE} $mkc
+    [ -f "Makefile" ] && doNoLog 'clean' ${MAKE_EXECUTABLE} $mkc
   }
 
   if ifdef_function 'build_config'; then
@@ -288,6 +323,7 @@ start(){
         [ -z "$MESON_EXEC" ] && doErr 'Could not install meson. Aborting.'
         local MESON_CFG="$SRCDIR/${arch}.meson"
         [ -f "$MESON_CFG" ] && rm $MESON_CFG
+        $host_clang || LD="bfd"
         meson_create_toolchain $MESON_CFG
         MAKE_EXECUTABLE=ninja
         doLog 'meson' ${MESON_EXEC} setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
@@ -304,12 +340,14 @@ start(){
 
   ifdef_function 'build_patch_config' && doLog 'patch' build_patch_config
 
+  [ -n "${wopts}" ] && CPPFLAGS+=" ${wopts}"
   $build_static && LDFLAGS="-all-static $LDFLAGS"
+  
   # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
 
   log_vars CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS
-  
+
   ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
 
   ifdef_function 'patch_install' && patch_install
@@ -350,7 +388,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki
+  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki wopts
   dec_tab
   echo
   exit 0
@@ -706,6 +744,14 @@ doLogNoErr(){
   logok $var
 }
 
+doNoLog(){
+  local var=$1; shift
+  echo -ne "${CD}${var}${C0}"
+  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
+  "$@" 2>&1 >/dev/null
+  logok $var
+}
+
 doLog() {
   local var=$1; shift
   echo -ne "${CD}${var}${C0}"
@@ -735,10 +781,7 @@ logver() {
 }
 
 inlineCcmake(){
-  #local inL="\e[u"
-  #[[ $(isBottomRow) -eq 1 ]] && inL="$inL\e[2A"
-  #echo -ne "\e[s" && ccmake $@ && echo -ne "${inL}"
-  tput sc && ccmake $@ && tput rc
+  tput sc; ccmake $@; tput rc
 }
 
 isBottomRow(){
@@ -748,11 +791,10 @@ isBottomRow(){
 # usage: do_git giturl [libname]
 do_git(){
   doLog 'git' git clone $1 $2
-  [ -n "${vrs}" ] && {
-    cd $2
-    doLog ${vrs} git checkout tags/${vrs}
-    cd ..
-  }
+  cd $2
+  [ -n "${vrs}" ] && doLog ${vrs} git checkout tags/${vrs}
+  [ -n "${sub}" ] && doLog 'sub' git ${sub}
+  cd ..
 }
 
 topct(){
@@ -1031,6 +1073,13 @@ set_ndk_api(){
   loadToolchain
 }
 
+ndk_assert_h_sys_soundcard(){
+  [ "$host_os" == "android" ] && \
+    [ ! -f "$SYSROOT/usr/include/sys/soundcard.h" ] && \
+    echo "#include <linux/soundcard.h>" >"$SYSROOT/usr/include/sys/soundcard.h" 
+  return 0
+}
+
 loadToolchain(){
 
   CMAKE_EXECUTABLE=cmake
@@ -1177,37 +1226,8 @@ clearAll(){
 
 checkPkg(){
   local pf="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
-  [ -f "$pf" ] && echo $pf || echo
-}
-
-pkgInfo(){
-  local DP=
-  local VS=
-  local longdesc=$(aptLongDesc)
-  [ -n "$tls" ] && DP="${CT0}tools: ${C0}$tls "
-  [ -n "$dep" ] && DP="${DP}${CT0}dependencies: ${C0}$dep"
-  if [ "$sty" == "git" ];then
-    local vgit=$(git_remote_version $src)
-    if [ -d $SRCDIR ];then
-      set_git_version
-      VS="${CT0}vrs: ${C0}$vrs "
-      str_contains $vgit $vrs && \
-        pushvar_l VS 'updated' || \
-        pushvar_l VS "$VS ${CT0}latest: ${CT1}${vgit}${C0}"
-    else
-      VS="${CT0}vrs: ${C0}${vgit}"
-    fi
-  fi
-  echo -e "\n${CW}${ind}${lib^^} - ${C0}${dsc}"
-  [ -n "${longdesc}" ] && echo -e "${CD}${longdesc}" | sed 's|\*|\u2605|g; s|\..\..|. |g' # sed 's|^|'${ind}|g'
-  echo -e "${CT0}${ind}Licence ${C0}$lic ${DP} ${VS}"
-}
-
-aptLongDesc(){
-  [ -n "$apt" ] && echo -e $(apt-cache show ${apt} 2>/dev/null | \
-    grep -E "Description-..^|^ " | \
-    sed $'s/\*/\u2605/g' | \
-    sed '/^ *This package contains.*\./d') | fold -s -w120 | sed 's/^/'"${ind}"'/g'
+  [ -f "$pf" ] && echo $pf
+  return 0
 }
 
 usage(){
@@ -1401,9 +1421,9 @@ while [ $1 ];do
     --refresh)  update=true;;
     --retry)    retry=true;;
     --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
-    --shared)   $disable_shared || build_shared=true;;
-    --shared-only ) build_shared=true build_static=false;;
+    --shared)   build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
+    --both)     build_static=true build_shared=true;;
     --bin)      build_bin=true;;
     --nobin)    build_bin=false;;
     --nodist)   bdist=false;;
@@ -1442,16 +1462,13 @@ while [ $1 ];do
           ;;
       esac
       ;;
-    --repo) only_repo=true;;   
+    --clone) only_repo=true;;   
     --cmake) cfg='cm';;
     --ndkcmake) ndkcmake=true;;
     --ccmake) cfg='ccm';;
     --nobanner) banner=false;;
     --debug) debug=true && set -x;;
     --nodev) nodev=true;;
-    --posix) f_win_posix=true;;
-    --ndkLpthread) patch_ndk_libpthread;;
-    --ndkLrt) patch_ndk_librt;;
     --vlatest) echo $(githubLatestTarGz) && exit 0;;
     --wipeall) read -p "Wipe all data? [y|N]" r
       case $r in y|Y) rm -rf builds sources

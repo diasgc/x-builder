@@ -7,7 +7,7 @@
 lib='libpng'
 dsc='Portable Network Graphics support'
 lic='As Is'
-src='https://git.code.sf.net/p/libpng/code'
+src='https://git.code.sf.net/p/libpng/code' sty='git'
 cfg='cmake'
 mki='install/strip'
 eta='9'

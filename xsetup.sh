@@ -167,13 +167,13 @@ check4Ndk(){
         esac
         #[ $latestNdk -gt $ndkv ] && latest="(latest ${CC0}$latestNdk${C0}" || latest="${CC0}${c}${C0}"
         echo -ne "${CC0}  ${b} Android NDK${C0}\t\t${ndkv} ${latest}"
-        local p="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/"
-        local ar="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64//bin/llvm-ar"
+        local p="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr"
+        local ar="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
         #echo -ne "\t\t\t${CC0}patching lrt/lpthread...${C0} "
+        [ ! -f "$p/include/sys/soundcard.h" ] && echo "#include <linux/soundcard.h>" >"$p/include/sys/soundcard.h"
         for arch in aarch64-linux-android arm-linux-androideabi i686-linux-android x86_64-linux-android; do
-            [ ! -f "$p/$arch/libpthread.a" ] && $ar cr "$p/$arch/libpthread.a"
-            [ ! -f "$p/$arch/librt.a" ] && $ar cr "$p/$arch/librt.a"
-            #echo -ne "${arch}${CC0}${c}${C0} "
+            [ ! -f "$p/lib/$arch/libpthread.a" ] && $ar cr "$p/lib/$arch/libpthread.a"
+            [ ! -f "$p/lib/$arch/librt.a" ] && $ar cr "$p/lib/$arch/librt.a"
         done
         echo -e "${CC0} lpthread/lrt patches ok${C0}"
     else

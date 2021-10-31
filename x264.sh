@@ -17,7 +17,7 @@ lst_bin='x264'
 
 . xbuilder.sh
 
-[ "$ABI" == "x86_64" ] && AS=nasm || CFG+=" --disable-asm"
+$host_x64 && AS=nasm || CFG+=" --disable-asm"
 
 start
 
