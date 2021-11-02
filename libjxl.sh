@@ -8,7 +8,8 @@ lib='libjxl'
 dsc='A fast, compressed, persistent binary data store library for C.'
 lic='BSD-3c'
 src='https://github.com/libjxl/libjxl.git'
-cfg='cm'
+sub='submodule update --init --recursive'
+cfg='cmake'
 eta='164'
 cstl='JPEGXL_STATIC'
 API=28
@@ -16,12 +17,6 @@ API=28
 . xbuilder.sh
 
 CFG="-DBUILD_TESTING=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_MANPAGES=OFF"
-
-source_patch(){
-    pushdir $SRCDIR
-    doLog 'submodule' git submodule update --init --recursive
-    popdir
-}
 
 start
 

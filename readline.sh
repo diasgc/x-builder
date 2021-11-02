@@ -9,6 +9,7 @@ dsc='The GNU Readline library'
 lic='GLP-2.0'
 src='https://git.savannah.gnu.org/git/readline.git'
 cfg='ac'
+mki='install'
 eta='0'
 
 lst_inc=''

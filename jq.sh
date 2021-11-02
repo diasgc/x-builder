@@ -23,12 +23,6 @@ lst_lic='share/doc/jq/COPYING'
 CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
 unset CSH
 
-_source_patch(){
-    pushdir $SRCDIR
-    doLog 'git2' git submodule update --init # if building from git to get oniguruma
-    popdir
-}
-
 start
 
 # Filelist

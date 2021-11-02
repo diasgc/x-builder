@@ -1,6 +1,6 @@
 #!/bin/bash
 #             a8  a7  x86 x64
-# ndk-clang   ... ... ... ...
+# ndk-clang   +++ ... ... ...
 # linux-gnu   ... ... ... ...
 # mingw-llvm  ... ... ... ...
 
@@ -9,7 +9,6 @@ apt='libgcrypt20-dev'
 dsc='The GNU crypto library'
 lic='LGPL-2.1'
 src='https://dev.gnupg.org/source/libgcrypt.git'
-sty='git'
 cfg='ag'
 dep='libgpg-error'
 eta='60'
@@ -22,16 +21,14 @@ lst_bin='mpicalc libgcrypt-config dumpsexp hmac256'
 
 CFG="--disable-doc --with-libgpg-error-prefix=${LIBSDIR}"
 
-case $arch in
-    aarch64*|arm*) CFG+=" --disable-aesni-support \
+$host_arm && CFG+=" --disable-aesni-support \
         --disable-shaext-support \
         --disable-pclmul-support \
         --disable-sse41-support \
         --disable-drng-support \
         --disable-avx-support \
-        --disable-avx2-support";;&
-    *linux*) CFG+=" --with-capabilitie=yes";;
-esac
+        --disable-avx2-support"
+$host_gnu && CFG+=" --with-capabilities=yes"
 
 start
 

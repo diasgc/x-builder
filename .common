@@ -167,8 +167,8 @@ prt_progress(){
 }
 
 inc_tab(){
-  indent=$(expr "$indent" + 2)
-  ind=$(printf '%*s' "$indent")
+  export indent=$(expr "$indent" + 2)
+  export ind=$(printf '%*s' "$indent")
 }
 
 dec_tab(){

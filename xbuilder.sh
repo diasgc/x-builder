@@ -86,7 +86,8 @@ init(){
     ./xsetup.sh
     . .config || doErr 'Unable to initialize config file'
   fi
-  export is_init=true indent=0 ind
+  [ -z "${indent}" ] && indent=0
+  export is_init=true indent ind
 }
 
 ! $is_init && init
@@ -258,13 +259,13 @@ start(){
       esac
     fi
 
-    # check whether to auto patch source
-    check_xbautopatch
-
     # check whether to custom patch source
     if ifdef_function 'source_patch'; then
       doLog 'patch' source_patch
     fi
+
+    # check whether to auto patch source
+    check_xbautopatch
   fi
 
   $only_repo && end_script
@@ -504,9 +505,6 @@ build_dependencies(){
   local o_cbh
   local cf
   local ldir
-  local args
-  $build_shared && args="--shared"
-  $build_bin && args="$args --bin"
   while [ -n "${1}" ]; do
     [ -f "./${1}.sh" ] || doErr "no script file ${1}.sh.\n  Aborting..."
     pkgfile=$(./${1}.sh ${arch} --get pc)
@@ -515,7 +513,7 @@ build_dependencies(){
       o_csh=$CSH
       o_cbh=$CBH
       unset CSH CBH
-      ./${1}.sh ${arch} ${args} || err
+      ./${1}.sh ${arch} --both --bin || err
       CSH=$o_csh
       CBH=$o_cbh
     fi

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++ +++ ... ... CLANG
+# GNU +++ +++ ... ... GCC
+# WIN +++ ... ... +++ CLANG/GCC
 
 lib='glib2'
 pkg='glib-2.0'
@@ -10,13 +10,12 @@ apt='libglib2.0-dev'
 dsc='GLib is a library containing many useful C routines for things such as trees, hashes, lists, and strings'
 lic='LGPL-2.1'
 src='https://github.com/GNOME/glib.git'
-dep='libiconv'
+dep='libiconv libffi'
 cfg='meson'
-eta='140'
+eta='220'
+CFG='-Dgtk_doc=false -Dman=false'
 
 . xbuilder.sh
-
-MAKE_EXECUTABLE=ninja
 
 build_patch_config(){
     mkf="-C $BUILD_DIR"
@@ -27,12 +26,17 @@ build_make_package(){
     DESTDIR=${1} ninja -C ${BUILD_DIR} install
 }
 
+$host_mingw && CFG+=' -Dlibelf=disabled -Dforce_posix_threads=true'
+wopts='-Wno-unused-result -Wno-unused-variable -Wno-unused-function -Wno-array-bounds'
+LDFLAGS+=" -L$LIBSDIR/lib -liconv -lffi"
 start
+
+# include/ffi-arm.h
+# include/ffitarget-x86_64.h
 
 # Filelist
 # --------
-
-# include/ffi-arm.h
+# include/zlib.h
 # include/glib-2.0/gmodule.h
 # include/glib-2.0/glib.h
 # include/glib-2.0/glib/gconvert.h
@@ -120,6 +124,7 @@ start
 # include/glib-2.0/glib/gtimer.h
 # include/glib-2.0/glib/gtrashstack.h
 # include/glib-2.0/glib/gtree.h
+# include/glib-2.0/msvc_recommended_pragmas.h
 # include/glib-2.0/gobject/gobject.h
 # include/glib-2.0/gobject/gtype.h
 # include/glib-2.0/gobject/gobjectnotifyqueue.c
@@ -294,38 +299,41 @@ start
 # include/glib-2.0/gio/gmenumodel.h
 # include/glib-2.0/gio/gsimpleactiongroup.h
 # include/glib-2.0/glib-object.h
+# include/ffitarget-aarch64.h
+# include/gio-win32-2.0/gio/gwin32outputstream.h
+# include/gio-win32-2.0/gio/gwin32inputstream.h
 # include/ffitarget.h
 # include/ffi.h
-# include/ffitarget-arm.h
-# include/gio-unix-2.0/gio/gunixmounts.h
-# include/gio-unix-2.0/gio/gdesktopappinfo.h
-# include/gio-unix-2.0/gio/gunixcredentialsmessage.h
-# include/gio-unix-2.0/gio/gunixconnection.h
-# include/gio-unix-2.0/gio/gunixoutputstream.h
-# include/gio-unix-2.0/gio/gunixfdlist.h
-# include/gio-unix-2.0/gio/gfiledescriptorbased.h
-# include/gio-unix-2.0/gio/gunixinputstream.h
-# include/gio-unix-2.0/gio/gunixsocketaddress.h
-# include/gio-unix-2.0/gio/gunixfdmessage.h
+# include/zconf.h
 # include/libintl.h
-# lib/pkgconfig/gio-unix-2.0.pc
+# include/ffi-aarch64.h
+# lib/libgobject-2.0.a
+# lib/pkgconfig/gio-windows-2.0.pc
 # lib/pkgconfig/gmodule-2.0.pc
 # lib/pkgconfig/gmodule-export-2.0.pc
 # lib/pkgconfig/gobject-2.0.pc
 # lib/pkgconfig/gthread-2.0.pc
 # lib/pkgconfig/gmodule-no-export-2.0.pc
+# lib/pkgconfig/zlib.pc
 # lib/pkgconfig/libffi.pc
 # lib/pkgconfig/glib-2.0.pc
 # lib/pkgconfig/gio-2.0.pc
-# lib/libgmodule-2.0.so
+# lib/libgio-2.0.a
+# lib/libgthread-2.0.a
 # lib/glib-2.0/include/glibconfig.h
-# lib/libgthread-2.0.so
-# lib/libglib-2.0.so
-# lib/libgio-2.0.so
-# lib/libintl.so
-# lib/libgobject-2.0.so
-# lib/libffi.so
+# lib/libffi.dll.a
+# lib/libglib-2.0.a
+# lib/libffi.a
+# lib/libgmodule-2.0.a
+# lib/libz.dll.a
+# lib/libgio-2.0.dll.a
+# lib/libz.a
+# lib/libintl.dll.a
+# lib/libglib-2.0.dll.a
 # lib/libintl.a
+# lib/libgmodule-2.0.dll.a
+# lib/libgthread-2.0.dll.a
+# lib/libgobject-2.0.dll.a
 # share/gettext/its/gschema.loc
 # share/gettext/its/gschema.its
 # share/locale/sr@latin/LC_MESSAGES/glib20.mo
@@ -435,7 +443,6 @@ start
 # share/glib-2.0/codegen/codegen_docbook.py
 # share/glib-2.0/codegen/parser.py
 # share/glib-2.0/codegen/__init__.py
-# share/glib-2.0/valgrind/glib.supp
 # share/glib-2.0/gdb/glib_gdb.py
 # share/glib-2.0/gdb/gobject_gdb.py
 # share/glib-2.0/schemas/gschema.dtd
@@ -451,20 +458,26 @@ start
 # share/bash-completion/completions/gresource
 # share/bash-completion/completions/gdbus
 # share/bash-completion/completions/gio
-# share/gdb/auto-load/home/gcdias/git/x-shellscripts/sh2/builds/android/armeabi-v7a/lib/libgobject-2.0.so.0.6902.0-gdb.py
-# share/gdb/auto-load/home/gcdias/git/x-shellscripts/sh2/builds/android/armeabi-v7a/lib/libglib-2.0.so.0.6902.0-gdb.py
+# bin/libintl-8.dll
+# bin/libffi-7.dll
+# bin/libglib-2.0-0.dll
 # bin/glib-gettextize
-# bin/gio-querymodules
+# bin/gdbus.exe
 # bin/gdbus-codegen
+# bin/gio-querymodules.exe
+# bin/libgmodule-2.0-0.dll
+# bin/glib-compile-schemas.exe
+# bin/gresource.exe
+# bin/gsettings.exe
+# bin/gspawn-win64-helper-console.exe
 # bin/gtester-report
-# bin/gobject-query
+# bin/libgthread-2.0-0.dll
 # bin/glib-mkenums
-# bin/gsettings
-# bin/glib-compile-resources
-# bin/glib-compile-schemas
-# bin/gapplication
-# bin/gresource
+# bin/glib-compile-resources.exe
 # bin/glib-genmarshal
-# bin/gtester
-# bin/gdbus
-# bin/gio
+# bin/libgio-2.0-0.dll
+# bin/libz.dll
+# bin/libgobject-2.0-0.dll
+# bin/gobject-query.exe
+# bin/gio.exe
+# bin/gspawn-win64-helper.exe

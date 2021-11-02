@@ -1,7 +1,7 @@
 #!/bin/bash
 # cpu av8 av7 x86 x64
-# NDK ++   .   .   .  clang
-# GNU  .   .   .   .  gcc
+# NDK ++  ++   .   .  clang
+# GNU ++   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
 lib='gmp'
