@@ -1,9 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   +   .   +   .   .   .   .   .  static
-#  +   .   .   +   .   +   .   .   .   .   .  shared
-#  +   .   .   +   .   +   .   .   .   .   .  bin
-# use src svn instead of tgz to avoid issues building shared/bin w64
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU +++ +++  .   .  gcc
+# WIN +++ +++  .   .  clang/gcc
 
 lib='lame'
 dsc='LAME is a high quality MPEG Audio Layer III (MP3) encoder'
@@ -27,7 +26,7 @@ vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/
 CFG="--disable-gtktest --disable-decoder --disable-debug"
 $host_mingw && CFG+=" --enable-expopt=full"
 # make shared executable so
-$build_shared && $build_bin && CBN="--enable-dynamic-frontends"
+! $build_static && $build_bin && CBN="--enable-dynamic-frontends"
 [ "$host_os" == "android" ] && [ $API -lt 26 ] && unset CBN
 
 build_patch_config(){

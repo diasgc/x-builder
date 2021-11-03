@@ -1,0 +1,12 @@
+#!/bin/bash
+lib=$1
+pkg=$(cat _packages.txt | jq ."${lib}")
+src=$(echo $pkg | jq -r .src)
+dsc=$(echo $pkg | jq -r .dsc)
+lic=$(echo $pkg | jq -r .lic)
+bdp=$(echo $pkg | jq -r .dep)
+cfg=$(echo $pkg | jq -r .sys)
+unset pkg
+shift
+. xbuilder.sh $@
+start
