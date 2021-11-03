@@ -14,8 +14,8 @@ eta='120'
 cbk='example'
 
 lst_lic='share/doc/zimg/COPYING'
-lst_inc=''
-lst_lib=''
+lst_inc='zimg.h zimg++.hpp'
+lst_lib='libzimg'
 lst_bin=''
 
 . xbuilder.sh
