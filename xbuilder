@@ -165,6 +165,75 @@ aptLongDesc(){
   return 0
 }
 
+guess_buildtool(){
+  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
+    build_tool="cmake"
+    cfg="cmake"
+  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
+    build_tool="automake"
+    cfg="ag"
+  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/bootstrap"
+  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/bootstrap"
+  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/bootstrap"
+  fi
+  return 0
+}
+
+  # check build type and set defaults if no cst0 cst1 csh0 or csh1 value provided
+  case $cfg in
+    cm|ccm|cmake|ccmake)
+      build_tool=cmake
+      [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
+      [ -n "$cshk" ] && csh0="-D${cshk}=OFF" csh1="-D${cshk}=ON"
+      
+      [ -z "$cst1" ] && cst1="-DBUILD_SHARED_LIBS=OFF"
+      [ -z "$csh1" ] && csh1="-DBUILD_SHARED_LIBS=ON"
+      
+      $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
+      $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
+      $build_static && $build_shared && CSH="${cst1} ${csh1}"
+      
+      [ -n "$cbk" ] && cb0="-D${cbk}=OFF" cb1="-D${cbk}=ON"
+
+      ;;
+    ab|am|ac|ar|ag|auto*)
+      build_tool=automake
+      [ -z "$cst0" ] && cst0="--disable-static"
+      [ -z "$cst1" ] && cst1="--enable-static"
+      [ -z "$csh0" ] && csh0="--disable-shared"
+      [ -z "$csh1" ] && csh0="--enable-shared"
+      $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
+      $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
+      $build_static && $build_shared && CSH="${cst1} ${csh1}"
+      [ -n "$cbk" ] && {
+        case $cbk in
+          --enable-*) cb0="${cbk}=0"; cb1="${cbk}=1";;
+          able-*) cb0="--dis${cbk}"; cb1="--en${cbk}";;
+          with-*) cb0="--without-${cbk:5}"; cb1="--${cbk}";;
+          *) cb0="--enable-${cbk}=0" cb1="--enable-${cbk}=1";;
+        esac
+      }
+      ;;
+    meson)
+      build_tool=meson
+      $build_static && ! $build_shared && CSH="-Ddefault_library=static"
+      $build_shared && ! $build_static && CSH="-Ddefault_library=shared"
+      $build_static && $build_shared && CSH="-Ddefault_library=both"
+      ;;
+    mk|make) build_tool=make;;
+    *) unset build_tool;;
+  esac
+}
+
 # Variables
 # mki: rule for install 'make $mkinstall' (default: install)
 # mkc: rule for clean 'make $mkclean' (default: clean)
@@ -398,20 +467,6 @@ end_script(){
   dec_tab
   echo
   exit 0
-}
-
-check_buildtool(){
-  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
-    build_tool="cmake"
-    cfg="cmake"
-  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
-    build_tool="automake"
-    cfg="ag"
-  elif [ -f "${CONFIG_DIR}/configure" ]; then
-    build_tool="automake"
-    cfg="ac"
-  
-            
 }
 
 check_xbautopatch(){
@@ -1529,52 +1584,6 @@ if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   echo -ne "${ind}${CY1}Requesting sudo for tool install "
   ${sudo} echo -ne "\r"
 fi
-
-
-# check build type and set defaults if no cst0 cst1 csh0 or csh1 value provided
-case $cfg in
-  cm|ccm|cmake|ccmake)
-    build_tool=cmake
-    [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
-    [ -n "$cshk" ] && csh0="-D${cshk}=OFF" csh1="-D${cshk}=ON"
-    
-    [ -z "$cst1" ] && cst1="-DBUILD_SHARED_LIBS=OFF"
-    [ -z "$csh1" ] && csh1="-DBUILD_SHARED_LIBS=ON"
-    
-    $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
-    $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
-    $build_static && $build_shared && CSH="${cst1} ${csh1}"
-    
-    [ -n "$cbk" ] && cb0="-D${cbk}=OFF" cb1="-D${cbk}=ON"
-
-    ;;
-  ab|am|ac|ar|ag|auto*)
-    build_tool=automake
-    [ -z "$cst0" ] && cst0="--disable-static"
-    [ -z "$cst1" ] && cst1="--enable-static"
-    [ -z "$csh0" ] && csh0="--disable-shared"
-    [ -z "$csh1" ] && csh0="--enable-shared"
-    $build_static && ! $build_shared && CSH="${cst1} ${csh0}"
-    $build_shared && ! $build_static && CSH="${csh1} ${cst0}"
-    $build_static && $build_shared && CSH="${cst1} ${csh1}"
-    [ -n "$cbk" ] && {
-      case $cbk in
-        --enable-*) cb0="${cbk}=0"; cb1="${cbk}=1";;
-        able-*) cb0="--dis${cbk}"; cb1="--en${cbk}";;
-        with-*) cb0="--without-${cbk:5}"; cb1="--${cbk}";;
-        *) cb0="--enable-${cbk}=0" cb1="--enable-${cbk}=1";;
-      esac
-    }
-    ;;
-  meson)
-    build_tool=meson
-    $build_static && ! $build_shared && CSH="-Ddefault_library=static"
-    $build_shared && ! $build_static && CSH="-Ddefault_library=shared"
-    $build_static && $build_shared && CSH="-Ddefault_library=both"
-    ;;
-  mk|make) build_tool=make;;
-  *) unset build_tool;;
-esac
 
 if [ -z "${CBN}" ];then
   $build_bin && CBN="${cb1}" || CBN="${cb0}"
