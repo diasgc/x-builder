@@ -10,20 +10,35 @@
   "libiconv": {
     "src": "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz",
     "dep": "libc++, libicu, libxml2",
+    "sys": "ac",
     "dsc": "An implementation of iconv()",
     "lic": "LGPL-2.0",
-    "url": "https://www.gnu.org/software/libiconv/"
+    "url": "https://www.gnu.org/software/libiconv/",
+    "cfg": "--enable-extra-encodings",
+    "llb": "-liconv"
+  },
+  "libicu": {
+    "src": "https://github.com/unicode-org/icu.git",
+    "dir": "icu4c/source",
+    "sys": "ac",
+    "dep": "libc++",
+    "dsc": "International Components for Unicode library",
+    "lic": "BSD",
+    "url": "http://site.icu-project.org/home"
   },
   "libuuid": {
-    "src": "https://downloads.sourceforge.net/project/libuuid/libuuid-1.0.3.tar.gz",
+    "src": "https://git.code.sf.net/p/libuuid/code",
+    "sys": "ar",
     "dep": "libusb",
     "dsc": "Portable uuid C library",
     "lic": "BSD 3-Clause",
     "url": "https://sourceforge.net/projects/libuuid/"
   },
   "libusb": {
-    "src": "https://github.com/libusb/libusb/archive/v1.0.24.tar.gz",
-    "dep": "libiconv",
+    "src": "https://github.com/libusb/libusb.git",
+    "scc": "./bootstrap.sh",
+    "sys": "ac",
+    "dep": "libiconv systemd",
     "dsc": "A C library that provides generic access to USB devices",
     "lic": "LGPL-2.1",
     "url": "https://libusb.info/"
@@ -37,7 +52,7 @@
     "url": "https://xorg.freedesktop.org/"
   },
   "libxau": {
-    "src": "https://xorg.freedesktop.org/releases/individual/lib/libXau-1.0.9.tar.bz2",
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxau",
     "dep": "libc++, libuuid, zlib",
     "dsc": "X11 authorisation library",
     "lic": "MIT",
@@ -64,11 +79,24 @@
     "lic": "MIT",
     "url": "https://xorg.freedesktop.org/"
   },
+  "libxml2": {
+    "src": "ftp://xmlsoft.org/libxml2/libxml2-2.9.12.tar.gz",
+    "dep": "libiconv, liblzma, zlib",
+    "dsc": "Library for parsing XML documents",
+    "lic": "MIT",
+    "url": "http://www.xmlsoft.org"
+  },
   "libxrender": {
     "src": "https://xorg.freedesktop.org/releases/individual/lib/libXrender-0.9.10.tar.bz2",
     "dep": "libx11",
     "dsc": "X Rendering Extension client library",
     "lic": "MIT",
     "url": "https://xorg.freedesktop.org/"
+  },
+  "systemd": {
+    "src": "https://github.com/systemd/systemd.git",
+    "dsc": "The systemd System and Service Manager",
+    "lic": "GPL-2.0",
+    "url": "https://github.com/systemd/systemd"
   }
 }
