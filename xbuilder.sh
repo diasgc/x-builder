@@ -245,6 +245,11 @@ start(){
       doLog 'automake' $automake_cmd
       unset automake_cmd
     else case $cfg in
+      auto) 
+
+      ab) [ -f "${CONFIG_DIR}/boostrap" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap
+          [ -f "${CONFIG_DIR}/boostrap.sh" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap.sh
+          ;;
       ag) doAutogen $CONFIG_DIR --noconfigure;;
       ar) doAutoreconf $CONFIG_DIR;;
       am|autom*)
@@ -393,6 +398,20 @@ end_script(){
   dec_tab
   echo
   exit 0
+}
+
+check_buildtool(){
+  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
+    build_tool="cmake"
+    cfg="cmake"
+  elif [ -f "${CONFIG_DIR}/configure" ]; then
+    build_tool="automake"
+    cfg="ac"
+  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
+    build_tool="automake"
+    cfg="ag"
+  
+            
 }
 
 check_xbautopatch(){

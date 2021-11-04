@@ -36,8 +36,7 @@
   },
   "libusb": {
     "src": "https://github.com/libusb/libusb.git",
-    "scc": "./bootstrap.sh",
-    "sys": "ac",
+    "sys": "ab",
     "dep": "libiconv systemd",
     "dsc": "A C library that provides generic access to USB devices",
     "lic": "LGPL-2.1",
@@ -53,6 +52,7 @@
   },
   "libxau": {
     "src": "https://gitlab.freedesktop.org/xorg/lib/libxau",
+    "sys": "ag",
     "dep": "libc++, libuuid, zlib",
     "dsc": "X11 authorisation library",
     "lic": "MIT",
@@ -60,34 +60,41 @@
   },
   "libxcb": {
     "src": "https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.14.tar.xz",
+    "sys": "ag",
     "dep": "libxau, libxdmcp",
     "dsc": "X11 client-side library",
     "lic": "MIT",
     "url": "https://xcb.freedesktop.org/"
   },
   "libxdmcp": {
-    "src": "https://xorg.freedesktop.org/archive/individual/lib/libXdmcp-1.1.3.tar.bz2",
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxdmcp.git",
+    "sys": "ag",
     "dep": "libx11, libxfixes, libxrender",
     "dsc": "X11 Display Manager Control Protocol library",
     "lic": "MIT",
     "url": "https://xorg.freedesktop.org/"
   },
   "libxfixes": {
-    "src": "https://xorg.freedesktop.org/releases/individual/lib/libXfixes-5.0.3.tar.bz2",
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxfixes.git",
+    "sys": "ag",
     "dep": "libx11",
     "dsc": "X11 miscellaneous 'fixes' extension library",
     "lic": "MIT",
     "url": "https://xorg.freedesktop.org/"
   },
   "libxml2": {
-    "src": "ftp://xmlsoft.org/libxml2/libxml2-2.9.12.tar.gz",
-    "dep": "libiconv, liblzma, zlib",
+    "src": "https://gitlab.gnome.org/GNOME/libxml2.git",
+    "sys": "ag",
+    "cfg": "--without-debug --without-python",
+    "dep": "liblzma, zlib",
     "dsc": "Library for parsing XML documents",
     "lic": "MIT",
-    "url": "http://www.xmlsoft.org"
+    "url": "http://www.xmlsoft.org",
+    "pkg": "libxml-2.0"
   },
   "libxrender": {
-    "src": "https://xorg.freedesktop.org/releases/individual/lib/libXrender-0.9.10.tar.bz2",
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxrender.git",
+    "sys": "ag",
     "dep": "libx11",
     "dsc": "X Rendering Extension client library",
     "lic": "MIT",
