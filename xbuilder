@@ -95,6 +95,171 @@ init(){
 inc_tab
 
 main(){
+
+  while [ $1 ];do
+    case $1 in
+      aa64|aa8|a*64-*android|android ) cpu_id=0 arch='aarch64-linux-android' LIBSDIR=$(pwd)/builds/android/arm64-v8a;;
+      aa7|arm-*android*eabi|arm-android) cpu_id=1 arch='arm-linux-androideabi' LIBSDIR=$(pwd)/builds/android/armeabi-v7a;;
+      a86|ax86|*86-*android) cpu_id=2 arch='i686-linux-android' LIBSDIR=$(pwd)/builds/android/x86;;
+      a64|ax64|*64-*android) cpu_id=3 arch='x86_64-linux-android' LIBSDIR=$(pwd)/builds/android/x86_64;;
+      la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4 arch='aarch64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/aarch64;;
+      la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5 arch='arm-linux-gnueabihf' LIBSDIR=$(pwd)/builds/linux/armeabihf;;
+      l86|lx86|*86-linux*|linux*32 ) cpu_id=6 arch='i686-linux-gnu' LIBSDIR=$(pwd)/builds/linux/i686;;
+      l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7 arch='x86_64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/x86_64;;
+      wa8|a*64-w64*|a*64-*mingw*) cpu_id=8 arch='aarch64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/aarch64;;
+      wa7|arm*-w64*|arm*-*mingw*) cpu_id=9 arch='armv7-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/armv7;;
+      w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10 arch='i686-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/i686;;
+      w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11 arch='x86_64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/x86_64;;
+
+      --api) shift && export API=$1;;
+      --clang) use_clang=true;;
+      --prefix) shift && LIBSDIR=$1;;
+      --stable) git_stable=true;;
+      --desc ) echo $dsc && exit 0;;
+      --help|-h) showBanner && usage && exit 0;;
+      --clean ) clean && exit 0;;
+      --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
+      --upd ) shift
+        while [ -n "$1" ]
+          case $1 in
+            src|source) req_build_id=0;;
+            setup) req_build_id=1;;
+            config) req_build_id=2;;
+            build) req_build_id=3;;
+            install) req_build_id=4;;
+            pkg|package) req_build_id=5;;
+            --*) break;;
+          esac
+          shift
+        done
+        ;;
+      --update )  update=true;;
+      --updateall )  update=true; req_update_deps=true;;
+      --vrep)     git_remote_version $src && exit 0;;
+      --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
+      --checkPkg) checkPkg && exit 0;;
+      --libName)  echo $lib && exit 0;;
+      --getVar)   shift && echo $($1) && exit 0;;
+      --refresh)  update=true;;
+      --retry)    retry=true;;
+      --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
+      --shared)   build_shared=true build_static=false;;
+      --static)   build_static=true build_shared=false;;
+      --both)     build_static=true build_shared=true;;
+      --bin)      build_bin=true;;
+      --nobin)    build_bin=false;;
+      --nodist)   bdist=false;;
+      --clear) shift
+        while [ -n "$1" ];do
+          case $1 in
+            source|src) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
+            all-sources) rm -rf sources 2>/dev/null;;
+            all-builds) rm -rf builds 2>/dev/null;;
+            all-packages) rm -rf packages 2>/dev/null;;
+          esac
+          shift
+        done
+        exit 0
+        ;;
+      --set) shift
+        while [ $1 ]; do
+          case $1 in
+            cflags) set_pkgconfig_cflags;;
+            ldflags) set_pkgconfig_ldflags;;
+            ldstatic) set_pkgconfig_ldstatic;;
+            --*) break;;
+          esac
+          shift
+        done
+        ;;
+      --get) shift
+        pkgfile="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
+        case $1 in
+          cflags)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
+          ldflags)    [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
+          ldstatic)   [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
+          pc-ver)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
+          pc-path|pc) echo ${pkgfile} && exit 0;;
+          pc-name)    echo ${pkg} && exit 0;;
+          prefix)     echo $LIBSDIR && exit 0;;
+          libname)    echo ${lib} && exit 0;;
+          aptname)    echo ${apt} && exit 0;;
+          var) shift; echo ${!1} && exit 0;;
+          cmake_include)
+            if [ -z "$cmake_path" ];then
+              echo
+            else
+              echo "$LIBSDIR/$cmake_path"
+            fi
+            exit 0
+            ;;
+        esac
+        ;;
+      --clone) only_repo=true;;   
+      --cmake) cfg='cm';;
+      --ndkcmake) ndkcmake=true;;
+      --ccmake) cfg='ccm';;
+      --nobanner) banner=false;;
+      --debug) debug=true && set -x;;
+      --nodev) nodev=true;;
+      --vlatest) echo $(githubLatestTarGz) && exit 0;;
+      --wipeall) read -p "Wipe all data? [y|N]" r
+        case $r in y|Y) rm -rf builds sources
+        esac && exit 0
+        ;;
+      * ) if [ "$(type -t extraOpts)" = 'function' ]; then
+            extraOpts $1
+          else
+            showBanner
+            usage
+            echo -e "${ind}${CR0}Unknown option $1\n${C0}"
+            exit 1
+          fi
+          ;;
+    esac
+    shift
+  done
+
+
+  [ -z ${f_win_posix} ] && f_win_posix=false
+
+  # Set default Host
+  if [ -z "${arch}" ];then
+    arch="x86_64-linux-gnu"
+    host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
+    host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
+    LIBSDIR=$(pwd)/builds/linux/x86_64
+    SYSTEM_NAME="Linux" CPU="x86_64" ABI="x86_64" EABI=
+  fi
+
+  # is cross-compile?
+  [ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
+
+  loadToolchain
+
+  if [ -z "$ISRUNNING" ]; then
+    showBanner
+    export ISRUNNING=1
+  fi
+  if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
+    echo -ne "${ind}${CY1}Requesting sudo for tool install "
+    ${sudo} echo -ne "\r"
+  fi
+
+  if [ -z "${CBN}" ];then
+    $build_bin && CBN="${cb1}" || CBN="${cb0}"
+  fi
+
+  # reset presets, we don't need them anymore
+  unset cst0 cst1 csh0 csh1 cb0 cb1 cstk cshk cbk
+
+  export arch update retry \
+    build_shared build_static build_bin build_tool \
+    CSH CBN LIBSDIR PLATFORM CPU ABI EABI \
+    host_arch host_64 host_eabi host_vnd host_arm host_os \
+    f_win_posix MAKE_EXECUTABLE=make cmake_includes
+
+
   $debug && set -x
   # exit if missing vars lib arch or src
   test -z ${lib} && {
@@ -129,6 +294,55 @@ main(){
   [ -f "${PKGDIR}/${pkg}.pc" ] || pkgInfo
 
   LOGFILE=$LIBSDIR/${lib}.log
+}
+
+setup_toolchain(){
+  host_bits=(64 32 32 64)
+  host_oss=(android linux windows)
+  host_sys=(linux linux windows)
+  host_pfx=(arm64-v8a armeabi-v7a x86 x86_64 \
+    aarch64 armeabihf i686 x86_64 \
+    aarch64 armv7 x86 x86_64)
+  case $cpu_id in
+    0)  arch='aarch64-linux-android'
+        CT0=$CG0 CT1=$CG1
+        ;;
+    1)  arch='arm-linux-androideabi'
+        host_os=android
+        LIBSDIR=$(pwd)/builds/android/armeabi-v7a
+        CT0=$CG0 CT1=$CG1
+        ;;
+    2)  arch='i686-linux-android'
+        LIBSDIR=$(pwd)/builds/android/x86
+        CT0=$CG0 CT1=$CG1;;
+    3)  arch='x86_64-linux-android'
+        LIBSDIR=$(pwd)/builds/android/x86_64
+        CT0=$CG0 CT1=$CG1;;
+    4)  arch='aarch64-linux-gnu'
+        LIBSDIR=$(pwd)/builds/linux/aarch64
+        ;;
+    5)  arch='arm-linux-gnueabihf'
+        LIBSDIR=$(pwd)/builds/linux/armeabihf
+        ;;
+    6)  arch='i686-linux-gnu'
+        LIBSDIR=$(pwd)/builds/linux/i686
+        ;;
+    7)  arch='x86_64-linux-gnu'
+        LIBSDIR=$(pwd)/builds/linux/x86_64
+        ;;
+    8)  arch='aarch64-w64-mingw32'
+        LIBSDIR=$(pwd)/builds/windows/aarch64
+        ;;
+    9)  arch='armv7-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/armv7;;
+    10) arch='i686-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/i686;;
+    11) arch='x86_64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/x86_64;;
+  esac
+  os_id=$(expr $cpu_id / 4 % 4)
+  LIBSDIR="$(pwd)/builds/${host_oss[] ${host_pfx[$cpu_id]}"
+}
+
+get_host_os(){
+
 }
 
 pkgInfo(){
@@ -1388,173 +1602,5 @@ showBanner(){
   fi
 }
 
-
-
-
-
 # main
-
-while [ $1 ];do
-  case $1 in
-    aa64|aa8|a*64-*android|android ) cpu_id=0 arch='aarch64-linux-android' LIBSDIR=$(pwd)/builds/android/arm64-v8a;;
-    aa7|arm-*android*eabi|arm-android) cpu_id=1 arch='arm-linux-androideabi' LIBSDIR=$(pwd)/builds/android/armeabi-v7a;;
-    a86|ax86|*86-*android) cpu_id=2 arch='i686-linux-android' LIBSDIR=$(pwd)/builds/android/x86;;
-    a64|ax64|*64-*android) cpu_id=3 arch='x86_64-linux-android' LIBSDIR=$(pwd)/builds/android/x86_64;;
-    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4 arch='aarch64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/aarch64;;
-    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5 arch='arm-linux-gnueabihf' LIBSDIR=$(pwd)/builds/linux/armeabihf;;
-    l86|lx86|*86-linux*|linux*32 ) cpu_id=6 arch='i686-linux-gnu' LIBSDIR=$(pwd)/builds/linux/i686;;
-    l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7 arch='x86_64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/x86_64;;
-    wa8|a*64-w64*|a*64-*mingw*) cpu_id=8 arch='aarch64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/aarch64;;
-    wa7|arm*-w64*|arm*-*mingw*) cpu_id=9 arch='armv7-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/armv7;;
-    w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10 arch='i686-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/i686;;
-    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11 arch='x86_64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/x86_64;;
-
-    --api) shift && export API=$1;;
-    --clang) use_clang=true;;
-    --prefix) shift && LIBSDIR=$1;;
-    --stable) git_stable=true;;
-    --desc ) echo $dsc && exit 0;;
-    --help|-h) showBanner && usage && exit 0;;
-    --clean ) clean && exit 0;;
-    --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
-    --upd ) shift
-      while [ -n "$1" ]
-        case $1 in
-          src|source) req_build_id=0;;
-          setup) req_build_id=1;;
-          config) req_build_id=2;;
-          build) req_build_id=3;;
-          install) req_build_id=4;;
-          pkg|package) req_build_id=5;;
-          --*) break;;
-        esac
-        shift
-      done
-      ;;
-    --update )  update=true;;
-    --updateall )  update=true; req_update_deps=true;;
-    --vrep)     git_remote_version $src && exit 0;;
-    --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
-    --checkPkg) checkPkg && exit 0;;
-    --libName)  echo $lib && exit 0;;
-    --getVar)   shift && echo $($1) && exit 0;;
-    --refresh)  update=true;;
-    --retry)    retry=true;;
-    --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
-    --shared)   build_shared=true build_static=false;;
-    --static)   build_static=true build_shared=false;;
-    --both)     build_static=true build_shared=true;;
-    --bin)      build_bin=true;;
-    --nobin)    build_bin=false;;
-    --nodist)   bdist=false;;
-    --clear) shift
-      while [ -n "$1" ];do
-        case $1 in
-          source|src) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
-          all-sources) rm -rf sources 2>/dev/null;;
-          all-builds) rm -rf builds 2>/dev/null;;
-          all-packages) rm -rf packages 2>/dev/null;;
-        esac
-        shift
-      done
-      exit 0
-      ;;
-    --set) shift
-      while [ $1 ]; do
-        case $1 in
-          cflags) set_pkgconfig_cflags;;
-          ldflags) set_pkgconfig_ldflags;;
-          ldstatic) set_pkgconfig_ldstatic;;
-          --*) break;;
-        esac
-        shift
-      done
-      ;;
-    --get) shift
-      pkgfile="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
-      case $1 in
-        cflags)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
-        ldflags)    [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
-        ldstatic)   [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
-        pc-ver)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
-        pc-path|pc) echo ${pkgfile} && exit 0;;
-        pc-name)    echo ${pkg} && exit 0;;
-        prefix)     echo $LIBSDIR && exit 0;;
-        libname)    echo ${lib} && exit 0;;
-        aptname)    echo ${apt} && exit 0;;
-        var) shift; echo ${!1} && exit 0;;
-        cmake_include)
-          if [ -z "$cmake_path" ];then
-            echo
-          else
-            echo "$LIBSDIR/$cmake_path"
-          fi
-          exit 0
-          ;;
-      esac
-      ;;
-    --clone) only_repo=true;;   
-    --cmake) cfg='cm';;
-    --ndkcmake) ndkcmake=true;;
-    --ccmake) cfg='ccm';;
-    --nobanner) banner=false;;
-    --debug) debug=true && set -x;;
-    --nodev) nodev=true;;
-    --vlatest) echo $(githubLatestTarGz) && exit 0;;
-    --wipeall) read -p "Wipe all data? [y|N]" r
-      case $r in y|Y) rm -rf builds sources
-      esac && exit 0
-      ;;
-    * ) if [ "$(type -t extraOpts)" = 'function' ]; then
-          extraOpts $1
-        else
-          showBanner
-          usage
-          echo -e "${ind}${CR0}Unknown option $1\n${C0}"
-          exit 1
-        fi
-        ;;
-  esac
-  shift
-done
-
-
-[ -z ${f_win_posix} ] && f_win_posix=false
-
-# Set default Host
-if [ -z "${arch}" ];then
-  arch="x86_64-linux-gnu"
-  host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-  host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
-  LIBSDIR=$(pwd)/builds/linux/x86_64
-  SYSTEM_NAME="Linux" CPU="x86_64" ABI="x86_64" EABI=
-fi
-
-# is cross-compile?
-[ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
-
-loadToolchain
-
-if [ -z "$ISRUNNING" ]; then
-  showBanner
-  export ISRUNNING=1
-fi
-if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
-  echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  ${sudo} echo -ne "\r"
-fi
-
-if [ -z "${CBN}" ];then
-  $build_bin && CBN="${cb1}" || CBN="${cb0}"
-fi
-
-# reset presets, we don't need them anymore
-unset cst0 cst1 csh0 csh1 cb0 cb1 cstk cshk cbk
-
-export arch update retry \
-  build_shared build_static build_bin build_tool \
-  CSH CBN LIBSDIR PLATFORM CPU ABI EABI \
-  host_arch host_64 host_eabi host_vnd host_arm host_os \
-  f_win_posix MAKE_EXECUTABLE=make cmake_includes
-
 main
