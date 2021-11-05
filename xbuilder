@@ -1,6 +1,6 @@
 #!$SHELL
 # ................................................
-# X-Builder util 0.3.1 2021-diasgc
+# X-Builder util 0.3.2 2021-diasgc
 # ................................................
 [ -z ${vsh+x} ] && . .common
 
@@ -161,7 +161,7 @@ pkgInfo(){
   echo -e "${CT0}${ind}Licence ${C0}$lic ${DP} ${VS}"
 }
 
-guess_buildtool(){
+setup_buildtool(){
   if [ -n "${cfg}" ]; then
     case ${cfg} in
       cm|ccm|cmake|ccmake) build_tool=cmake;;
@@ -172,36 +172,34 @@ guess_buildtool(){
       make|mk) build_tool=make;;
     esac
   fi
-  [ -n "${cfg}" ] && return 0
 
-  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
-    build_tool="cmake"
-    cfg="cmake"
-  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${CONFIG_DIR}/autogen.sh"
-  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${CONFIG_DIR}/bootstrap.sh"
-  elif [ -f "${CONFIG_DIR}/bootstrap" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${CONFIG_DIR}/bootstrap"
-  elif [ -f "${CONFIG_DIR}/configure.ac" ] || [ -f "${CONFIG_DIR}/configure.in" ]; then
-    build_tool="automake"
-    cfg="ar"
-  elif [ -f "${CONFIG_DIR}/meson.build" ]; then
-    build_tool="meson"
-    cfg="meson"
-  else
-    return 1
+  if [ -z "${cfg}" ]; then
+    if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
+      build_tool="cmake"
+      cfg="cmake"
+    elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
+      build_tool="automake"
+      cfg="ac"
+      automake_cmd="${CONFIG_DIR}/autogen.sh"
+    elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+      build_tool="automake"
+      cfg="ac"
+      automake_cmd="${CONFIG_DIR}/bootstrap.sh"
+    elif [ -f "${CONFIG_DIR}/bootstrap" ]; then
+      build_tool="automake"
+      cfg="ac"
+      automake_cmd="${CONFIG_DIR}/bootstrap"
+    elif [ -f "${CONFIG_DIR}/configure.ac" ] || [ -f "${CONFIG_DIR}/configure.in" ]; then
+      build_tool="automake"
+      cfg="ar"
+    elif [ -f "${CONFIG_DIR}/meson.build" ]; then
+      build_tool="meson"
+      cfg="meson"
+    else
+      return 1
+    fi
   fi
-  return 0
-}
 
-config_buildtool(){
   case $build_tool in
     cmake) 
       [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
@@ -241,6 +239,11 @@ config_buildtool(){
       ;;
     *) unset build_tool;;
   esac
+
+  return 0
+}
+
+config_buildtool(){
 
   local od=$(pwd)
   cd $CONFIG_DIR
@@ -322,15 +325,20 @@ start(){
   # use this instead
   [ -n "${dir_config+x}" ] && CONFIG_DIR="${SOURCES}/${lib}/${dir_config}"
 
-
+  # get source
+  local request_config=false
   if [ ! -d $SRCDIR ];then
     # check whether to custom get source
     ifdef_function 'source_get' && source_get || get_source
+    # request 
+    request_config=true
+  fi
 
-    [ -z "${cfg}" ] && guess_buildtool
-    [ -n "${cfg}" ] && check_buildtool
-    pushdir $CONFIG_DIR
+  setup_buildtool
+  cd $CONFIG_DIR
 
+  # config source for 1st time
+  if $request_config; then
     # check whether to custom config source
     ifdef_function 'source_config' && doLog 'config' source_config || config_buildtool
   
@@ -339,10 +347,6 @@ start(){
     
     # check whether to auto patch source
     check_xbautopatch
-  else
-    [ -z "${cfg}" ] && guess_buildtool
-    [ -n "${cfg}" ] && check_buildtool
-    pushdir $CONFIG_DIR
   fi
 
   $only_repo && end_script
@@ -357,7 +361,7 @@ start(){
     esac
   fi
   
-  popdir; pushdir ${BUILD_DIR}
+  cd ${BUILD_DIR}
 
   log_vars SRCDIR dep PKG_CONFIG_LIBDIR
   log_vars CC CXX LD AS AR NM RANLIB STRIP
