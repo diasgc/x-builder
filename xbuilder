@@ -1396,92 +1396,19 @@ showBanner(){
 
 while [ $1 ];do
   case $1 in
-    aa64|aa8|a*64-*android|android ) cpu_id=0 
-      arch='aarch64-linux-android' PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/arm64-v8a
-      CT0=$CG3 CT1=$CG6
-      ;;
-    aa7|arm-*android*eabi|arm-android) cpu_id=1
-      arch='arm-linux-androideabi' PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
-      host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/armeabi-v7a
-      CT0=$CG2 CT1=$CG5
-      ;;
-    a86|ax86|*86-*android) cpu_id=2
-      arch='i686-linux-android' PLATFORM="Android" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/x86
-      CT0=$CG0 CT1=$CG1
-      ;;
-    a64|ax64|*64-*android) cpu_id=3
-      arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/x86_64
-      CT0=$CG0 CT1=$CG1
-      ;;
-    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4
-      arch='aarch64-linux-gnu' PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/aarch64
-      CT0=$CM0 CT1=$CM1
-      ;;
-    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5
-      arch='arm-linux-gnueabihf' PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
-      host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/armeabihf
-      CT0=$CY0 CT1=$CY1
-      ;;
-    l86|lx86|*86-linux*|linux*32 ) cpu_id=6
-      arch='i686-linux-gnu' PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/i686
-      CT0=$CM0 CT1=$CM1
-      ;;
-    l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7
-      arch='x86_64-linux-gnu' PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/x86_64
-      CT0=$CM0 CT1=$CM1
-      ;;
-    wa8|a*64-w64*|a*64-*mingw*) cpu_id=8
-      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for aarch64-w64-mingw32 is not installed"
-      arch='aarch64-w64-mingw32' PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/aarch64
-      CT0=$CC0 CT1=$CC1
-      ;;
-    wa7|arm*-w64*|arm*-*mingw*) cpu_id=9
-      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
-      arch='armv7-w64-mingw32' PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/armv7
-      CT0=$CC0 CT1=$CC1
-      ;;
-    w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10
-      arch='i686-w64-mingw32' PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/i686
-      CT0=$CB0 CT1=$CB1
-      ;;
-    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11
-      arch='x86_64-w64-mingw32' PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/x86_64
-      CT0=$CB0 CT1=$CB1
-      ;;
+    aa64|aa8|a*64-*android|android ) cpu_id=0 arch='aarch64-linux-android' LIBSDIR=$(pwd)/builds/android/arm64-v8a;;
+    aa7|arm-*android*eabi|arm-android) cpu_id=1 arch='arm-linux-androideabi' LIBSDIR=$(pwd)/builds/android/armeabi-v7a;;
+    a86|ax86|*86-*android) cpu_id=2 arch='i686-linux-android' LIBSDIR=$(pwd)/builds/android/x86;;
+    a64|ax64|*64-*android) cpu_id=3 arch='x86_64-linux-android' LIBSDIR=$(pwd)/builds/android/x86_64;;
+    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4 arch='aarch64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/aarch64;;
+    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5 arch='arm-linux-gnueabihf' LIBSDIR=$(pwd)/builds/linux/armeabihf;;
+    l86|lx86|*86-linux*|linux*32 ) cpu_id=6 arch='i686-linux-gnu' LIBSDIR=$(pwd)/builds/linux/i686;;
+    l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7 arch='x86_64-linux-gnu' LIBSDIR=$(pwd)/builds/linux/x86_64;;
+    wa8|a*64-w64*|a*64-*mingw*) cpu_id=8 arch='aarch64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/aarch64;;
+    wa7|arm*-w64*|arm*-*mingw*) cpu_id=9 arch='armv7-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/armv7;;
+    w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10 arch='i686-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/i686;;
+    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11 arch='x86_64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/x86_64;;
+
     --api) shift && export API=$1;;
     --clang) use_clang=true;;
     --prefix) shift && LIBSDIR=$1;;
@@ -1490,6 +1417,20 @@ while [ $1 ];do
     --help|-h) showBanner && usage && exit 0;;
     --clean ) clean && exit 0;;
     --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
+    --upd ) shift
+      while [ -n "$1" ]
+        case $1 in
+          src|source) req_build_id=0;;
+          setup) req_build_id=1;;
+          config) req_build_id=2;;
+          build) req_build_id=3;;
+          install) req_build_id=4;;
+          pkg|package) req_build_id=5;;
+          --*) break;;
+        esac
+        shift
+      done
+      ;;
     --update )  update=true;;
     --updateall )  update=true; req_update_deps=true;;
     --vrep)     git_remote_version $src && exit 0;;
@@ -1517,6 +1458,17 @@ while [ $1 ];do
         shift
       done
       exit 0
+      ;;
+    --set) shift
+      while [ $1 ]; do
+        case $1 in
+          cflags) set_pkgconfig_cflags;;
+          ldflags) set_pkgconfig_ldflags;;
+          ldstatic) set_pkgconfig_ldstatic;;
+          --*) break;;
+        esac
+        shift
+      done
       ;;
     --get) shift
       pkgfile="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
