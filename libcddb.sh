@@ -1,20 +1,21 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu  av8 av7 x86 x64  cc
+# NDK  P+. P+.  .   .   clang
+# GNU  P+.  .   .   .   gcc
+# WIN  P+.  .   .  P++  clang
 
 lib='libcddb'
 apt='libcddb2-dev'
 dsc='CDDB server access library'
 lic='GPL?'
 src='https://salsa.debian.org/nickg/libcddb.git'
-sty='git'
-dep='libiconv libcdio' # optional
 cfg='ac'
+dep='libiconv libcdio' # optional
 eta='10'
 
 . xbuilder.sh
+
+CFG="--without-cdio"
 
 source_patch(){
     # ix clang undefined symbol rpl_malloc error by disabling AC_FUNC_MALLOC
@@ -22,9 +23,7 @@ source_patch(){
     # regenerate
     doAutoreconf $SRCDIR
 }
-
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --without-cdio"
-CPPFLAGS="$CPPFLAGS -Wno-header-guard"
+wopts='-Wno-header-guard'
 
 start
 

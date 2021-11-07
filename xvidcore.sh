@@ -6,17 +6,21 @@ lic='GPL'
 url='https://labs.xvid.com/source/'
 vrs="1.3.7"
 src="https://downloads.xvid.com/downloads/xvidcore-${vrs}.tar.gz"
-sty='tgz'
 cfg='ac'
 eta='20'
+
+pc_url=$url
+pc_llib='-lxvidcore'
+
+lst_inc='xvid.h'
+lst_lib='libxvidcore'
+lst_bin=''
 
 . xbuilder.sh
 
 unset CSH # unsupported static/shared tags
-
 SRCDIR=$SRCDIR/build/generic
-pkgconfig_url=$url
-pkgconfig_llib='-lxvidcore'
+
 
 case $arch in
 	i686-linux-android) CFG="$CFG --disable-assembly";;
@@ -30,7 +34,6 @@ start
 
 # Filelist
 # --------
-
 # include/xvid.h
 # lib/pkgconfig/xvidcore.pc
 # lib/libxvidcore.so.4.3

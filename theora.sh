@@ -16,7 +16,7 @@ eta='391'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-doc --disable-spec --disable-examples --disable-oggtest --disable-vorbistest"
+CFG="--disable-doc --disable-spec --disable-examples --disable-oggtest --disable-vorbistest"
 
 
 start

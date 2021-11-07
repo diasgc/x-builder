@@ -11,26 +11,11 @@ src='https://github.com/KhronosGroup/glslang.git'
 sty='git'
 cfg='cm'
 eta='72'
+pc_llib='-lglslang -lOSDependent -lHLSL -lOGLCompiler -lSPVRemapper'
 
 . xbuilder.sh
 
 CFG="-DBUILD_TESTING=OFF -DENABLE_OPT=OFF -DINSTALL_GTEST=OFF"
-
-build_pkgconfig_file(){
-  [ -z "$vrs" ] || setGitVrs
-  cat <<-EOF >>$PKGDIR/${lib}.pc
-		prefix=${INSTALL_DIR}
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-		Name: ${lib}
-		Description: ${dsc}
-		Version: ${vrs}
-		Requires:
-		Libs: -L${libdir} -lglslang -lOSDependent -lHLSL -lOGLCompiler -lSPVRemapper
-		Cflags: -I${includedir}
-		EOF
-}
 
 start
 

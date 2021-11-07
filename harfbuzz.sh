@@ -9,27 +9,22 @@ apt='libharfbuzz-dev'
 dsc='HarfBuzz text shaping engine'
 lic='Old MIT'
 src='https://github.com/harfbuzz/harfbuzz.git'
-sty='git'
 cfg='ag'
 tls='ragel'
 dep='freetype'
 eta='690'
-mki='install-strip'
-mkc='distclean'
-cmake_path='lib/cmake/harfbuzz'
 
 . xbuilder.sh
 
 case $build_tool in
 	cmake)      $build_bin && CBN="-DHB_BUILD_UTILS=ON";;
-	automake)   CFG="--with-sysroot=${SYSROOT} --with-pic --with-libstdc++=yes";;
+	automake)   CFG="--with-libstdc++=yes";;
 esac
 
 start
 
 # Filelist
 # --------
-
 # include/harfbuzz/hb-subset.h
 # include/harfbuzz/hb-ot-color.h
 # include/harfbuzz/hb-ot-deprecated.h

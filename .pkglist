@@ -1,0 +1,161 @@
+{
+  "8086tiny": {
+    "src": "https://github.com/adriancable/8086tiny.git",
+    "sys": "make",
+    "dsc": "A PC XT-compatible emulator/virtual machine",
+    "lic": "MIT",
+    "url": "https://github.com/adriancable/8086tiny"
+  },
+  "acr": {
+    "src": "https://github.com/radare/acr.git",
+    "dsc": "A fully compatible autoconf replacement",
+    "lic": "GPL-2.0",
+    "mki": "install",
+    "mkf": "all",
+    "url": "https://github.com/radare/acr"
+  },
+  "aom": {
+    "src": "https://aomedia.googlesource.com/aom.git",
+    "sys": "ar",
+    "dep": "libpng",
+    "dsc": "A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream",
+    "lic": "LGPL-3.0"
+  },
+  "aribb24": {
+    "src": "https://github.com/nkoriyama/aribb24.git",
+    "sys": "ar",
+    "dep": "libpng",
+    "dsc": "A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream",
+    "lic": "LGPL-3.0"
+  },
+  "aribb25": {
+    "src": "https://code.videolan.org/videolan/aribb25.git",
+    "dsc": "Basic implementation of the ARIB STD-B25 public standard",
+    "dep": "pscs",
+    "lic": "ISCS",
+    "url": "https://code.videolan.org/videolan/aribb25.git"
+  },
+  "avisynth": {
+    "src": "https://github.com/AviSynth/AviSynthPlus.git",
+    "dsc": "A powerful nonlinear scripting language for video",
+    "lic": "GPL",
+    "sys": "cmake",
+    "cbk": "ENABLE_PLUGINS",
+    "cfg": "-DHEADERS_ONLY=OFF",
+    "host_mingw": "unset PKG_CONFIG_LIBDIR"
+  },
+  "libcrypt": {
+    "src": "https://github.com/gpg/libgcrypt.git",
+    "dep": "libgpg-error",
+    "dsc": "The GNU crypto library",
+    "lic": "GPL-2.0",
+    "cfg": "--with-libgpg-error-prefix=$LIBSDIR"
+  },
+  "libiconv": {
+    "src": "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz",
+    "sys": "ac",
+    "dep": "libicu, libxml2",
+    "dsc": "An implementation of iconv()",
+    "lic": "LGPL-2.0",
+    "url": "https://www.gnu.org/software/libiconv/",
+    "cfg": "--enable-extra-encodings",
+    "llb": "-liconv"
+  },
+  "libicu": {
+    "src": "https://github.com/unicode-org/icu.git",
+    "dir": "icu4c/source",
+    "sys": "ac",
+    "dsc": "International Components for Unicode library",
+    "lic": "BSD",
+    "url": "http://site.icu-project.org/home",
+    "pkg": {
+      "lpc": ["icu-i18n.pc", "icu-uc.pc", "icu-io.pc"],
+      "inc": ["unicode/*.h"],
+      "lib": ["libicui18n","libicutu","libicuuc","libicuio","libicutest","libicudata"],
+      "bin": [""],
+      "eta": 480,
+      "out": 7 
+    }
+  },
+  "libuuid": {
+    "src": "https://git.code.sf.net/p/libuuid/code",
+    "sys": "ar",
+    "dep": "libusb",
+    "dsc": "Portable uuid C library",
+    "lic": "BSD 3-Clause",
+    "url": "https://sourceforge.net/projects/libuuid/"
+  },
+  "libusb": {
+    "src": "https://github.com/libusb/libusb.git",
+    "vrs": "v1.0.24",
+    "sys": "ab",
+    "dep": "libiconv systemd",
+    "dsc": "A C library that provides generic access to USB devices",
+    "lic": "LGPL-2.1",
+    "url": "https://libusb.in fo/"
+  },
+  "libx11": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libx11.git",
+    "sys": "ag",
+    "dep": "libxcb",
+    "dsc": "X11 client-side library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxau": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxau",
+    "sys": "ag",
+    "dep": "libc++, libuuid, zlib",
+    "dsc": "X11 authorisation library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxcb": {
+    "src": "https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.14.tar.xz",
+    "sys": "ag",
+    "dep": "libxau, libxdmcp",
+    "dsc": "X11 client-side library",
+    "lic": "MIT",
+    "url": "https://xcb.freedesktop.org/"
+  },
+  "libxdmcp": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxdmcp.git",
+    "sys": "ag",
+    "dep": "libx11, libxfixes, libxrender",
+    "dsc": "X11 Display Manager Control Protocol library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxfixes": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxfixes.git",
+    "sys": "ag",
+    "dep": "libx11",
+    "dsc": "X11 miscellaneous 'fixes' extension library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxml2": {
+    "src": "https://gitlab.gnome.org/GNOME/libxml2.git",
+    "sys": "ag",
+    "cfg": "--without-debug --without-python",
+    "dep": "liblzma, zlib",
+    "dsc": "Library for parsing XML documents",
+    "lic": "MIT",
+    "url": "http://www.xmlsoft.org",
+    "pkg": "libxml-2.0"
+  },
+  "libxrender": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxrender.git",
+    "sys": "ag",
+    "dep": "libx11",
+    "dsc": "X Rendering Extension client library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "systemd": {
+    "src": "https://github.com/systemd/systemd.git",
+    "dsc": "The systemd System and Service Manager",
+    "lic": "GPL-2.0",
+    "url": "https://github.com/systemd/systemd"
+  }
+}

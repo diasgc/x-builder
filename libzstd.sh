@@ -1,40 +1,31 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   .   .   .   .   .   .  static
-#  +   .   .   .   +   .   .   .   .   .   .  shared
-#  +   .   .   .   +   .   .   .   .   .   .  bin
-# PKGINFO-------------------------------------
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU +..  .   .   .  gcc
+# WIN +..  .   .   .  clang/gcc
+
 lib='libzstd'
 apt='libzstd-dev'
 dsc='Zstandard - Fast real-time compression algorithm'
-lic='BSD/GPL-2.0'
+lic='BSD GPL-2.0'
 src='https://github.com/facebook/zstd.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='134'
-cst0="-DZSTD_BUILD_STATIC=OFF"
-cst1="-DZSTD_BUILD_STATIC=ON"
-csh0="-DZSTD_BUILD_SHARED=OFF"
-csh1="-DZSTD_BUILD_SHARED=ON"
-cb0="-DZSTD_BUILD_PROGRAMS=OFF"
-cb1="-DZSTD_BUILD_PROGRAMS=ON"
-cmake_path='lib/cmake/zstd'
-# -----------------------------------------
+cstk="ZSTD_BUILD_STATIC"
+cshk="ZSTD_BUILD_SHARED"
+cbk="ZSTD_BUILD_PROGRAMS"
+dir_config='build/cmake'
 
 . xbuilder.sh
-#CFG="-DZSTD_BUILD_TESTS=OFF -DZSTD_BUILD_CONTRIB=OFF \
-#  -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_LZ4_SUPPORT=OFF \
-#  -DZSTD_LZMA_SUPPORT=OFF -DZSTD_ZLIB_SUPPORT=OFF \
-#  -DZSTD_PROGRAMS_LINK_SHARED=OFF \
-#  -DZSTD_MULTITHREAD_SUPPORT=ON"
-SRCDIR=$SRCDIR/build/cmake/
-dbld=$SRCDIR/${arch}
+
+nodev=false
+
+#SRCDIR=$SRCDIR/build/cmake/
 
 start
 
 # Filelist
 # --------
-
 # include/zstd_errors.h
 # include/zstd.h
 # include/zdict.h

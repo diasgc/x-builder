@@ -1,26 +1,21 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   +   .   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
-# Issues: automake wont work
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU +++  .   .   .  gcc
+# WIN +++  .   .  +++ clang/gcc
 
 lib='fribidi'
 apt='libfribidi0'
 dsc='Unicode Bidirectional Algorithm Library'
 lic='LGPL-2.1'
 src='https://github.com/fribidi/fribidi.git'
-sty='git'
 cfg='meson'
 eta='60'
+CFG="-Db_lto=true -Ddocs=false"
 
 . xbuilder.sh
 
-CSH="-Ddefault_library=both"
-CFG="-Db_pie=true -Db_lto=true -Ddocs=false"
-MAKE_EXECUTABLE=ninja
-case $PLATFORM in Windows) LD="bfd";; esac
-
+$host_mingw || CFG+=' -Db_pie=true'
 start
 
 # Filelist

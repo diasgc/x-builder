@@ -16,7 +16,7 @@ cb0="--disable-cli"
 . xbuilder.sh
 
 AS=nasm
-CFG="--sysroot=${SYSROOT} --enable-pic --cross-prefix=${CROSS_PREFIX}"
+CFG="--cross-prefix=${CROSS_PREFIX}"
 SRCDIR=$SRCDIR/build/linux
 
 case $arch in

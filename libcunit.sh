@@ -14,7 +14,6 @@ pkg='cunit'
 eta='27'
 
 . xbuilder.sh
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
 
 source_config(){
     pushd $SRCDIR

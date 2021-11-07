@@ -22,8 +22,6 @@ eta='60'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 source_config(){
     pushd $SRCDIR
     autoreconf -i -s

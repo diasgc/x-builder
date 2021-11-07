@@ -9,33 +9,13 @@ apt='libaec-dev'
 dsc='Adaptive Entropy Coding library'
 lic='BSD-s2c'
 src='https://gitlab.dkrz.de/k202009/libaec.git'
-sty='git'
 cfg='cm'
 eta='30'
-cmake_path='cmake'
+pc_llib='-lsz -laec'
 
 . xbuilder.sh
 
 CFG="-DBUILD_TESTING=OFF"
-
-# CMAKE DEFAULT OPTIONS
-# -DAEC_FUZZING=OFF
-
-build_pkgconfig_file(){
-	cat <<-EOF >>$PKGDIR/${pkg}.pc
-		prefix=$INSTALL_DIR
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-
-		Name: ${lib}
-		Description: ${dsc}
-		URL: https://gitlab.dkrz.de/k202009/libaec
-		Version: ${vrs}
-		Libs: -L\${libdir} -lsz -laec
-		Cflags: -I\${includedir}
-		EOF
-}
 
 start
 

@@ -1,22 +1,42 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   +   +   .   +   .   .   .  static
-#  +   +   .   .   .   +   .   +   .   .   .  shared
-#  +   +   .   .   .   +   .   +   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK PP+ PP+ ... ... CLANG
+# GNU ... PP+ ... ... GCC
+# WIN ... ... ... PP+ CLANG/GCC
 
 lib='jasper'
 apt='jasper'
 dsc='Image Processing/Coding Tool Kit'
-lic=''
+lic='JasPer'
 src='https://github.com/mdadams/jasper.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='26'
+
 cshk="JAS_ENABLE_SHARED"
 cbk="JAS_ENABLE_PROGRAMS"
 CFG="-DBUILD_TESTING=OFF -DJAS_ENABLE_DOC=OFF"
 
+lst_inc='jasper/jas_malloc.h jasper/jas_version.h
+	jasper/jas_dll.h jasper/jas_tmr.h
+	jasper/jas_export_cmake.h jasper/jas_init.h
+	jasper/jas_fix.h jasper/jas_compiler.h
+	jasper/jasper.h jasper/jas_getopt.h
+	jasper/jas_image.h jasper/jas_stream.h
+	jasper/jas_types.h jasper/jas_string.h
+	jasper/jas_icc.h jasper/jas_config.h
+	jasper/jas_thread.h jasper/jas_cm.h
+	jasper/jas_math.h jasper/jas_log.h
+	jasper/jas_tvp.h jasper/jas_seq.h
+	jasper/jas_debug.h'
+lst_lib='libjasper'
+lst_bin='jasper multithread imgcmp imginfo'
+
 . xbuilder.sh
+
+$host_mingw && CFG="-DWITH_STACK_PROTECTOR=OFF"
+
+start
+
 
 # CMAKE config options             def.val
 # ALLOW_IN_SOURCE_BUILD             OFF
@@ -25,13 +45,8 @@ CFG="-DBUILD_TESTING=OFF -DJAS_ENABLE_DOC=OFF"
 # JAS_ENABLE_ASAN                   OFF
 # JAS_ENABLE_AUTOMATIC_DEPENDENCIES ON
 
-[[ $arch = *mingw32 ]] && CFG="-DWITH_STACK_PROTECTOR=OFF"
-
-start
-
 # Filelist
 # --------
-
 # include/jasper/jas_malloc.h
 # include/jasper/jas_version.h
 # include/jasper/jas_dll.h

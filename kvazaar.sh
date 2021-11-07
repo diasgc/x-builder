@@ -15,8 +15,6 @@ eta='70'
 
 . xbuilder.sh $@ --ndkLrt
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist

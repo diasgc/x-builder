@@ -6,26 +6,21 @@
 
 lib='libheif'
 apt='libheif-dev'
-dsc='HEand AVIF file format decoder and encoder'
+dsc='HEIF and AVIF file format decoder and encoder'
 lic='LGPL-3.0'
 src='https://github.com/strukturag/libheif.git'
 sty='git'
-cfg='cm'
+cfg='cmake'
 dep='libpng libjpeg x265 libde265 aom'
 eta='60'
 f_win_posix=true
 
-case $build_tool in
-  cmake) cbk="WITH_EXAMPLES";;
-  automake) cbk="examples";;
+case $cfg in
+  cmake) cbk="WITH_EXAMPLES" CFG="-DWITH_AOM=ON -DWITH_X265=ON -DWITH_DAV1D=OFF -DWITH_LIBDE265=ON -DWITH_RAV1E=OFF";;
+  ag) cbk="examples" CFG="--disable-rav1e --disable-go --disable-gdk-pixbuf";;
 esac
 
 . xbuilder.sh
-
-case $cfg in
-  cm|ccm|cmake|ccmake) CFG="-DWITH_AOM=ON -DWITH_X265=ON -DWITH_DAV1D=OFF -DWITH_LIBDE265=ON -DWITH_RAV1E=OFF";;
-  ac|ag|am|ar|automake) CFG="--with-sysroot=${SYSROOT} --disable-rav1e --disable-go --disable-gdk-pixbuf --with-pic=1";;
-esac
 
 start
 

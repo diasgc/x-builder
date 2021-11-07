@@ -15,13 +15,10 @@ eta='40'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 start
 
 # Filelist
 # --------
-
 # include/libmodplug/stdafx.h
 # include/libmodplug/modplug.h
 # include/libmodplug/it_defs.h

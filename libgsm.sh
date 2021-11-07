@@ -13,12 +13,11 @@ src="http://www.quut.com/gsm/gsm-${vrs}.tar.gz"
 sty='tgz'
 cfg='mk'
 eta='60'
+pc_llib="-lgsm"
 
 . xbuilder.sh
 
 CFG="CC=${CC} AR=${AR} RANLIB=${RANLIB}"
-
-pkgconfig_llib="-lgsm"
 
 # cannot install!!
 gsm_install(){

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU ...  .   .   .  gcc
+# WIN ...  .   .   .  clang/gcc
 
 lib='twolame'
 dsc='MPEG Audio Layer 2 (MP2) encoder'
@@ -15,7 +15,7 @@ eta='225'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-maintainer-mode"
+CFG="--disable-maintainer-mode"
 
 source_patch(){
   	pushdir $SRCDIR
@@ -26,8 +26,6 @@ source_patch(){
 }
 
 start
-
-
 
 # Filelist
 # --------

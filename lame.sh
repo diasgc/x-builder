@@ -1,53 +1,37 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   +   .   +   .   .   .   .   .  static
-#  +   .   .   +   .   +   .   .   .   .   .  shared
-#  +   .   .   +   .   +   .   .   .   .   .  bin
-# use src svn instead of tgz to avoid issues building shared/bin w64
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU +++ +++  .   .  gcc
+# WIN +++ +++  .   .  clang/gcc
 
 lib='lame'
 dsc='LAME is a high quality MPEG Audio Layer III (MP3) encoder'
 lic='LGPL'
-svn='https://svn.code.sf.net/p/lame/svn'
-src="${svn}/trunk/lame"
-sty='svn'
-#src='https://github.com/despoa/LAME.git'
-#sty='git'
+svn='https://svn.code.sf.net/p/lame/svn' #sty='svn'
+src="${svn}/trunk/lame" #src='https://github.com/despoa/LAME.git'
 cfg='ac'
 dep='libiconv'
 eta='180'
-cb0="--disable-frontend"
-cb1="--enable-frontend"
+mki='install-strip'
+mkc='distclean'
+cbk="able-frontend"
+pc_llib="-lmp3lame"
+API=26 # required for frontends build
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-decoder --disable-debug"
-[[ $arch = *mingw32* ]] && CFG="$CFG --enable-expopt=full"
-
+# update latest version
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
+CFG="--disable-gtktest --disable-decoder --disable-debug"
+$host_mingw && CFG+=" --enable-expopt=full"
 # make shared executable so
-$build_shared && $build_bin && CBN="--enable-dynamic-frontends"
-mkf="-Wno-shift-negative-value -Wno-unused-variable"
+! $build_static && $build_bin && CBN="--enable-dynamic-frontends"
+[ "$host_os" == "android" ] && [ $API -lt 26 ] && unset CBN
 
 build_patch_config(){
 	#no docs
 	sed -i '/^SUBDIRS/ {s/ doc//}' $SRCDIR/Makefile
-}
-
-build_pkgconfig_file(){
-	cat <<-EOF >>$PKGDIR/$pkg.pc
-		prefix=${INSTALL_DIR}
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-		Name: Lame
-		Description: ${dsc}
-		Version: ${vrs}
-		Requires:
-		Libs: -L\${libdir} -lmp3lame
-		Cflags: -I\${includedir}
-		EOF
 }
 
 start
@@ -55,7 +39,6 @@ start
 
 # Filelist
 # --------
-
 # include/lame/lame.h
 # lib/pkgconfig/lame.pc
 # lib/libmp3lame.so

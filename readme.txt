@@ -1,32 +1,179 @@
-Build status:
-    bit 0   build static ok
-    bit 1   build shared ok
-    bit 2   build bin ok
-    *       build static OR shared at a time
-
-            android      linux        windows
-            a8 a7 86 64  a8 a7 86 64  86 64 
-    aom     3  3  3  3   3  3  3  3   3  3
-aribb24     3  3  3  3   3  3  F  3   .  3
-avisynth    2
-bzip        
-celt        ok
-chromaprint 3* 3* 3* 3*
-cmake
-codec2      3  3  3  3   3  3  3  3   .  3
-daala       3
-dav1d       7  7  7  7
-davs2       7  7  7  7   7  7  F  7   .  .
-
-libde265
-libheif
-libjpeg
-libpng
-ogg
-vorbis
-x265
-zlib
-
-
 todo:
 json package-stat file
+
+libs-2-build/fix:
+binutils
+ffmpeg
+pzip
+lib7zip
+boost
+turingcodec
+...
+status:
+aom                        cm
+aribb24                    ar..........READY
+avisynth                   cm
+binutils                   ac
+boost                      cm
+brotli                     cm
+brunsli                    cm
+bzip2                      cm
+c-blosc                    cm
+c-blosc2                   cm
+cairo                      ag
+celt                       ag
+charls                     cm
+chromaprint                cm
+codec2                     cm
+cpu_features               cm
+daala                      ag
+dav1d                      meson
+davs2                      ac
+density                    cm
+exhale                     cm
+exiv2                      cm
+expat                      ac
+fastlz                     cm..........READY
+fdk-aac                    ag
+fftw                       cm
+fftwf                      cm
+fftwl                      cm
+fftwq                      cm
+file-signature             
+flac                       ag
+flif                       cm
+flite                      ac
+fontconfig                 ac
+freetype                   cm
+frei0r                     ag
+fribidi                    meson
+giflib                     cmake
+glib2                      meson
+glslang                    cm
+gmp                        ac
+gnutls                     ac
+guetzli                    cm
+harfbuzz                   ag
+highway                    cm
+isobmff                    cm
+jasper                     cm
+jpegoptim                  ac
+jq                         ar
+json-c                     cm
+jsoncpp                    cm
+jxrlib                     mk
+kvazaar                    ag
+ladspa                     mk
+lame                       ac
+lcms2                      ac
+lensfun                    cm
+leptonica                  ag
+lerc                       cm
+lib7zip                    ccm
+libaec                     cm
+libao                      ag
+libass                     ag
+libavif                    cm
+libbluray                  ar
+libbpg                     mk
+libbs2b                    ag
+libcaca                    ac
+libcddb                    ac
+libcdio                    ac
+libcunit                   ac
+libdc1394                  ac
+libde265                   ag
+libdeflate                 mk
+libexif                    ar
+libfishsound               ag
+libgav1                    cm
+libgcrypt                  ag
+libgme                     cm
+libgsm                     mk
+libheif                    cm
+libiconv                   ac
+libiec61883                ar
+libilbc                    cm
+libjack                    waf
+libjbig                    cmake.......READY
+libjpeg                    cm
+libjxl                     cm
+libklvanc                  ac
+liblzf                     ac
+liblzma                    ac
+libmagic                   ac
+libmodplug                 ar
+libmysofa                  cm
+libnuma                    ac
+libpng                     cm
+libpulse                   meson
+libraw                     ar
+libraw1394                 ac
+libressl                   cm
+librsvg                    ag
+librubberband              meson
+libsrt                     cm
+libtiff                    ccm
+libtool                    am
+libudfread                 ar
+libvideogfx                ag
+libwebp                    ar
+libwebp2                   cm
+libxml2                    am
+libzstd                    cm
+lizard                     cm
+lodepng                    mk
+lv2                        wf
+lz4                        mk
+lzo                        cm
+mbedtls                    cm
+nettle                     ac
+ogg                        ag
+oniguruma                  cm
+open-vcdiff                cm
+opencore-amr               ar
+openh264                   meson
+openjpeg                   cm
+openssl                    other
+opus                       ag
+p7zip                      cm
+pixman                     ag
+poppler                    cm
+postfish                   mk
+rnnoise                    ag
+samplerate                 cm
+sdl2                       cm
+sjpeg                      cm
+skcms                      bazel
+snappy                     cm
+sndfile                    cm
+soxr                       cm
+speex                      ag
+speexdsp                   ag
+svtav1                     cm
+tesseract                  ag
+theora                     am
+tree                       mk
+turingcodec                cm
+twolame                    ac
+uchardet                   cm
+vapoursynth                ag
+vidstab                    cm
+vo-amrwbenc                ar
+vorbis                     ag
+vpx                        ac
+vvc                        cm
+vvdec                      cm
+vvenc                      cm
+wavpack                    ar
+x264                       ac
+x265                       cm
+xavs                       ac
+xavs2                      ac
+xeve                       cm
+xvidcore                   ac
+zfp                        cm
+zimg                       ag
+zlib                       cm
+zopfli                     cm
+zvbi                       ar

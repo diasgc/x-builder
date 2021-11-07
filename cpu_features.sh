@@ -8,10 +8,9 @@ lib='cpu_features'
 dsc='A cross platform C99 library to get cpu features at runtime'
 lic='Apache-2.0'
 src='https://github.com/google/cpu_features.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 pkg='cpu_features'
-pkgconfig_llib='-lcpufeatures'
+pc_llib='-lcpufeatures'
 CFG='-DBUILD_PIC=ON'
 
 . xbuilder.sh

@@ -9,29 +9,15 @@ dsc='Image metadata library and tools'
 lic=''
 vrs='5.39'
 src="http://ftp.debian.org/debian/pool/main/f/file/file_${vrs}.orig.tar.gz"
-sty='tgz'
 cfg='ac'
-pkg='libmagic'
 eta='60'
 
 . xbuilder.sh
-
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
-_buildSrc(){
-	pushd $SOURCES >/dev/null
-	log download
-	wget -O- $src 2>>$LOGFILE | tar -xz >>$LOGFILE 2>&1 || err
-	mv file_*.tar.gz $lib
-	logok
-	popd >/dev/null
-}
 
 start
 
 # Filelist
 # --------
-
 # include/magic.h
 # share/man/man4/magic.4
 # share/man/man3/libmagic.3

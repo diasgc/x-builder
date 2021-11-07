@@ -26,7 +26,7 @@ case $build_tool in
   automake)
     mki='install-strip'
     mkd='distclean'
-    CFG="--with-sysroot=${SYSROOT} --with-pic=1 --without-debug --without-python"
+    CFG="--without-debug --without-python"
     ;;
 esac
 

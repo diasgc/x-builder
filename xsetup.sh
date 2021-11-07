@@ -2,38 +2,16 @@
 # ................................................
 # setup util 1.0 2021-diasgc
 # ................................................
+[ -z ${vsh+x} ] && . .common
+# load config
+[ -f ".config" ] && . .config
+install=false
 
-# def colors
-C0="\e[0m" CW="\e[97m" CD="\e[90m"
-CR0="\e[31m" CR1="\e[91m"
-CG0="\e[32m" CG1="\e[92m"
-CY0="\e[33m" CY1="\e[93m"
-CB0="\e[34m" CB1="\e[94m"
-CM0="\e[35m" CM1="\e[95m"
-CC0="\e[36m" CC1="\e[96m"
-
-vsh="1.0"
-#b="\u25ba"
-b="\u2605"
-c="\u2714"
-
+clear
+echo -ne "$CY1  Request to sudo apt update "; sudo apt update |& prt_progress
 sudo echo -ne "\r" || exit 1
 
 [ "$1" == "--debug" ] && shift && set -x
-
-banner(){
-    echo -ne "\n\n  ${CW}Setup Utility for XSh Scripts ${vsh}${C0}\n  "
-    echo -ne "Running on $(uname -m) $(uname -o) "
-    [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
-    if [ -n "$(uname -r | grep 'microsoft')" ];then
-        echo -ne "${CD}WSL2 "
-    elif [ -n "$(uname -r | grep 'Microsoft')" ];then
-        echo -ne "${CD}WSL "
-    else
-        echo -ne "${CD} "
-    fi
-    echo -e "$(uname -r)${C0}\n"
-}
 
 aptInstall(){
     local showV=1
@@ -81,7 +59,7 @@ check4Pkg(){
         shift
         local v0=$(dpkg-query -W ${2} 2>/dev/null | cut -f2)
         if [ -n "${v0}" ];then
-            local v1=$(apt-cache madison ${2} | cut -d'|' -f2 | xargs)
+            local v1=$(apt-cache madison ${2} | head -n1 | cut -d'|' -f2 | xargs)
             if [ $v0=$v1 ]; then
                 echo -e "${CC0}  ${b} ${1}${C0}\t\t${v0} ${CC0}${c}${C0}"
             else
@@ -94,7 +72,7 @@ check4Pkg(){
     else
         if [ $(which $2) ];then
             local v0=$(dpkg-query -W ${3} 2>/dev/null | cut -f2)
-            local v1=$(apt-cache madison ${3} | cut -d'|' -f2 | xargs)
+            local v1=$(apt-cache madison ${3} | head -n1 | cut -d'|' -f2 | xargs)
             #local v0=$(apt-cache policy ${3} | grep -Po '(Installed:).\K.*')
             #local v1=$(apt-cache policy ${3} | grep -Po '(Candidate:).\K.*')
             if [ "$v0" == "$v1" ]; then
@@ -120,18 +98,19 @@ getAndroidNdkLatestAvailableVersion(){
 }
 
 getAndroidNdkLatestDownloadUrl(){
-    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..-linux.zip"
+    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip"
 }
 
 # usage installNdk <version>
 installNdk(){
+    local url=$(getAndroidNdkLatestDownloadUrl)
     [ $(which unzip) ] || sudo apt -qq install unzip -y >/dev/null 2>&1
-    echo -ne "${CM0} downloading... ${C0}"
+    echo -ne "${CM0} downloading... ${url}${C0}"
     tput sc && echo -ne "\e[$(tput lines);0H${CY1}"
     [ -z "$ANDROID_HOME" ] && ANDROID_HOME="~/Android"
     [ ! -d "$ANDROID_HOME" ] && mkdir -p $ANDROID_HOME
     pushd $ANDROID_HOME >/dev/null
-    wget --progress=dot $1 -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
+    wget --progress=dot $url -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
     tput rc
     echo -ne "${CM0} decompressing... ${C0}"
     unzip tmp.zip >/dev/null 2>&1
@@ -188,13 +167,13 @@ check4Ndk(){
         esac
         #[ $latestNdk -gt $ndkv ] && latest="(latest ${CC0}$latestNdk${C0}" || latest="${CC0}${c}${C0}"
         echo -ne "${CC0}  ${b} Android NDK${C0}\t\t${ndkv} ${latest}"
-        local p="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/"
-        local ar="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64//bin/llvm-ar"
+        local p="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr"
+        local ar="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
         #echo -ne "\t\t\t${CC0}patching lrt/lpthread...${C0} "
+        [ ! -f "$p/include/sys/soundcard.h" ] && echo "#include <linux/soundcard.h>" >"$p/include/sys/soundcard.h"
         for arch in aarch64-linux-android arm-linux-androideabi i686-linux-android x86_64-linux-android; do
-            [ ! -f "$p/$arch/libpthread.a" ] && $ar cr "$p/$arch/libpthread.a"
-            [ ! -f "$p/$arch/librt.a" ] && $ar cr "$p/$arch/librt.a"
-            #echo -ne "${arch}${CC0}${c}${C0} "
+            [ ! -f "$p/lib/$arch/libpthread.a" ] && $ar cr "$p/lib/$arch/libpthread.a"
+            [ ! -f "$p/lib/$arch/librt.a" ] && $ar cr "$p/lib/$arch/librt.a"
         done
         echo -e "${CC0} lpthread/lrt patches ok${C0}"
     else
@@ -210,6 +189,7 @@ check4Ndk(){
             test "$(echo "$testVer $ndkVer" | tr " " "n" | sort -V | head -n 1)" != "$testVer" && ndkVer=$testVer && ndkDir=$testDir
         done
         if [ -n "$ndkDir" ] && [ -d "$ndkDir" ]; then
+            export ANDROID_NDK_HOME=${ndkDir}
             echo -e "${CC0}  ${b} Android NDK${C0}\t\tfound at $ndkDir $ndkVer"
             [ -z "$(cat ~/.bashrc | grep 'ANDROID_NDK_HOME')" ] && printf "\nexport ANDROID_NDK_HOME=$ndkDir\n" >> ~/.bashrc && source ~/.bashrc
         else
@@ -220,72 +200,128 @@ check4Ndk(){
     
 }
 
-# vercomp v1 v2 returns 0: v1=v2, 1: v1>v2, 2: v1<v2
-vercomp () {
-    test "$1" = "$2" && return 0
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++)); do
-        test -z "${ver2[i]}" && ver2[i]=0
-        if ((10#${ver1[i]} > 10#${ver2[i]})); then return 1; fi
-        if ((10#${ver1[i]} < 10#${ver2[i]})); then return 2; fi
-    done
-    return 0
-}
-
 writeConfig(){
     local ldate=$(date +%s)
+    local xv_ndk=$(getAndroidNdkHomeVersion $ANDROID_NDK_HOME)
     local xv_aarch64_gnu=$(ls -t /usr/lib/gcc-cross/aarch64-linux-gnu 2>/dev/null | head -n1)
     local xv_armeabi_gnu=$(ls -t /usr/lib/gcc-cross/arm-linux-gnueabihf 2>/dev/null | head -n1)
     local xv_x64_gnu=$(ls -t /usr/lib/gcc/x86_64-linux-gnu 2>/dev/null | head -n1)
     local xv_x86_gnu=$(ls -t /usr/lib/gcc-cross/i686-linux-gnu 2>/dev/null | head -n1)
     local xv_x64_mingw=$(ls -t /usr/lib/gcc/x86_64-w64-mingw32 | grep -E "*-win32" | head -n1)
     local xv_x86_mingw=$(ls -t /usr/lib/gcc/i686-w64-mingw32 | grep -E "*-win32" | head -n1)
-    
+    [ -z "${llvm_mingw}" ] && [ -n "${LLVM_MINGW_HOME}" ] && llvm_mingw=${LLVM_MINGW_HOME}
     case "$(uname -s)" in
-        Linux)  BUILD_TRIP=$(echo $(uname -m)-linux-gnu)
-        [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && BUILD_TRIP="${BUILD_TRIP}eabihf"    
+        Linux)  build_arch=$(echo $(uname -m)-linux-gnu)
+        [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && build_arch="${build_arch}eabihf"    
         if [ -n "$(which getprop)" ];then
-            BUILD_TRIP=$(echo $(uname -m)-linux-android)
+            build_arch=$(echo $(uname -m)-linux-android)
             export API=$(getprop ro.build.version.sdk)
         fi
         ;;
-        Darwin) BUILD_TRIP=$(echo $(uname -m)-darwin-gnu);;
-        CYGWIN*|MINGW32*|MSYS*|MINGW*) BUILD_TRIP=$(echo $(uname -m)-w64-mingw32);;
+        Darwin) build_arch=$(echo $(uname -m)-darwin-gnu);;
+        CYGWIN*|MINGW32*|MSYS*|MINGW*) build_arch=$(echo $(uname -m)-w64-mingw32);;
     esac
 
     cat <<-EOF >${1}
     #!/bin/bash
-    export config_lastupdate=${ldate} \\
-           xv_aarch64_gnu=${xv_aarch64_gnu} \\
-           xv_armeabi_gnu=${xv_armeabi_gnu} \\
-           xv_x86_gnu=${xv_x86_gnu} \\
-           xv_x64_gnu=${xv_x64_gnu} \\
-           xv_x64_mingw=${xv_x64_mingw} \\
-           xv_x86_mingw=${xv_x86_mingw} \\
-           MAKE_EXECUTABLE=$(which make) \\
-           CMAKE_EXECUTABLE=$(which cmake) \\
-           NASM_EXECUTABLE=$(which nasm) \\
-           PKG_CONFIG=$(which pkg-config) \\
-           BUILD_TRIP=$BUILD_TRIP \\
-           HOST_NPROC=$(nproc) \\
-           ROOTDIR=$(pwd)
+    export config_lastupdate=$(date +%s) \\
+           ROOTDIR="$(pwd)" \\
+           build_arch="${build_arch}" \\
+           ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \\
+           xv_ndk="${xv_ndk}" \\
+           xv_ndk_major="${xv_ndk%%.*}" \\
+           MAKE_EXECUTABLE="$(which make)" \\
+           CMAKE_EXECUTABLE="$(which cmake)" \\
+           NASM_EXECUTABLE="$(which nasm)" \\
+           PKG_CONFIG="$(which pkg-config)" \\
+           HOST_NPROC="$(nproc)" \\
+           LLVM_MINGW_HOME="${llvm_mingw}" \\
+           LLVM_MINGW_REL="${llvm_mingw_rel}" \\
+           xv_llvm_mingw="${xv_llvm_mingw}" \\
+           llvm_mingw_rel="${llvm_mingw_rel}" \\
+           xv_aarch64_gnu="${xv_aarch64_gnu}" \\
+           xv_armeabi_gnu="${xv_armeabi_gnu}" \\
+           xv_x86_gnu="${xv_x86_gnu}" \\
+           xv_x64_gnu="${xv_x64_gnu}" \\
+           xv_x64_mingw="${xv_x64_mingw%%-*}" \\
+           xv_x86_mingw="${xv_x86_mingw%%-*}"
+           
+           
 	EOF
 }
 
-banner
+check_llvm_mingw(){
+    if [ -z ${LLVM_MINGW_HOME+x} ] || [ ! -d "${LLVM_MINGW_HOME}" ]; then
+        find_llvm_mingw
+        if [ -z ${llvm_mingw} ];then
+            install_llvm_mingw
+        else
+            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw (found at ~/${LLVM_MINGW_HOME#"$HOME"/})"
+            export LLVM_MINGW_HOME=${llvm_mingw}
+        fi
+    else
+        local latest_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
+        if [ "${latest_rel}" != "${llvm_mingw_rel}" ];then
+            local d=$(pwd)
+            echo -ne "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw release ${llvm_mingw_rel} upgrading to ${latest_rel}..."
+            cd $LLVM_MINGW_HOME; cd ..
+            rm -rf $LLVM_MINGW_HOME
+            install_llvm_mingw $(pwd)
+            echo -e "\b\b\b${CC1} done (release ${llvm_mingw_rel})${C0}"
+            cd $d
+        else
+            echo -e "${CC0}  ${b} LLVM-MINGW${C0}\t\t$xv_llvm_mingw release ${llvm_mingw_rel} (latest)"
+        fi
+    fi
+}
 
-echo -e "${CC1}${b} Toolchains${C0}"
+find_llvm_mingw(){
+    echo -ne "searching... "
+    llvm_mingw=$(find ~ -name "aarch64-w64-mingw32-clang")
+    [ -f "$llvm_mingw" ] && {
+        xv_llvm_mingw="$(${llvm_mingw} --version | grep -oP '\d*\.\d*.\d* (?=\()')"
+        llvm_mingw=$(dirname "${llvm_mingw%/*}")
+        echo -ne " found $xv_llvm_mingw at $llvm_mingw "
+        [ -d "$llvm_mingw" ] && return 0
+    }
+    unset llvm_mingw
+    echo -ne "not found"
+}
+
+install_llvm_mingw(){
+    export llvm_mingw_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
+    echo -ne "installing... "
+    [ -z $1 ] && d=~ || d=$1
+    if [ -d "$d" ];then
+        local od=$(pwd)
+        cd $d
+        [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
+        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
+        export LLVM_MINGW_HOME="$(pwd)/llvm-mingw"
+        export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
+        cd $od
+    fi
+}
+
+banner 'Setup Utility'
+
+if [ "$1" == "--ndk" ]; then
+    rm -rf ${ANDROID_NDK_HOME}
+    installNdk $(getAndroidNdkLatestDownloadUrl)
+    exit 0
+fi
+
+echo -e "\n${CC1}${b} Toolchains${C0}"
 #ANDROID NDK
 check4Ndk
 
+check_llvm_mingw
+
+# https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+
 #MINGW
-check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
-check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
+#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
+#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
 
 #CROSS-ARCH-GNU
 check4Pkg 'i686-GNU' 'i686-linux-gnu-gcc' 'gcc-i686-linux-gnu' 'g++-i686-linux-gnu'
@@ -325,6 +361,8 @@ check4Pkg --pkg 'Patch    ' 'patch'
 check4Pkg --pkg 'Jq       ' 'jq'
 
 echo -ne "\n  ${CC0}Writing config... "
+
 writeConfig .config
+
 echo -e "Done${C0}\n"
 

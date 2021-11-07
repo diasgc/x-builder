@@ -8,16 +8,32 @@ lib='libklvanc'
 apt=''
 dsc='VANC Processing Framework'
 lic='LGPL-2.1'
-vrs='0.0.0' # no version
+vrs='0' # no version
 src='https://github.com/stoth68000/libklvanc.git'
-sty='git'
 cfg='ac'
 eta='60'
 
+CFG="--disable-tests --enable-rpath --disable-dsd --enable-legacy --with-pic=1"
+
+pc_llib="-lklvanc"
+
+lst_inc='libklvanc/cache.h libklvanc/vanc-afd.h libklvanc/vanc.h \
+         libklvanc/vanc-eia_708b.h libklvanc/vanc-sdp.h libklvanc/vanc-eia_608.h \
+         libklvanc/vanc-kl_u64le_counter.h libklvanc/vanc-lines.h \
+         libklvanc/klrestricted_code_path.h libklvanc/vanc-scte_104.h \
+         libklvanc/vanc-smpte_12_2.h libklvanc/vanc-checksum.h \
+         libklvanc/vanc-packets.h libklvanc/pixels.h libklvanc/smpte2038.h \
+         libklvanc/did.h'
+lst_lib='libklvanc'
+lst_bin='klvanc_eia708 klvanc_genscte104 \
+         klvanc_scte104 klvanc_util klvanc_afd \
+         klvanc_smpte12_2 klvanc_smpte2038 klvanc_parse'
+lst_pc='libklvanc.pc'
+
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --disable-tests --enable-rpath --disable-dsd --enable-legacy --with-pic=1"
-pkgconfig_llib="-lklvanc"
+CFG="--with-sysroot=${SYSROOT} $CFG" 
+
 
 source_patch(){
     pushdir $SRCDIR

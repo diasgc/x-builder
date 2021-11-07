@@ -17,8 +17,6 @@ eta='275'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-
 [ "${arch}" == "arm-linux-androideabi" ] && {
     pushvar_f dep 'cpu_features'
     pushvar_l CFG '--disable-arm-neon --disable-arm-simd'

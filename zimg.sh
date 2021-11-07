@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='zimg'
 dsc='Scaling, colorspace conversion, and dithering library'
@@ -13,9 +13,12 @@ cfg='ag'
 eta='120'
 cbk='example'
 
-. xbuilder.sh
+lst_lic='share/doc/zimg/COPYING'
+lst_inc='zimg.h zimg++.hpp'
+lst_lib='libzimg'
+lst_bin=''
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
+. xbuilder.sh
 
 start
 

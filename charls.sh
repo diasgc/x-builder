@@ -1,20 +1,29 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK  P   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='charls'
 apt='libcharls-dev'
 dsc='C++ JPEG-LS (ISO/IEC 14495-1 / ITU-T.87) library implementation.'
 lic='BSD-3c'
 src='https://github.com/team-charls/charls.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='15'
-cmake_include='lib/cmake/charls/charlsConfig.cmake'
 cbk="CHARLS_BUILD_SAMPLES"
 mki='install/strip'
+
+lst_inc='charls/charls_jpegls_decoder.h
+	charls/api_abi.h
+	charls/annotations.h
+	charls/jpegls_error.h
+	charls/public_types.h
+	charls/charls.h
+	charls/charls_jpegls_encoder.h
+	charls/version.h'
+lst_lib='libcharls'
+lst_bin=''
 
 . xbuilder.sh
 

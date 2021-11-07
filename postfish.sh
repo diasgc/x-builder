@@ -8,7 +8,6 @@ lib='postfish'
 dsc='A digital audio post-processing, restoration, filtering and mixdown tool.'
 lic='GPL-2'
 src='https://gitlab.xiph.org/xiph/postfish.git'
-sty='git'
 cfg='mk'
 tls='libgtk2.0-dev libfftw3-bin'
 dep='libao fftw'
@@ -19,7 +18,7 @@ eta='60'
 
 CFG="CC=$CC LD=$CC PREFIX=$INSTALL_DIR"
 
-source_patch(){
+_source_patch(){
   sed -i 's|gtk+-2.0 ao|gtk+-2.0 ao fftw|' $SRCDIR/Makefile
 }
 

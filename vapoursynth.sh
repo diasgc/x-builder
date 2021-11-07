@@ -1,27 +1,37 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  F   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +F   .   .   .  clang
+# GNU ++´ ++   .   .  gcc
+# WIN  F   .   .   .  clang/gcc
 
 lib='vapoursynth'
 dsc='A video processing framework with simplicity in mind'
 lic='LGPL-2.1'
 src='https://github.com/vapoursynth/vapoursynth.git'
-sty='git'
 cfg='ag'
 tls='python'
 dep='zimg'
 eta='60'
-mki='install-strip'
-mkc='distclean'
+
+lst_inc='vapoursynth/VSScript4.h
+	vapoursynth/VapourSynth4.h
+	vapoursynth/VSConstants4.h
+	vapoursynth/VSHelper.h
+	vapoursynth/VSScript.h
+	vapoursynth/VSHelper4.h
+	vapoursynth/VapourSynth.h'
+lst_lib='libvapoursynth'
+lst_bin=''
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-python-module=no --enable-vspipe=no --enable-vsscript=no --enable-x86-asm=no"
+CFG="--enable-python-module=no --enable-vspipe=no --enable-vsscript=no"
+$host_arm && CFG+=" --enable-x86-asm=no"
 
 start
 
+# ndk shared libs: ld.lld undefined symbol: __emutls_get_address
+# mingw: src/zimg/common/arm/cpuinfo_arm.cpp:7:12: fatal error: 'Windows.h' file not found
 
 # Filelist
 # --------
@@ -35,3 +45,4 @@ start
 # lib/pkgconfig/vapoursynth.pc
 # lib/libvapoursynth.la
 # lib/libvapoursynth.a
+# lib/libvapoursynth.so

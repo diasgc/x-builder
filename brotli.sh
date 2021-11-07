@@ -1,26 +1,34 @@
 #!/bin/bash
 
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 lib='brotli'
 pkg='libbrotlicommon'
 dsc='Lossless compression algorithm and format'
 lic='MIT'
 src='https://github.com/google/brotli.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='60'
+
+lst_inc='brotli/shared_dictionary.h
+	brotli/port.h
+	brotli/types.h
+	brotli/decode.h
+	brotli/encode.h'
+lst_lib='libbrotlidec libbrotlienc libbrotlicommon
+    libbrotlicommon-static libbrotlicommon-static
+    libbrotlicommon-static'
+lst_bin='brotli'
 
 . xbuilder.sh
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   .   .   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
-
 # Filelist
 # --------
-
 # include/brotli/shared_dictionary.h
 # include/brotli/port.h
 # include/brotli/types.h

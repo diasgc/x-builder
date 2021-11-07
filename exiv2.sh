@@ -1,15 +1,14 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='exiv2'
 dsc='Image metadata library and tools'
-lic=''
+lic='Other'
 src='https://github.com/Exiv2/exiv2.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 dep='libiconv'
 eta='60'
 f_win_posix=true
@@ -19,30 +18,23 @@ png="OFF"
 
 extraOpts(){
   case $1 in
-	--xmp ) [[ $arch != *ming32 ]] && xmp="ON" && dep_add "expat";;
-	--png ) png="ON" dep_add "libpng";;
+	--xmp ) $host_mingw || xmp="ON"; dep+=' expat';;
+	--png ) png="ON"; dep+=" libpng";;
   esac
 }
 
 . xbuilder.sh
 
-! $build_shared && CFG="-DEXIV2_ENABLE_DYNAMIC_RUNTIME=OFF" || CFG="-DEXIV2_ENABLE_DYNAMIC_RUNTIME=ON"
+$host_mingw && CFG+=" -DCMAKE_TOOLCHAIN_FILE=$SRCDIR/cmake/toolschains/ubuntu1804-mingw64.cmake -DEXIV2_ENABLE_WIN_UNICODE=ON"
+! $build_shared && CFG+=" -DEXIV2_ENABLE_DYNAMIC_RUNTIME=OFF" || CFG+=" -DEXIV2_ENABLE_DYNAMIC_RUNTIME=ON"
 
-case $arch in
-	*mingw32 ) CFG="-DCMAKE_TOOLCHAIN_FILE=$SRCDIR/cmake/toolschains/ubuntu1804-mingw64.cmake -DEXIV2_ENABLE_WIN_UNICODE=ON";;
-esac
-
-CFG="$CFG -DINSTALL_EXAMPLES=OFF \
+CFG+=" -DINSTALL_EXAMPLES=OFF \
 	-DEXIV2_BUILD_DOC=OFF \
 	-DEXIV2_BUILD_SAMPLES=OFF \
 	-DBUILD_TESTING=OFF \
 	-DEXIV2_TEAM_PACKAGING=ON \
 	-DEXIV2_ENABLE_PNG=$png \
 	-DEXIV2_ENABLE_XMP=$xmp"
-
-# [[ "$xmp" == "ON" ]] && CFG+="	-DEXPAT_INCLUDE_DIR=$LIBSDIR/include -DEXPAT_LIBRARY=$LIBSDIR/lib/expat.a"
-[[ "$arch" == *"mingw32" ]] && [[ "$png" == "ON" ]] && dep="$dep zlib" CFG="$CFG -DZLIB_INCLUDE_DIR=$LIBSDIR/include \
-	-DZLIB_LIBRARY_RELEASE=$LIBSDIR/lib/libzlib.dll.a"
 
 source_patch(){
 	# update mingw toolchain to <xv_x64_mingw> in .config

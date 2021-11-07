@@ -1,31 +1,40 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  .   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 lib='jq'
-pkg='jq'
-apt='jq'
 dsc='Lightweight and flexible command-line JSON processor'
-lic=''
+lic='Other'
+vrs='jq-1.6' # latest
 src='https://github.com/stedolan/jq.git'
-sty='git'
 cfg='ar'
-tls=''
-dep=''
-eta='22'
-mkclean='distclean'
+dep='oniguruma'
+eta='575'
+pc_llib='-ljq'
+lst_inc='jv.h jq.h'
+lst_lib='libjq'
+lst_bin='jq'
+lst_lic='share/doc/jq/COPYING'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-oniguruma=builtin --disable-maintainer-mode "
-CSH=0
-
-source_patch(){
-    pushdir $SRCDIR
-    doLog 'git2' git submodule update --init # if building from git to get oniguruma
-    popdir
-}
+CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
+unset CSH
 
 start
+
+# Filelist
+# --------
+# include/jv.h
+# include/jq.h
+# lib/libjq.so
+# lib/libjq.la
+# lib/libjq.a
+# share/man/man1/jq.1
+# share/doc/jq/AUTHORS
+# share/doc/jq/README.md
+# share/doc/jq/COPYING
+# share/doc/jq/README
+# bin/jq

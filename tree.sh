@@ -18,20 +18,15 @@ API=26
 # todo clean & simplify
 
 OBJS="tree.o unix.o html.o xml.o json.o hash.o color.o file.o"
-case $arch in
-  *-android* ) CFLAGS="-std=c11 -O3 -Wall -D__ANDROID"
-    LDFLAGS="-s -lc"
-    OBJS="$OBJS strverscmp.o";;&
-  aarch64-linux-android|x86_64-linux-android )
-     CFLAGS="$CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64";;
-  arm-*android*|i686-*android );;
-  *-linux-gnu* ) CFLAGS="-ggdb -pedantic -Wall -DLINUX"
-    LDFLAGS="-s";;&
-  aarch64-linux-gnu|x86_64-linux-gnu )
-    CFLAGS="$CFLAGS -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64";;
-  arm-linux-gnu*|i686-linux-gnu );;
-  * ) doErr "  $arch is unsupported";;
+CFLAGS+=' -std=c11 -O3 -flto -Wall' LDFLAGS+=" -s"
+
+case $host_os in
+  android) CFLAGS+=" -D__ANDROID" LDFLAGS+=" -lc" OBJS+=" strverscmp.o";;
+  gnu) CFLAGS=" -DLINUX";;
+  *) doErr "  $arch is unsupported";;
 esac
+
+$host_64 && CFLAGS+=" -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64"
 
 CFG="prefix=$INSTALL_DIR CC=$CC"
 mki="prefix=$INSTALL_DIR install"
@@ -48,7 +43,7 @@ build_all(){
     log 'make '
     LDFLAGS=$LDFLAGS CFLAGS=$CFLAGS OBJS=$OBJS make $CFG -j4 >>"$LOGFILE" || err
     logok
-    doLog 'install' make $mkinstall
+    doLog 'install' install -s -D -m 700 $SRCDIR/tree $INSTALL_DIR/bin
     popd >/dev/null 
 }
 

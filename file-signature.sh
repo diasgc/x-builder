@@ -15,7 +15,7 @@ eta='30'
 
 . xbuilder.sh
 
-[[ "$arch" == *"mingw32" ]] && ext='.exe'
+$host_mingw && ext='.exe'
 # Use function buildSrc to custom clone repo
 # Use function patchSrc to custom patch src and/or configure
 # Use function beforeBuild to execute extra code before buildLib

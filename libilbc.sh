@@ -26,7 +26,6 @@ start
 
 # Filelist
 # --------
-
 # include/ilbc.h
 # include/ilbc_export.h
 # share/doc/libilbc/CONTRIBUTING.md

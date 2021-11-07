@@ -1,42 +1,32 @@
 #!/bin/bash
-# ANDROID
-# Aa8 Aa7 A86 A64
-#  +   +   +   +  static
-#  +   +   +   +  shared
-#  -   -   -   -  bin
-# LINUX
-# Aa8 Aa7 A86 A64 
-#  +   +   +   +  static
-#  +   +   +   +  shared
-#  -   -   -   -  bin
-# WINDOWS
-# Aa8 Aa7 A86 A64 
-#  -   -   .   +  static
-#  -   -   .   +  shared
-#  -   -   -   -  bin
+#             a8  a7  x86 x64
+# ndk-clang   ++. ++. ++. ++.
+# linux-gnu   ++. ++. ++. ++.
+# mingw-llvm  ++. ++. ... ++.
 
-# HEADER ---------------
 lib='aribb24'
 apt='libaribb24-dev'
 dsc='A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream'
 lic='LGPL-3.0'
 src='https://github.com/nkoriyama/aribb24.git'
-sty='git'
 cfg='ar'
-tls=''
 dep='libpng'
 eta='10'
 
-# LOADER ---------------
+lst_inc='aribb24/parser.h aribb24/decoder.h aribb24/bits.h aribb24/aribb24.h'
+lst_lib='libaribb24'
+
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
+build_patch_config(){
+    # to build shared libs on mingw
+    $host_mingw && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo
+}
 
 start
 
 # Filelist
 # --------
-
 # include/aribb24/parser.h
 # include/aribb24/decoder.h
 # include/aribb24/bits.h

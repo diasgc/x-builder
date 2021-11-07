@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   F   +   +   .   +   +   .   .   +  static
-#  +   +   F   +   +   .   +   +   .   .   +  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
+#             a8  a7  x86 x64
+# ndk-clang   ++  ++  FF  ++ 
+# linux-gnu   ++  ++  ++. ++ 
+# mingw-llvm  ... ... ... ...
 
 # note: vorbis --shared build requires ogg --shared
 # otherwise relocation errors may occur
@@ -11,7 +11,6 @@ apt='libvorbis0a'
 dsc='Ogg Vorbis audio format'
 lic='BSD'
 src='https://github.com/xiph/vorbis.git'
-sty='git'
 cfg='ag'
 dep='ogg'
 eta='42'
@@ -24,7 +23,7 @@ case $cfg in
     ;;
   ac|ag|ar|autotools)
     [ ! -f "$SRCDIR/configure" ] && pushdir $SRCDIR && ./autogen.sh && popdir
-    CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-docs --disable-examples --disable-oggtest"
+    CFG="--disable-docs --disable-examples --disable-oggtest"
     ;;
 esac
 

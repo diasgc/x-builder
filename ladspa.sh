@@ -15,6 +15,7 @@ sty='tgz'
 cfg='mk'
 dep='sndfile'
 eta='60'
+pc_llib='-lladspa'
 
 . xbuilder.sh
 
@@ -31,23 +32,6 @@ build_patch_config(){
 	sed -i "s|-I.$|-I. -I$LIBSDIR/include|g" Makefile
 	sed -i "s|-ldl -lm -lsndfile|-ldl -lm -L$LIBSDIR/lib -lsndfile|g" Makefile
 	sed -i "s|-Werror|-Wno-error|g" Makefile
-}
-
-build_pkgconfig_file(){
-  cat <<-EOF >>$PKGDIR/${pkg}.pc
-		prefix=$INSTALL_DIR
-		exec_prefix=\${prefix}
-		libdir=\${exec_prefix}/lib
-		includedir=\${prefix}/include
-
-		Name: ${lib}
-		Description: ${dsc}
-		Requires:
-		Version: ${vrs}
-		Libs: -L${libdir} -lladspa
-		Libs.private:
-		Cflags: -I${includedir}/
-		EOF
 }
 
 start

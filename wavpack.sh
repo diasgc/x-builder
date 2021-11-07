@@ -1,31 +1,38 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  F   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++ +++ +++  .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .  +++ clang/gcc
 
 lib='wavpack'
 dsc='WavPack encode/decode library, command-line programs, and several plugins'
 lic='BSD 3-clause'
 src='https://github.com/dbry/WavPack.git'
-sty='git'
 cfg='ar'
 dep='libiconv'
-eta='172'
+eta='30'
+cbk="able-apps"
 
-#cb0="--disable-apps"
-#cb1="--enable-apps"
+lst_inc='wavpack/wavpack.h'
+lst_lib='libwavpack'
+lst_bin='wavpack wvgain wvtag wvunpack'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-apps --enable-maintainer-mode" #--enable-rpath --disable-dsd --enable-legacy 
-case $arch in aarch64*|arm*) CFG="$CFG --disable-asm";;esac
+# cli has glob header that requires api28 for ndk
+$build_bin && [ "$host_os" == "android" ] && [ $API -lt 28 ] && set_ndk_api 28
+
+CFG="--enable-maintainer-mode"
+
+$host_arm && CFG+=" --disable-asm"
 
 source_config(){
     test -f "$SRCDIR/config.rpath" || cp /usr/share/gettext/config.rpath $SRCDIR 2>/dev/null || touch $SRCDIR/config.rpath || exit 1
     doAutoreconf $SRCDIR
 }
+
 start
+
 
 # Filelist
 # --------
@@ -38,3 +45,7 @@ start
 # share/man/man1/wvgain.1
 # share/man/man1/wvunpack.1
 # share/man/man1/wavpack.1
+# bin/wavpack
+# bin/wvgain
+# bin/wvtag
+# bin/wvunpack

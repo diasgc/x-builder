@@ -1,28 +1,26 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++ ... ... ... CLANG
+# GNU +++ ... ... ... GCC
+# WIN  F  ... ... ... CLANG/GCC
 
 lib='libiec61883'
 apt="${lib}-dev"
 dsc='An isochronous streaming media library for IEEE 1394'
 lic='LGPL-2.1'
 src='https://github.com/Distrotech/libiec61883.git'
-sty='git'
 cfg='ar'
 dep='libraw1394'
+eta='15'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} --with-pic=1"
-[[ $arch = *mingw32 ]] && dep=''
+#$host_mingw && unset dep
 
 start
 
 # Filelist
 # --------
-
 # include/libiec61883/iec61883.h
 # share/man/man1/plugctl.1
 # share/man/man1/plugreport.1

@@ -9,15 +9,12 @@ apt='libcairo2-dev'
 dsc='Development files for the Cairo 2D graphics library'
 lic='LGPL-2.1'
 src='https://github.com/freedesktop/cairo.git'
-sty='git'
 cfg='ag'
 dep='fontconfig'
-tls='build-dep cairo'
+tls='build-dep'
 eta='275'
+CFG="--enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
 
 . xbuilder.sh
-
-CFG="--with-sysroot=${SYSROOT} --with-pic=1 --enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
-
 
 start

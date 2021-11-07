@@ -1,8 +1,8 @@
 #!/bin/bash
 # Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   .   .   .   .   .  static
-#  +   .   .   .   .   +   .   .   .   .   .  shared
-#  +   .   .   .   .   +   .   .   .   .   .  bin
+#  +   .   .   .   .   +   .   .   +   .   .  static
+#  +   .   .   .   .   +   .   .   +   .   .  shared
+#  +   .   .   .   .   +   .   .   +   .   .  bin
 
 lib='lzo'
 pkg='lzo2'
@@ -19,7 +19,6 @@ cshk="ENABLE_SHARED"
 . xbuilder.sh
 
 start
-
 
 # Filelist
 # --------

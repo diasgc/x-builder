@@ -1,26 +1,24 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .  +++ clang/gcc
 
 lib='uchardet'
 dsc='an encoding detector library'
 lic='GPL-2'
 src='https://gitlab.freedesktop.org/uchardet/uchardet.git'
-sty='git'
-cfg='cm'
-eta='60'
+cfg='cmake'
+eta='10'
 cbk="BUILD_BINARY"
+lst_inc='uchardet/uchardet.h'
+lst_lib='libuchardet'
+lst_bin='uchardet'
 
 . xbuilder.sh
 
 CFG="-DUSE_OMP=OFF"
-
-case $arch in
-  aarch64*|arm* ) CFG="$CFG -DCHECK_SSE2=OFF";;
-  i686*|x86_64* ) CFG="$CFG -DCHECK_SSE2=ON";;
-esac
+$host_arm && CFG+=" -DCHECK_SSE2=OFF" || CFG+=" -DCHECK_SSE2=ON"
 
 start
 
