@@ -7,12 +7,12 @@
 
 lib='libusb'
 apt='libpscs-dev'
+vrs='v1.0.24'
 dsc='A cross-platform library to access USB devices'
 lic='LGPL-2.1'
 src='https://github.com/libusb/libusb.git'
 cfg='ac'
 eta='10'
-dep='systemd'
 automake_cmd='./bootstrap.sh'
 
 lst_inc=''

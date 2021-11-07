@@ -173,6 +173,35 @@ aptLongDesc(){
 
 gitjson=
 
+guess_cfg(){
+  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
+    build_tool="cmake"
+    cfg="cmake"
+  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/autogen.sh"
+  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/bootstrap.sh"
+  elif [ -f "${CONFIG_DIR}/bootstrap" ]; then
+    build_tool="automake"
+    cfg="ac"
+    automake_cmd="${CONFIG_DIR}/bootstrap"
+  elif [ -f "${CONFIG_DIR}/configure.ac" ] || [ -f "${CONFIG_DIR}/configure.in" ]; then
+    build_tool="automake"
+    cfg="ar"
+  elif [ -f "${CONFIG_DIR}/meson.build" ]; then
+    build_tool="meson"
+    cfg="meson"
+  else
+    return 1
+  fi
+  
+  return 0
+}
+
 start(){
   
   # check whether to update source of main lib and dependencies
@@ -214,9 +243,8 @@ start(){
   # use this instead
   [ -n "${dir_config+x}" ] && CONFIG_DIR="${SOURCES}/${lib}/${dir_config}"
 
-
+  local req_src_config=false
   if [ ! -d $SRCDIR ];then
-    
     # check whether to custom get source
     if ifdef_function 'source_get'; then
       source_get
@@ -235,9 +263,14 @@ start(){
           ;;
       esac
     fi
+    req_src_config=true
+  fi
 
-    pushdir $CONFIG_DIR
+  pushdir $CONFIG_DIR
+  
+  [ -z "$cfg" ] && guess_cfg
 
+  if $req_src_config; then
     # check whether to custom config source
     if ifdef_function 'source_config'; then
       doLog 'config' source_config
@@ -245,8 +278,6 @@ start(){
       doLog 'automake' $automake_cmd
       unset automake_cmd
     else case $cfg in
-      auto) 
-
       ab) [ -f "${CONFIG_DIR}/boostrap" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap
           [ -f "${CONFIG_DIR}/boostrap.sh" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap.sh
           ;;
@@ -274,19 +305,17 @@ start(){
   fi
 
   $only_repo && end_script
-
+  
   if [ -z "$BUILD_DIR" ];then
     case $build_tool in
-      cmake|meson) BUILD_DIR="${CONFIG_DIR}/build_${arch}"
-        [ -d "${BUILD_DIR}" ] && rm -rf ${BUILD_DIR}
-        mkdir -p ${BUILD_DIR}
-        ;;
+      cmake|meson) BUILD_DIR="${CONFIG_DIR}/build_${arch}";;
       *) BUILD_DIR=${CONFIG_DIR};;
     esac
   fi
-  
+  [ -d "${BUILD_DIR}" ] && rm -rf ${BUILD_DIR}
+  mkdir -p ${BUILD_DIR}
   popdir; pushdir ${BUILD_DIR}
-
+  
   log_vars SRCDIR dep PKG_CONFIG_LIBDIR
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
@@ -398,20 +427,6 @@ end_script(){
   dec_tab
   echo
   exit 0
-}
-
-check_buildtool(){
-  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
-    build_tool="cmake"
-    cfg="cmake"
-  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
-    build_tool="automake"
-    cfg="ag"
-  elif [ -f "${CONFIG_DIR}/configure" ]; then
-    build_tool="automake"
-    cfg="ac"
-  
-            
 }
 
 check_xbautopatch(){
@@ -1314,7 +1329,7 @@ hwinfoProcessor(){
 
 showBanner(){
   if $banner; then
-    echo -ne "\n\n${ind}${CW}Cross Compile Shell Scripts ${vsh} for Linux${C0}\n${ind}"
+    echo -ne "\n\n${ind}${CW}Cross Builder Scripts ${vsh} for Linux${C0}\n${ind}"
     [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
     if [ -n "$(uname -r | grep 'microsoft')" ];then
       echo -ne "WSL2 "

@@ -303,46 +303,29 @@ setup_toolchain(){
   host_pfx=(arm64-v8a armeabi-v7a x86 x86_64 \
     aarch64 armeabihf i686 x86_64 \
     aarch64 armv7 x86 x86_64)
+  
   case $cpu_id in
-    0)  arch='aarch64-linux-android'
-        CT0=$CG0 CT1=$CG1
-        ;;
-    1)  arch='arm-linux-androideabi'
-        host_os=android
-        LIBSDIR=$(pwd)/builds/android/armeabi-v7a
-        CT0=$CG0 CT1=$CG1
-        ;;
-    2)  arch='i686-linux-android'
-        LIBSDIR=$(pwd)/builds/android/x86
-        CT0=$CG0 CT1=$CG1;;
-    3)  arch='x86_64-linux-android'
-        LIBSDIR=$(pwd)/builds/android/x86_64
-        CT0=$CG0 CT1=$CG1;;
-    4)  arch='aarch64-linux-gnu'
-        LIBSDIR=$(pwd)/builds/linux/aarch64
-        ;;
-    5)  arch='arm-linux-gnueabihf'
-        LIBSDIR=$(pwd)/builds/linux/armeabihf
-        ;;
-    6)  arch='i686-linux-gnu'
-        LIBSDIR=$(pwd)/builds/linux/i686
-        ;;
-    7)  arch='x86_64-linux-gnu'
-        LIBSDIR=$(pwd)/builds/linux/x86_64
-        ;;
-    8)  arch='aarch64-w64-mingw32'
-        LIBSDIR=$(pwd)/builds/windows/aarch64
-        ;;
-    9)  arch='armv7-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/armv7;;
-    10) arch='i686-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/i686;;
-    11) arch='x86_64-w64-mingw32' LIBSDIR=$(pwd)/builds/windows/x86_64;;
+    0)  arch='aarch64-linux-android' CT0=$CG0 CT1=$CG1;;
+    1)  arch='arm-linux-androideabi' CT0=$CG0 CT1=$CG1;;
+    2)  arch='i686-linux-android'    CT0=$CG0 CT1=$CG1;;
+    3)  arch='x86_64-linux-android'  CT0=$CG0 CT1=$CG1;;
+    4)  arch='aarch64-linux-gnu'     CT0=$CG0 CT1=$CG1;;
+    5)  arch='arm-linux-gnueabihf'   CT0=$CG0 CT1=$CG1;;
+    6)  arch='i686-linux-gnu'        CT0=$CG0 CT1=$CG1;;
+    7)  arch='x86_64-linux-gnu'      CT0=$CG0 CT1=$CG1;;
+    8)  arch='aarch64-w64-mingw32'   CT0=$CG0 CT1=$CG1;;
+    9)  arch='armv7-w64-mingw32'     CT0=$CG0 CT1=$CG1;;
+    10) arch='i686-w64-mingw32'      CT0=$CG0 CT1=$CG1;;
+    11) arch='x86_64-w64-mingw32'    CT0=$CG0 CT1=$CG1;;
   esac
-  os_id=$(expr $cpu_id / 4 % 4)
-  LIBSDIR="$(pwd)/builds/${host_oss[] ${host_pfx[$cpu_id]}"
+
+  os_id=$(expr $cpu_id / 4)
+  LIBSDIR="$(pwd)/builds/${host_oss[$os_id]}/${host_pfx[$cpu_id]}"
+  CC
 }
 
-get_host_os(){
-
+phost_os(){
+  echo ${host_oss[$os_id]}
 }
 
 pkgInfo(){

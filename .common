@@ -1,10 +1,10 @@
 #!/bin/sh
 # ................................................
-# Commons 0.3.1 2021-diasgc
+# Commons 0.3.1-dev 2021-diasgc
 # Definition constants and functions
 # ................................................
 
-vsh='0.3.1'
+vsh='0.3.1-dev'
 
 #b="\u25ba"
 b="\u2605"
