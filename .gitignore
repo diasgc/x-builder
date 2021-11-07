@@ -7,3 +7,4 @@ xstat.json
 android_device_vendor_lib64.lst
 .termux
 _test.sh
+_template.sh
