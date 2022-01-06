@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/diasgc/x-builder#readme",
   "publishConfig": {
-    "@YOUR-USERNAME:registry": "https://npm.pkg.github.com"
+    "diasgc:registry": "https://npm.pkg.github.com"
   }
 }
