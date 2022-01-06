@@ -1,0 +1,68 @@
+#!/bin/bash
+# cpu av8 av7 x86 x64
+# NDK PP+  .   .   .   clang
+# GNU  .   .   .  PP++ gcc
+# WIN  .   .   .   .   clang/gcc
+
+lib='svtav1'
+dsc='SVT (Scalable Video Technology) for AV1 encoder/decoder library'
+lic='BSD'
+src='https://github.com/OpenVisualCloud/SVT-AV1.git'
+cfg='cmake'
+pkg='SvtAv1Enc'
+eta='45'
+cbk="BUILD_APPS"
+
+CFG="-DBUILD_TESTING=OFF"
+
+. xbuilder.sh
+
+[ "$host_os" == "android" ] && LDFLAGS+=" -L$SYSROOT/usr/${arch}/lib -llog"
+
+start
+<<'XB64_PATCH'
+LS0tIFNvdXJjZS9MaWIvQ29tbW9uL0NvZGVjL0ViVGhyZWFkcy5jCTIwMjEtMTAtMzAgMTc6NTI6
+MjguNjM1MDQ2MzAwICswMTAwCisrKyBTb3VyY2UvTGliL0NvbW1vbi9Db2RlYy9FYlRocmVhZHMu
+YwkyMDIxLTEwLTMwIDE3OjUxOjEzLjE5NTA0NjMwMCArMDEwMApAQCAtODEsNyArODEsNyBAQAog
+ICAgIGlmICh0aCA9PSBOVUxMKQogICAgICAgICByZXR1cm4gTlVMTDsKIAotI2lmbmRlZiBFQl9U
+SFJFQURfU0FOSVRJWkVSX0VOQUJMRUQKKyNpZiAhZGVmaW5lZCBFQl9USFJFQURfU0FOSVRJWkVS
+X0VOQUJMRUQgJiYgIWRlZmluZWQoX19BTkRST0lEX18pCiAgICAgcHRocmVhZF9hdHRyX3QgYXR0
+cjsKICAgICBwdGhyZWFkX2F0dHJfaW5pdCgmYXR0cik7CiAgICAgcHRocmVhZF9hdHRyX3NldHNj
+aGVkcG9saWN5KCZhdHRyLCBTQ0hFRF9GSUZPKTsKCi0tLSBTb3VyY2UvTGliL0NvbW1vbi9Db2Rl
+Yy9FYlRocmVhZHMuaAkyMDIxLTEwLTMwIDE3OjMwOjUxLjU4NTA0NjMwMCArMDEwMAorKysgU291
+cmNlL0xpYi9Db21tb24vQ29kZWMvRWJUaHJlYWRzLmgJMjAyMS0xMC0zMCAxNzozMDozMi44NzEw
+MDAwMDAgKzAxMDAKQEAgLTgxLDcgKzgxLDcgQEAKICNlbmRpZgogI2luY2x1ZGUgPHNjaGVkLmg+
+CiAjaW5jbHVkZSA8cHRocmVhZC5oPgotI2lmIGRlZmluZWQoX19saW51eF9fKQorI2lmIGRlZmlu
+ZWQoX19saW51eF9fKSAmJiAhZGVmaW5lZChfX0FORFJPSURfXykKICNkZWZpbmUgRUJfQ1JFQVRF
+X1RIUkVBRChwb2ludGVyLCB0aHJlYWRfZnVuY3Rpb24sIHRocmVhZF9jb250ZXh0KSAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIFwKICAgICBkbyB7ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IFwKICAgICAgICAgcG9pbnRlciA9IHN2dF9jcmVhdGVfdGhyZWFkKHRocmVhZF9mdW5jdGlvbiwg
+dGhyZWFkX2NvbnRleHQpOyAgICAgICAgICAgICAgICAgICAgICAgIFwKCi0tLSBDTWFrZUxpc3Rz
+LnR4dAkyMDIxLTEwLTMwIDE3OjI4OjU3Ljk0NTA0NjMwMCArMDEwMAorKysgQ01ha2VMaXN0cy50
+eHQJMjAyMS0xMC0zMCAxNzoyODo0NS42MDAwMDAwMDAgKzAxMDAKQEAgLTIwMSw3ICsyMDEsOSBA
+QAogICAgIGVsc2UoKQogICAgICAgICBjaGVja19ib3RoX2ZsYWdzX2FkZCgtZnN0YWNrLXByb3Rl
+Y3Rvci1zdHJvbmcpCiAgICAgZW5kaWYoKQotICAgIGNoZWNrX2JvdGhfZmxhZ3NfYWRkKC1tbm8t
+YXZ4KQorICAgIGlmIChOT1QgQ01BS0VfQ19DT01QSUxFUl9JRCBTVFJFUVVBTCAiQ2xhbmciKQor
+ICAgICAgICBjaGVja19ib3RoX2ZsYWdzX2FkZCgtbW5vLWF2eCkKKyAgICBlbmRpZigpCiBlbmRp
+ZigpCiAKIGlmKENNQUtFX0NfRkxBR1MgTUFUQ0hFUyAiLU8iIEFORCBOT1QgQ01BS0VfQ19GTEFH
+UyBNQVRDSEVTICItTzAiIEFORCBOT1QgTUlOR1cp
+XB64_PATCH
+
+
+# Filelist
+# --------
+# include/svt-av1/EbDebugMacros.h
+# include/svt-av1/EbSvtAv1Formats.h
+# include/svt-av1/EbSvtAv1ExtFrameBuf.h
+# include/svt-av1/EbSvtAv1Enc.h
+# include/svt-av1/EbSvtAv1ErrorCodes.h
+# include/svt-av1/EbSvtAv1Metadata.h
+# include/svt-av1/EbSvtAv1.h
+# include/svt-av1/EbSvtAv1Dec.h
+# lib/pkgconfig/SvtAv1Enc.pc
+# lib/pkgconfig/SvtAv1Dec.pc
+# lib/libSvtAv1Dec.so
+# lib/libSvtAv1Enc.so
+# bin/SvtAv1DecApp
+# bin/SvtAv1EncApp

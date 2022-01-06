@@ -1,0 +1,466 @@
+{ 
+    "or": {
+        "lo": {
+            "acetazolamida": {
+                "110000774": {
+                    "chnm_id": 138,
+                    "cdm_id": 11,
+                    "cdm_ff": 5,
+                    "cnc": "25",
+                    "cnc_u": "mg/ml", 
+                    "desc": "acetazolamida susp.oral 25mg/ml litro [man]",
+                }
+            },
+            "ácido acetilsalicilico": {
+                "110004059": "ácido acetilsalicilico sol.oral 20mg/ml 30ml [man]",
+            },
+            "acido ursodesoxicolico": {
+                "110002601": "acido ursodesoxicolico susp.oral 1.5% 15mg/ml 100ml [man]",
+            },
+            "aloPURINol": {
+                "110003191": "aloPURINol susp.oral fr. [man]"
+            },
+            "amiNOFILina": {
+                "110003034": "amiNOFILina susp.oral 4.8mg/ml fr. 100ml [man]"
+            },
+            "amioDAROna": {
+                "110003643": "amioDAROna susp.oral 0.5% 80ml [man]"
+            },
+            "amitriptilina": {
+                "110003591": "amitriptilina susp.oral 2.5mg/ml 50ml [man]"
+            },
+            "amLODIPina": {
+                "110003547": "amLODIPina susp.oral 1mg/ml fr.100ml [man]"
+            },
+            "atenolol": {
+                "110003546": "atenolol 2mg/ml susp.oral fr. 50ml [man]"
+            },
+            "azaTIOPRina": {
+                "110003274": "azaTIOPRina susp.or.1% 30ml [man][ctx][niosh-1]"
+            },
+            "baclofeno": {
+                "110004387": "baclofeno susp.oral 0.5% 5mg/ml 100ml [man]",
+                "110004386": "baclofeno susp.oral 0.5% 5mg/ml 50ml [man]"
+            },
+            "benzoato sodio": {
+                "110002621": "benzoato sodio sol.or. 10% fr. 250ml  [man]"
+            },
+            "budesonido": {
+                "110004430": "budesonido susp.oral 0.25mg/ml 100ml [man]"
+            },
+            "caLCITRiol": {
+                "110004474": "caLCITRiol sol.oral 0.25µg/ml srg. 1ml [man]"
+            },
+            "captopril": {
+                "110000770": "captopril sol.oral 1mg/ml 100ml [man]"
+            },
+            "bicarbonato sodio" : {
+                "110004396": "bicarbonato sodio sol. 1.4% 500ml [man]"
+            },
+            "caRVEDilol": {
+                "110002767": "caRVEDilol susp.oral 0.625mg/ml fr. 120ml [man]"
+            },
+            "cetamina": {
+                "110003284": "cetamina susp.oral 1% 100ml [man][j]"
+            },
+            "CIPROfloxacina": {
+                "110003665": "CIPROfloxacina susp.oral 50mg/ml 100ml [man]"
+            },
+            "citrato cafeina": {
+                "110000546": "citrato cafeina sol.oral 1% 10ml [man]",
+                "110003631": "citrato cafeina sol.oral 1% 60ml [man]",
+                "110003667": "citrato cafeina sol.oral 2% 100ml [man]"
+            },
+            "citrato potassio": {
+                "110003165": "citrato potassio sol.oral 20% fr. 100ml  [man]"
+            },
+            "clindamicina": {
+                "110003834": "clindamicina sol.oral 5% 100mL [man]"
+            },
+            "cloBAZam": {
+                "110004491": "cloBAZam susp.oral 1mg/ml 100ml [man][niosh-2]"
+            },
+            "cloNIDina": {
+                "110003634": "cloNIDina xar. 1.5mcg/ml 100ml [man]",
+                "110003678": "cloNIDina xar. 100mcg/ml 60ml [man]",
+                "110004453": "cloNIDina xar. 10mcg/ml 90ml [man]"
+            },
+            "cloreto sodio": {
+                "110002909": "cloreto sodio sol.oral 20% 200mg/ml 100ml [man]"
+            },
+            "diazePAM": {
+                "110003443": "diazePAM sol.oral 0.2% 30ml [man]"
+            },
+            "digoxina": {
+                "110003326": "digoxina susp.oral 0.05mg/ml 30ml [man][f]"
+            },
+            "docusato sódio": {
+                "110004119": "docusato sódio 0.85% benzoato sódio 0.15% sol. 25mL [man]"
+            },
+            "enalapril": {
+                "110003318": "enalapril susp.oral 1mg/ml [man]"
+            },
+            "eslicarbazepina": {
+                "110004330": "eslicarbazepina susp.oral 100mg/ml 50ml [man]"
+            },
+            "espironolactona": {
+                "110002658": "espironolactona susp.oral 2mg/ml 100ml [man][niosh-2]"
+            },
+            "etambutol": {
+                "110004350": "etambutol xar.50mg/ml 120ml fr [man]"
+            },
+            "FENobarbital": {
+                "110002354": "FENobarbital sol.oral 1% 10mg/ml 50ml [f][man][a7-p]"
+            },
+            "flecainida": {
+                "110003329": "flecainida susp.oral 5mg/ml 50ml [man]"
+            },
+            "fludrocortisona": {
+                "110004433": "fludrocortisona susp.oral 0.02 mg/ml 50ml [man]"
+            },
+            "110004454": "folinato calcio susp.oral 5mg/ml 30ml [man]",
+            "110000772": "furosemida sol.oral 2.5mg/ml 40ml [man]",
+            "110003309": "gabapentina susp.oral 100mg/ml fr. 20ml [man]",
+            "110002914": "hidrato de cloral sol.oral 10% 100mg/ml 100ml [man]",
+            "110003319": "hidrato de cloral sol.oral 10% 100mg/ml 50ml [man]",
+            "110002671": "hidroCLOROtiazida susp.oral 2mg/ml fr.100ml [man]",
+            "110004421": "hidrocortisona susp.or. 0.1% 50ml fr. [man]",
+            "110004300": "hidroxicloroquina susp.oral 25mg/ml 96ml [man]",
+            "110003157": "indometacina xar. 2mg/ml fr. 100ml  [man]",
+            "110002964": "levodopa carbidopa sol.oral 1+0.25mg/ml 100ml [man]",
+            "110003845": "levodopa carbidopa sol.oral 10+1mg/ml 100ml [man]",
+            "110004480": "levoFLOXacina susp.oral 50mg/ml 50ml [man]",
+            "110004463": "levoTIROXina susp.oral 25mcg/ml srg. 5ml [man]",
+            "110004429": "lisinopril susp.oral 1mg/ml fr. 50-100ml [man]",
+            "110004425": "mercaptupurina susp.oral 25mg/2.5ml srg [man]",
+            "110003237": "metoprolol susp.oral 1% [man]",
+            "110002526": "metoxsaleno emulsão 0,1% (m/m) bg 25g [man]",
+            "110000732": "metRONIDAZOL susp.oral 2% 100mg/5ml 125ml [man]",
+            "110003238": "midazolam sol.intrabucal 5mg/1ml [man]",
+            "110003574": "midazolam susp.oral 2.5mg/ml 20ml [man][f]",
+            "110003327": "midazolam susp.oral 2.5mg/ml 60ml [man][f]",
+            "110004060": "minoxidil sol.oral 2mg/ml 30ml [man]",
+            "110003866": "morfina sol.oral 0.02% 0.2mg/ml fr.100ml [man][a7-e]",
+            "110002530": "morfina sol.oral 0.02% 0.2mg/ml fr.50ml [man][a7-e]",
+            "110001019": "nitrofurantoina sol.oral 0.5% 5mg/ml 100ml [man][f]",
+            "110002290": "omeprazol susp.oral 0,2% 100ml fr. [man]",
+            "110003720": "ondansetron susp.or. 1mg/mL fr. 80mL [man]",
+            "110003575": "oseltamivir susp.oral 15mg/ml 50ml[man][j]",
+            "110004269": "oxibutinina susp.oral 0.1% 1mg/ml fr.100ml [man]",
+            "110004304": "perclorato sodio sol.oral 80mg/ml fr. 500ml [man]",
+            "110004443": "pirazinamida susp.oral 100mg/ml 100ml [man]",
+            "110003843": "pirimetamina susp.oral 2mg/mL 100mL [man]",
+            "110003113": "prednisoLONA susp.oral 0.5% 5mg/ml 50ml [man]",
+            "110002082": "propRANOLol sol.oral 0.1% 80ml [man][f]",
+            "110001014": "raNITIdina susp.oral 2.5% 25mg/ml 50ml [man][f]",
+            "110004438": "rifAMPicina susp.oral 25mg/ml (125mg<>5ml) 60ml [man]",
+            "110004444": "sevelamero susp.oral 50mg/ml fr. 240ml [man]",
+            "110003289": "sildenafil susp.oral 2.5mg/ml 20ml  [man][j]",
+            "110004050": "sildenafil susp.oral 2.5mg/ml 30ml [man][j]",
+            "110002896": "sildenafil susp.oral 2.5mg/ml 80ml  [man][j]",
+            "110003998": "sotalol susp.oral fr.[man]",
+            "110004452": "sulfADIAZINA susp.oral 60mg/ml 100ml [man]",
+            "110003088": "sulfato zinco sol.oral 0.5% fr.50ml  [man]",
+            "110002752": "TACrolimus susp.oral 0.5mg/ml 100ml [man][f][niosh-2]",
+            "110003035": "teofilina susp.oral 0.5% fr. 100ml [man]",
+            "110004492": "tiamina susp.oral 50mg/ml 50ml [man]",
+            "110004320": "topiramato susp.oral 12mg/ml 100ml [man][niosh-2]",
+            "110004133": "topiramato susp.oral 5mg/ml 30ml [man][niosh-2]",
+            "110004473": "tri-hexifenidilo susp.or. 0.4mg/ml fr. 100ml [man]",
+            "110001898": "trimetoprim susp.oral 1% fr. 30ml [man][f]",
+            "110003868": "vigabatrina susp.or. 50mg/ml fr. 100ml  [man]",
+            "110004456": "vancomicina susp.oral 25mg/ml 200ml [man]",
+            "110003976": "zonisamida susp.oral 10mg/ml 50ml [man]",
+            "nmov": {
+                "110000819": "nmov baclofeno susp.oral 0.5% litro [man]",
+                "110000476": "nmov cloreto potassio sol.oral 20% (13meq k+/5ml) lt  [man]",
+                "110002394": "nmov fenitoina susp.oral 100ml [man][niosh-2]",
+                "110002912": "nmov furosemida sol.oral 2.5mg/ml 80ml [man]"
+            }
+        },
+        "po": {
+            "110004364": "acido fólico caps. < 5mg [man]",
+            "110002596": "benzoato de sódio pó cart.  [man]",
+            "110003590": "benzoato sódio cp. <1000mg [man][j]",
+            "110002039": "bicarbonato sodio cp. 250mg (3meq na+) [man]",
+            "110000327": "bicarbonato sodio cp. 500mg (6meq na+) [man][f]",
+            "110003597": "brometo potassio caps. [man]",
+            "110004256": "carbonato calcio caps. < 500mg [man]",
+            "110003846": "carbonato calcio caps. 125mg [man]",
+            "110003915": "carbonato calcio cp. 100mg (2meq ca2+) [man]",
+            "110001980": "carbonato calcio cp. 250mg (5meq ca2+) [man]",
+            "110000479": "cloreto sodio cp. 500mg (8.5meq) [man]",
+            "110003962": "creatina caps. 800mg [man]",
+            "110003065": "cromoglicato sodio caps. 100mg [man]",
+            "110002031": "cromoglicato sodio caps. 200mg [man]",
+            "110004496": "dapsona cp 150mg [man]",
+            "110002638": "dextrometorfano caps.  [man]",
+            "110003901": "diazoxido caps. 25-100mg [man]",
+            "110003869": "diazoxido caps.<25mg [man]",
+            "110004332": "dieta entérica modular glucidica caps. 250mg [man]",
+            "110004305": "dieta entérica modular glucidica caps. 500mg [man]",
+            "110003862": "dieta enterica modular lipidica (mct-oil) 100mL fr. [man]",
+            "110004306": "dieta entérica modular proteica caps. 350mg [man]",
+            "110002592": "dieta especial isoleucina caps.100mg  [man][ne]",
+            "110002593": "dieta especial l-valina caps.100mg  [man][ne]",
+            "110004211": "eritromicina caps. 4-10mg [man]",
+            "110004204": "estiripentol caps. < 250mg [man]",
+            "110003883": "fenilbutirato sodio caps.300mg [man]",
+            "110003300": "fortificante leite materno pp. 430mg [man]",
+            "110001154": "fosfato dissodico cp. 250mgp (1148mg) [man][f]",
+            "110002349": "hidrocortisona capsula 0.5mg [man]",
+            "110002724": "hidrocortisona capsula 1.5mg [man]",
+            "110002348": "hidrocortisona capsula 1mg [man]",
+            "110002725": "hidrocortisona capsula 2.5mg [man]",
+            "110002413": "hidrocortisona capsula 2mg [man]",
+            "110002589": "hidrocortisona capsula 3mg [man]",
+            "110004042": "hidrocortisona capsula 4mg [man]",
+            "110003222": "hidrocortisona cp. 1.6mg [man]",
+            "110003205": "hidrocortisona cp. 5mg [man][f]",
+            "110004058": "hidrocortisona cp. 7.5mg [man][f]",
+            "110002094": "lactose cart. 25g [man]",
+            "110003969": "miSOPROStol caps. 25mcg [man][niosh-2]",
+            "110002139": "papeis ac.ascorbico <1g  [man]",
+            "110002036": "papeis acenocumarol <4mg  [man]",
+            "110003311": "papeis ácido acetilsalicilico <100mg [man]",
+            "110003312": "papeis atenolol <50mg [man]",
+            "110003313": "papeis bosentano <32mg [man][niosh-2]",
+            "110002899": "papeis clobazam <10mg [man][niosh-2]",
+            "110004339": "papeis clopidogrel < 75mg [man]",
+            "110004494": "papeis coenzima q10 < 10mg [man]",
+            "110003370": "papeis diazePAM <5mg [man]",
+            "110003328": "papeis diazoxido < 25mg [man]",
+            "110003508": "papeis dilTIAZem <60mg [man]",
+            "110003713": "papeis enalapril <5mg [man]",
+            "110004116": "papeis fenobarbital < 100mg [man]",
+            "110003317": "papeis fludrocortisona <0.1mg [man]",
+            "110003586": "papeis gabapentina < 100mg [man]",
+            "110002004": "papeis glucose 25g  [man]",
+            "110001207": "papeis glucose 50g  [man]",
+            "110002061": "papeis glucose 75g  [man]",
+            "110002603": "papeis glutamina po <5g  [man]",
+            "110004110": "papeis lacosamida < 100mg [man]",
+            "110001993": "papeis levoTIROXina <0.050mg  [man]",
+            "110003365": "papeis mercaptamina <150mg [man]",
+            "110003375": "papeis metilPREDNISolona <4mg [man]",
+            "110003815": "papeis mexilitina 50mg [man]",
+            "110003854": "papeis miglustato < 100mg [man]",
+            "110003314": "papeis minoxidil <5mg [man]",
+            "110003492": "papeis OXcarbamazepina <300mg [a][man][niosh-2]",
+            "110003926": "papeis penicilamina < 300mg [man]",
+            "110003913": "papeis piridostigmina < 60mg [man]",
+            "110000821": "papeis piridoxina <300mg [man]",
+            "110004130": "papeis retinol < 50.000 ui [man]",
+            "110002604": "papeis rifAMPicina <300mg  [man]",
+            "110003864": "papeis rufinamida < 100mg [man]",
+            "110003444": "papeis sildenafil <20mg [man]",
+            "110003673": "papeis SIRolimus <1mg [man][niosh-2]",
+            "110003730": "papeis sulfato cobre <100mg [man]",
+            "110003585": "papeis terazosina < 5mg [man]",
+            "110003316": "papeis tetrabenazina <25mg [man]",
+            "110004353": "papeis tiamazol (metIMAzol) < 5mg [f][man][niosh-2]",
+            "110000820": "papeis tocoferol <150mg [man]",
+            "110003493": "papeis tri-hexifenidilo < 2mg [f][man]",
+            "110003315": "papeis varfarina <5mg [man][niosh-2]",
+            "110004230": "papeis zonisamida <25mg [man][niosh-2]",
+            "110003502": "papel fenitoina <100mg [man]",
+            "110006167": "papel losartan < 50mg [man]",
+            "110003128": "perclorato potassio caps.500mg  [man]",
+            "110004277": "resina permutadora iões (polistireno sulfonato calcio) pp.<5g [f][man]",
+            "110003758": "resina permutadora iões (polistireno sulfonato calcio) pp.20g [f][man]",
+            "110003762": "resina permutadora iões (polistireno sulfonato calcio) pp.5g [f][man]",
+            "110002583": "riboflavina caps.100mg  [man]",
+            "110003118": "riboflavina caps.200mg  [man]",
+            "110002584": "riboflavina caps.50mg  [man]",
+            "110002591": "sevelamer caps.< 400mg  [man]",
+            "110003870": "sildenafil caps.<25mg [man]",
+            "110004302": "sulfapiridina caps.500mg [man]",
+            "110003301": "suplemento proteico recém-nascidos pré-termo pp.100mg [man]",
+            "110003202": "tiamina cp.50mg [man]",
+            "110001880": "tocoferol  alfa (vitamina e) cp. 100mg [man][f]",
+            "110002585": "tocoferol alfa caps.50mg  [man]",
+            "110003821": "tocoferol alfa caps.75mg  [man]",
+            "110002582": "valGANciclovir cáps. <450mg  [man]",
+            "nmov": {
+                "110000326": "nmov bicarbonato sodio cp. 1000mg (12meq na+) [man][f]",
+                "110000480": "NMOV cloreto sodio cp. 1000mg (17meq) [man]",
+                "110001153": "NMOV fosfato dissodico cp. 125mgp (572mg) [man][f]",
+                "110003204": "NMOV hidrocortisona cp.10mg [man][f]",
+                "110002401": "nmov metoxsaleno caps.10mg  [man]",
+                "110000804": "NMOV papeis ac.ursodesoxicolico <150mg [man]",
+                "110002037": "NMOV papeis acetazolamida 40mg  [man]",
+                "1100003845": "NMOV papeis retinol < 50.000ui [man]",
+                "110003510": "nmov papeis tetrabenazina <25mg [man]",
+                "110002382": "nmov tocoferol alfa caps. 25mg  [man]",
+            }
+        }      
+
+    },
+    "tp": {
+        "110003147": "ác.nitrico sol.top 60% fr 10ml [man]",
+        "110004383": "acetilcisteína cr. < ou =10% bg 100g [man]",
+        "110003804": "acido acetico <3% fr litro [man]",
+        "110003216": "acido acetico sol. 50% litro [man]",
+        "110000848": "acido borico sol.alc.sat. litro [man]",
+        "110000850": "acido borico sol.cut. 2% litro [man]",
+        "110002280": "acido salicilico pom.<10% 100g [man]",
+        "110001093": "acido salicilico+vaselina pom. 50g [man]",
+        "110003368": "ácido tricloroacético 20% fr. 50ml [man]",
+        "110003369": "ácido tricloroacético 35% fr. 50ml [man]",
+        "110003953": "ácido tricloroacético 80% litro [man]",
+        "110004003": "amitriptilina 2% cetamina 0.5% gele bg 100g [man]",
+        "110004222": "anfotericina b 3% + flucitosina 17% gele vaginal bg 100g [man]",
+        "110003366": "anfotericina b colut. 250ml [man]",
+        "110004279": "anfotericina b lipossomica sol.aq.irrig.nasal 0.1mg/ml 1000ml fr [man][j]",
+        "110004278": "anfotericina b sol.aq. spray nasal 10ml [man][j]",
+        "110003183": "BETAmetasona em vaselina cr. 250g [man]",
+        "110004431": "budesonido gele.oral 0.25mg/ml srg.50ml [man]",
+        "110003201": "calcipotriol em vaselina salicilada pom. [man]",
+        "110003297": "CIPROfloxacina gel.nasal 65% srg. 50ml [man]",
+        "110002362": "cloreto sodio sol.nebulização 7% 120ml [man]",
+        "110002897": "fenol 5% + oleo amendoas doces fr.100ml  [man]",
+        "110002151": "fenol 5% em alcool 70º sol.alc. fr.100ml [man]",
+        "110000805": "fenol 6% inj - amp [man]",
+        "110003287": "formol 15% fr. 200ml [man][j]",
+        "110003671": "formol sol. 2% 500ml [man]",
+        "110003897": "gabapentina cr.vag. 2% (p/p) [man] - bg.",
+        "110002581": "hidrocortisona pom. >5% 100g bg. [man]",
+        "110002361": "indigo carmim 0,3% fr.20ml [man]",
+        "110003367": "iodeto potássio sol. 2% fr. 1l [man]",
+        "110004195": "lidocaina cr. vag. 5%(p/p) bg. 30g [man]",
+        "110001465": "loção de banho (loção de alfazema) fr. litro [man]",
+        "110004248": "midazolan seringas 3mg/0.6 ml (tópico nasal) [man]",
+        "190000310": "MP Ácido Cítrico sol. 25% (mL) FGP [man]",
+        "190000161": "MP ALCOOL SOL. 30-90º [man]",
+        "110001571": "NIFEdipina sol.or. 0,1% 1mg/ml fr.100ml  [man]",
+        "110003426": "nistatina + clorohexidina colut. 250ml [man]",
+        "110003342": "nistatina + lidocaína, colut. 250ml [man]",
+        "110001613": "pasta de lassar modificada pom. (oxido zinco composto) kg [man]",
+        "110004321": "paromomicina gel 15% m/m [man]",
+        "110001640": "pasta de agua susp.top. [man]",
+        "110000852": "permanganato potássio 0.005-0.02% 1000ml [man]",
+        "110001780": "salicilato sodio 2%,sol-lt  [man]",
+        "110004288": "SOLUÇÃO ANTISSETICA ALCOOLICA 500ML [man]",
+        "110003686": "Solução de Conservação de Safenas [man]",
+        "110002869": "solução de lugol sol. 100g fr. [mjd][man]",
+        "110001023": "solução lugol (iodo iodetado) sol. 10g fr. [man]",
+        "110003847": "vaselina enxofrada < 10% pom. kg [man]",
+        "nmov": {
+            "110002900": "NMOV enxofre pomada <10% boiao - quilo  [man]",
+            "110002281": "nmov ac.salicilico pom.<10%  grama [man]"
+        }
+    },
+    "inj": {
+        "110004336": "adalimumab srg.30mg/0.3ml [man]",
+        "110003491": "aflibercept srg. 2mg/0.05ml [man][niosh-2]",
+        "110003635": "alcool 10% + glucose 5% inj.srg. 50ml [man]",
+        "110002239": "amicacina intratecal 50mg/5ml srg  [man]",
+        "110002965": "anacinra inj. <100mg sc [man][f] seringa",
+        "110003507": "anfotericina b inj. intravitreo 10mcg/0,1ml srg [man]",
+        "110003100": "anfotericina B LIPOSSOMICA inj.srg. 40mg/20ml  [man]",
+        "110003071": "aTROPina inj.srg 25mg/50ml  [man]",
+        "110003099": "azitromicina inj.srg. 100mg/50ml  [man]",
+        "110004112": "bevacizumab srg. 2mg/0.08ml [man]",
+        "110004442": "brolucizumab srg. 6mg/0.05ml (0.07ml) [man]",
+        "110003723": "cefTAZidima inj.intravitreo 2mg/0.1mL [man]",
+        "110002677": "cefuroxima inj.intra-ocular 5mg/0.5ml [man]",
+        "110003763": "clindamicina inj.intravitreo 1mg/0.1ml srg [man]",
+        "110004097": "hidroxocobalamina srg.manipulado 1.5mg/0.3ml [man]",
+        "110003432": "hidroxocobalamina srg.manipulado 1mg/0.2ml [man]",
+        "110004159": "hidroxocobalamina srg.manipulado 2.5mg/0.5ml [man]",
+        "110003658": "hidroxocobalamina srg.manipulado 2mg/0.4ml [man]",
+        "110003823": "hidroxocobalamina srg.manipulado 3mg/0.6ml [man]",
+        "110003943": "hidroxocobalamina srg.manipulado 4mg/0.8ml [man]",
+        "110004012": "hidroxocobalamina srg.manipulado 5mg/1.0ml [man]",
+        "110003987": "hidroxocobalamina srg.manipulado 6mg/1.2ml [man]",
+        "110004033": "hidroxocobalamina srg.manipulado 7mg/1.4ml [man]",
+        "110004190": "hidroxocobalamina srg.manipulado 8mg/1.6ml [man]",
+        "110003867": "histidinato cobre inj. 500µg/1mL [man]",
+        "110004117": "enoxaparina sódica srg. 10mg/0.1ml sc [man]",
+        "110004158": "enoxaparina sódica srg. 12mg/0.12ml sc [man]",
+        "110004143": "enoxaparina sódica srg. 14mg/0.14ml sc [man]",
+        "110004415": "etanercept embrel man. srg.<50mg [man][j]",
+        "110003517": "GANciclovir inj.srg. 2mg/ 0.1ml ivitreo [man][niosh-1]",
+        "110004160": "GANciclovir srg.inj. < 500mg [man][niosh-1]",
+        "110004323": "golimumab srg. <50mg/0.5ml sc [j][d][man]",
+        "110003361": "interferão gama-1b srg. <100mcg [man]",
+        "110003379": "lacosamida inj. 100mg/10ml iv [man]",
+        "110004331": "lacosamida inj. 101-199mg/10.1-19.9ml iv [man]",
+        "110004217": "lacosamida inj. 50mg/5ml iv [man]",
+        "110002523": "linezolide (scinp) seringa 50mg/25ml  [man]",
+        "110002543": "linezolide seringa 100mg/50ml (scinp/ped)  [man]",
+        "110003664": "micafungina srg.<50mg [man]",
+        "110003239": "midazolam dib 440mg/88ml [man]",
+        "110003266": "midazolam dib 485mg/248ml [man]",
+        "110004192": "mitoMIcina col. 0.04% 10mL [j][man][niosh-1]",
+        "110003789": "mitoMIcina srg.  0.2mg/mL (pterigio) [man][niosh-1]",
+        "110003788": "mitoMIcina srg.  0.3mg/mL (glaucoma) [man][niosh-1]",
+        "110009314": "mitoMIcina srg. 0.02mg/mL [man][niosh-1]",
+        "110001554": "morfina inj.pca 50mg/50ml iv [man][a7-e]",
+        "110003627": "pamidronato srg.<90mg [man][niosh-2]",
+        "110003499": "ranibizumab inj. 0.5mg/0.05ml seringa [man]",
+        "110003339": "ROpivacaina 0.1% fentanil 50mcg/ml 50ml seringa [man]",
+        "110003724": "vancomicina inj.intravitreo 1mg/0.1mL[man]",
+        "110003716": "voriconazol inj.intravitreo 100mcg/ml srg 0.1mL [man][j][niosh-2]"
+        "nmov": {
+            "110003496": "NMOV adalimumab srg.20mg/0.4ml [man]",
+            "110003984": "NMOV adalimumab srg.30mg/0.6ml [man]",
+            "110002030": "nmov alteplase inj. 3mg/3ml [man][j]",
+            "110003101": "nmov amicacina inj.srg. 100mg/50ml  [man]",
+            "110003269": "nmov BEVACizumab inj. 5mg 0.2ml seringa [man][j] escoar e inactivar",
+            "110002712": "nmov citrato cafeina srg. <10mg  [man]",
+            "110002527": "nmov heparina seringa scinp 500ui/10ml  [man]",
+            "110002460": "nmov lipidos 20% 5g/25ml seringa 25ml  [man]",
+            "110002414": "nmov morfina 0,1% saco 250mg/250ml iv-perf  [man]",
+            "110002953": "nmov netilmicina seringa 30mg/10ml g5% srg. scinp  [man]",
+            "110002334": "nmov vancomicina seringa 50mg/10ml (g5%) iv [man]",
+            "110003050": "nmov vancomicina seringa 75mg/15ml srg. (scinp) [man]",
+            "110002521": "nutrição parenterica scinp bolsa <250ml  [man]",
+            "110002755": "nutrição parenterica scinp/ped bolsa 350-750ml  [man]",
+            "110002669": "nutrição parenterica scinp/ped bolsa 750-1250ml  [man]"
+        }
+    },
+    "col": {
+        "110003154": "anfotericina b col. 0.1% 1mg/ml fr.10ml  [man]",
+        "110003914": "aTROPina col. 0.5% srg.0.5mL [man]",
+        "110002300": "cefTAZidima col. 5% 10ml [man]",
+        "110003642": "cicloSPORINA col. 0.05% 10ml [man][niosh-1]",
+        "110003236": "cisteamina col.0.1% 10ml [man][j]",
+        "110004293": "cisteamina col.0.55% 5,5mg/ml [man][j]",
+        "110003498": "fenilefrina col. 10% seringa 0.5ml [man]",
+        "110003741": "fenilefrina col. 25mg/mL srg. 1mL [man]",
+        "110004176": "cloro-hexidina col. 0.02% 10ml [man]",
+        "110003135": "fluconazol col. 0.2% 10ml [man][niosh-2]",
+        "110002301": "geNTAMICina col. fortificado 1.4% 7ml [man]",
+        "110003497": "oxibuprocaina col. 0.4% 0.5ml seringa [man]",
+        "110003939": "pilocarpina col. 0.1% 10mg/10ml [man]",
+        "110003615": "tropicamida col. 0.5% srg 0.5ml [man]",
+        "110003495": "tropicamida col. 1% 0.5ml srg [man]",
+        "110002302": "vancomicina col. 5% 10ml [man]",
+        "110003268": "voriconazol col.1% 10ml [man][niosh-2]",
+        "nmov": {
+            "110000955": "nmov fenilefrina col. 2.5% 10ml  [man]"
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

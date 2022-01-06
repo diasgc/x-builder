@@ -1,0 +1,670 @@
+{
+  "8086tiny": {
+    "src": "https://github.com/adriancable/8086tiny.git",
+    "bld": "make",
+    "dsc": "A PC XT-compatible emulator/virtual machine",
+    "lic": "MIT",
+    "url": "https://github.com/adriancable/8086tiny"
+  },
+  "acr": {
+    "src": "https://github.com/radare/acr.git",
+    "dsc": "A fully compatible autoconf replacement",
+    "lic": "GPL-2.0",
+    "mki": "install",
+    "mkf": "all",
+    "url": "https://github.com/radare/acr"
+  },
+  "amf": {
+    "src": "https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git",
+    "dsc": "The Advanced Media Framework (AMF) SDK",
+    "lic": "MIT"
+  },
+  "aom": {
+    "src": "https://aomedia.googlesource.com/aom.git",
+    "deb_so": "a/aom/libaom0",
+    "deb_dev": "a/aom/libaom-dev",
+    "deb_bin": "a/aom/aom-tools",
+    "bld": "gnu",
+    "src_cfg": "autoreconf -fi",
+    "dep": "libpng",
+    "dsc": "A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream",
+    "lic": "LGPL-3.0"
+  },
+  "aribb24": {
+    "src": "https://github.com/nkoriyama/aribb24.git",
+    "bld": "gnu",
+    "src_cfg": "autoreconf -fi",
+    "dep": "libpng",
+    "dsc": "A library for ARIB STD-B24, decoding JIS 8 bit characters and parsing MPEG-TS stream",
+    "lic": "LGPL-3.0"
+  },
+  "aribb25": {
+    "src": "https://code.videolan.org/videolan/aribb25.git",
+    "dsc": "Basic implementation of the ARIB STD-B25 public standard",
+    "dep": "pscs",
+    "lic": "ISCS",
+    "url": "https://code.videolan.org/videolan/aribb25.git"
+  },
+  "avisynth": {
+    "src": "https://github.com/AviSynth/AviSynthPlus.git",
+    "dsc": "A powerful nonlinear scripting language for video",
+    "lic": "GPL",
+    "bld": "cmake",
+    "cbk": "ENABLE_PLUGINS",
+    "cfg": "-DHEADERS_ONLY=OFF",
+    "host_mingw": "unset PKG_CONFIG_LIBDIR"
+  },
+  "boost": {
+    ".sh": "boost.sh"
+  },
+  "brotli": {
+    "src": "https://github.com/google/brotli.git",
+    "dsc": "Lossless compression algorithm and format",
+    "lic": "MIT",
+    "bld": "cmake",
+    "pkg": {
+      "lpc": ["libbrotlidec.pc","libbrotlienc.pc","libbrotlicommon.pc"],
+      "inc": ["brunsli/*.h"],
+      "lib": ["libbrotlidec","libbrotlienc","libbrotlicommon","libbrotlicommon-static","libbrotlicommon-static","libbrotlicommon-static"],
+      "bin": ["brotli"],
+      "eta": 60
+    }
+  },
+  "brunsli": {
+    "src": "https://github.com/google/brunsli.git",
+    "dsc": "Practical JPEG Repacker",
+    "lic": "MIT",
+    "bld": "cmake",
+    "cfg": "-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF",
+    "req_pc_build": "brunslienc-c brunslidec-c",
+    "req_git_sub": "git submodule update --init",
+    "patch": "LS0tIGJydW5zbGkuY21ha2UJMjAyMS0xMC0wNiAyMjoxMzowNS42MjgxNTIwMDAgKzAxMDAKKysrIGJydW5zbGkuY21ha2UJMjAyMS0xMC0wNiAyMjoxMzowOS4yNTgxNTIwMDAgKzAxMDAKQEAgLTc0LDcgKzc0LDggQEAKICkKIAogc2V0KEJSVU5TTElfTElCUkFSSUVTIGJydW5zbGljb21tb24tc3RhdGljIGJydW5zbGlkZWMtc3RhdGljIGJydW5zbGllbmMtc3RhdGljKQotCitzZXRfdGFyZ2V0X3Byb3BlcnRpZXMoYnJ1bnNsaWVuYy1zdGF0aWMgUFJPUEVSVElFUyBPVVRQVVRfTkFNRSBicnVuc2xpZW5jLWMpCitzZXRfdGFyZ2V0X3Byb3BlcnRpZXMoYnJ1bnNsaWRlYy1zdGF0aWMgUFJPUEVSVElFUyBPVVRQVVRfTkFNRSBicnVuc2xpZGVjLWMpCiBpZihOT1QgQlJVTlNMSV9FTVNDUklQVEVOKQogYWRkX2xpYnJhcnkoYnJ1bnNsaWRlYy1jIFNIQVJFRAogICBjL2RlYy9kZWNvZGUuY2MKQEAgLTE1Myw3ICsxNTQsNyBAQAogIyBJbnN0YWxsYXRpb24KIGlmKE5PVCBCUlVOU0xJX0VNU0NSSVBURU4pCiAgIGluc3RhbGwoCi0gICAgVEFSR0VUUyBicnVuc2xpZGVjLWMgYnJ1bnNsaWVuYy1jCisgICAgVEFSR0VUUyBicnVuc2xpZGVjLWMgYnJ1bnNsaWVuYy1jIGJydW5zbGlkZWMtc3RhdGljIGJydW5zbGllbmMtc3RhdGljCiAgICAgQVJDSElWRSBERVNUSU5BVElPTiAiJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0iCiAgICAgTElCUkFSWSBERVNUSU5BVElPTiAiJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0iCiAgICkKQEAgLTE3MSw2ICsxNzIsOCBAQAogICBSVU5USU1FX09VVFBVVF9ESVJFQ1RPUllfUkVMRUFTRSAiJHtDTUFLRV9CSU5BUllfRElSfS9hcnRpZmFjdHMiCiApCiAKK2luc3RhbGwoVEFSR0VUUyBjYnJ1bnNsaSBkYnJ1bnNsaSBSVU5USU1FIERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9CSU5ESVJ9KQorCiBpZiAoJHtCVUlMRF9URVNUSU5HfSkKIAogaW5jbHVkZShHb29nbGVUZXN0KQo=",
+    "pkg": {
+      "lpc": ["brunslienc-c.pc", "brunslidec-c.pc"],
+      "inc": ["brunsli/*.h"],
+      "lib": ["libbrunslienc-c","libbrunslidec-c"],
+      "bin": ["dbrunsli","cbrunsli"],
+      "eta": 480
+    }
+  },
+  "bzip2": {
+    "src": "https://gitlab.com/bzip2/bzip2.git",
+    "dsc": "Lossless, block-sorting data compression",
+    "lic": "Other",
+    "bld": "cmake",
+    "cstk": "ENABLE_STATIC_LIB",
+    "cshk": "ENABLE_SHARED_LIB",
+    "cbk": "ENABLE_APP",
+    "cfg": "-DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF",
+    "pkg": {
+      "lpc": ["bzip2.pc"],
+      "inc": ["bzlib.h"],
+      "lib": ["libbz2.so","libbz2_static.a"],
+      "bin": ["bzgrep","bzdiff","bzip2recover","bzmore","bzip2"],
+      "eta": 20
+    }
+  },
+  "c-blosc": {
+    "src": "https://github.com/Blosc/c-blosc.git",
+    "dsc": "A blocking, shuffling and loss-less compression library that can be faster than memcpy().",
+    "lic": "Other",
+    "bld": "cmake",
+    "cstk": "BUILD_STATIC",
+    "cshk": "BUILD_SHARED",
+    "cfg": "-DBUILD_TESTS=OFF",
+    "host_arm": "CFG+=\" -DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON\"",
+    "pkg": {
+      "lpc": ["blosc.pc"],
+      "inc": ["blosc-export.h","blosc.h"],
+      "lib": ["libblosc"],
+      "eta": 100
+    }
+  },
+  "cairo": {
+    "src": "https://github.com/freedesktop/cairo.git",
+    "dsc": "Development files for the Cairo 2D graphics library",
+    "lic": "LGPL-2.1",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "fontconfig",
+    "tls": "build-dep",
+    "cfg": "--enable-xlib=no --enable-xlib-xrender=no --enable-xcb=no --enable-png=no"
+  },
+  "celt": {
+    "src": "https://gitlab.xiph.org/xiph/celt.git",
+    "dsc": "CELT is a low-delay audio codec",
+    "lic": "BSD-2c",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "ogg",
+    "cfg": "--enable-experimental-postfilter --enable-float-approx --enable-fixed-point --enable-custom-modes",
+    "git_patch": "sed -i 's|XIPH_PATH_OGG|#XIPH_PATH_OGG|g' $SRCDIR/configure",
+    "pkg": {
+      "lpc": ["celt.pc"],
+      "inc": ["celt/*.h"],
+      "lib": ["libcelt0"],
+      "eta": 100
+    }
+  },
+  "charls": {
+    "src": "https://github.com/team-charls/charls.git",
+    "dsc": "C++ JPEG-LS (ISO/IEC 14495-1 / ITU-T.87) library implementation",
+    "lic": "BSD-3c",
+    "bld": "cmake",
+    "dep": "ogg",
+    "cbk": "CHARLS_BUILD_SAMPLES",
+    "mki": "install/strip",
+    "pkg": {
+      "lpc": ["charls.pc"],
+      "inc": ["charls/*.h"],
+      "lib": ["libcharls"],
+      "cmake": ["lib/cmake/charls/charlsConfig.cmake","lib/cmake/charls/charlsConfig-release.cmake"],
+      "eta": 15
+    }
+  },
+  "chromaprint": {
+    "src": "https://github.com/acoustid/chromaprint.git",
+    "dsc": "C library for generating audio fingerprints used by AcoustID",
+    "lic": "LGPL-2.1",
+    "bld": "cmake",
+    "cfg": "-DKISSFFT_SOURCE_DIR=${SRCDIR}/vendor/kissfft -DBUILD_TOOLS=OFF",
+    "pkg": {
+      "lpc": ["libchromaprint.pc"],
+      "inc": ["chromaprint.h"],
+      "lib": ["libchromaprint"],
+      "eta": 12
+    }
+  },
+  "codec2": {
+    "src": "https://github.com/drowe67/codec2.git",
+    "dsc": "A speech codec for 2400 bit/s and below",
+    "lic": "LGPL-2.1",
+    "bld": "cmake",
+    "cfg": "-DUNITTEST=FALSE",
+    "patch": "LS0tIHNyYy9DTWFrZUxpc3RzLnR4dAkyMDIxLTA5LTI2IDExOjQwOjQzLjYyNTE0NzIwMCArMDEwMAorKysgc3JjL0NNYWtlTGlzdHMudHh0CTIwMjEtMDktMjYgMTI6NTE6MTUuMzY1MTQ3MjAwICswMTAwCkBAIC03MSw2ICs3MSw3IEBACiAgICAgICAgQlVJTERfQ09NTUFORCAke0NNQUtFX0NPTU1BTkR9IC0tYnVpbGQgLiAtLXRhcmdldCBnZW5lcmF0ZV9jb2RlYm9vawogICAgICAgIElOU1RBTExfQ09NTUFORCAke0NNQUtFX0NPTU1BTkR9IC1FIGNvcHkgJHtDTUFLRV9DVVJSRU5UX0JJTkFSWV9ESVJ9L2NvZGVjMl9uYXRpdmUvc3JjL2dlbmVyYXRlX2NvZGVib29rICR7Q01BS0VfQ1VSUkVOVF9CSU5BUllfRElSfQogICAgICAgIEJVSUxEX0JZUFJPRFVDVFMgJHtDTUFLRV9DVVJSRU5UX0JJTkFSWV9ESVJ9L2dlbmVyYXRlX2NvZGVib29rCisgICAgICAgQ01BS0VfQVJHUyAtRENNQUtFX0NfQ09NUElMRVI9Z2NjCiAgICAgKQogICAgIGFkZF9leGVjdXRhYmxlKGdlbmVyYXRlX2NvZGVib29rIElNUE9SVEVEKQogICAgIHNldF90YXJnZXRfcHJvcGVydGllcyhnZW5lcmF0ZV9jb2RlYm9vayBQUk9QRVJUSUVTCkBAIC0yMzgsNiArMjM5LDI4IEBACiAjCiAjIFNldHVwIHRoZSBjb2RlYzIgbGlicmFyeQogIworCithZGRfY29tcGlsZV9vcHRpb25zKCItV25vLWltcGxpY2l0LWNvbnN0LWludC1mbG9hdC1jb252ZXJzaW9uIikKKworc2V0KFRBUkdFVFMgY29kZWMyKQorCitpZihCVUlMRF9TVEFUSUNfTElCUyBBTkQgQlVJTERfU0hBUkVEX0xJQlMpCisgICAgYWRkX2xpYnJhcnkoY29kZWMyX3N0YXRpYyBTVEFUSUMgJHtDT0RFQzJfU1JDU30pCisgICAgc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGNvZGVjMl9zdGF0aWMgUFJPUEVSVElFUyBPVVRQVVRfTkFNRSBjb2RlYzIpCisgICAgdGFyZ2V0X2luY2x1ZGVfZGlyZWN0b3JpZXMoY29kZWMyX3N0YXRpYyBJTlRFUkZBQ0UKKyAgICAgICAgJDxJTlNUQUxMX0lOVEVSRkFDRTppbmNsdWRlL2NvZGVjMj4KKyAgICAgICAgJDxCVUlMRF9JTlRFUkZBQ0U6JHtDTUFLRV9DVVJSRU5UX1NPVVJDRV9ESVJ9PgorICAgICAgICAkPEJVSUxEX0lOVEVSRkFDRToke0NNQUtFX0JJTkFSWV9ESVJ9PgorICAgICkKKyAgICBpZihVTklYKQorICAgICAgICB0YXJnZXRfbGlua19saWJyYXJpZXMoY29kZWMyX3N0YXRpYyBtKQorICAgIGVuZGlmKFVOSVgpCisgICAgaWYoTFBDTkVUIEFORCBscGNuZXRmcmVlZHZfRk9VTkQpCisgICAgICAgIHRhcmdldF9saW5rX2xpYnJhcmllcyhjb2RlYzJfc3RhdGljIGxwY25ldGZyZWVkdikKKyAgICBlbmRpZigpCisgICAgbGlzdChBUFBFTkQgVEFSR0VUUyBjb2RlYzJfc3RhdGljKQorZW5kaWYoKQorCiBhZGRfbGlicmFyeShjb2RlYzIgJHtDT0RFQzJfU1JDU30pCiBpZihVTklYKQogICAgIHRhcmdldF9saW5rX2xpYnJhcmllcyhjb2RlYzIgbSkKQEAgLTM5Myw3ICs0MTYsNyBAQAogYWRkX2V4ZWN1dGFibGUobGRwY19kZWMgbGRwY19kZWMuYykKIHRhcmdldF9saW5rX2xpYnJhcmllcyhsZHBjX2RlYyAke0NNQUtFX1JFUVVJUkVEX0xJQlJBUklFU30gY29kZWMyKQogCi1pbnN0YWxsKFRBUkdFVFMgY29kZWMyIEVYUE9SVCBjb2RlYzItY29uZmlnCitpbnN0YWxsKFRBUkdFVFMgJHtUQVJHRVRTfSBFWFBPUlQgY29kZWMyLWNvbmZpZwogICAgIExJQlJBUlkgREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0gQ09NUE9ORU5UIGxpYgogICAgIEFSQ0hJVkUgREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0gQ09NUE9ORU5UIGxpYgogICAgIFJVTlRJTUUgREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0JJTkRJUn0=",
+    "patch_make": "$host_mingw && sed -i 's|include|# include|' $BUILD_DIR/cmake/GetDependencies.cmake && sed -i 's|get_prerequisites|# get_prerequisites|' $BUILD_DIR/cmake/GetDependencies.cmake",
+    "pkg": {
+      "lpc": ["codec2.pc"],
+      "inc": ["codec2/*.h"],
+      "lib": ["libcodec2"],
+      "eta": 12
+    }
+  },
+  "cpu_features": {
+    "src": "https://github.com/google/cpu_features.git",
+    "dsc": "A cross platform C99 library to get cpu features at runtime",
+    "lic": "LGPL-2.1",
+    "bld": "cmake",
+    "cfg": "-DBUILD_PIC=ON",
+    "req_pc_build": ["cpu_features"],
+    "pkg": {
+      "lpc": ["cpu_features.pc"],
+      "inc": ["cpu_features/*.h","ndk_compat/cpu-features.h"],
+      "lib": ["libcpu_features","libndk_compat"],
+      "bin": ["list_cpu_features"],
+      "cmake": ["lib/cmake/CpuFeaturesNdkCompat/*.cmake","lib/cmake/CpuFeatures/*.cmake"],
+      "eta": 12
+    }
+  },
+  "cryptopp": {
+    "src": "https://github.com/weidai11/cryptopp.git",
+    "dsc": "Free C++ class library of cryptographic schemes",
+    "lic": "CRYPTOGAMS",
+    "bld": "cmake",
+    "cshk": "BUILD_SHARED",
+    "cstk": "BUILD_STATIC",
+    "cfg": "-DBUILD_TESTING=OFF",
+    "req_pc_build": "cryptopp",
+    "pkg": {
+      "lpc": ["cryptopp.pc"],
+      "inc": ["cryptopp/*.h"],
+      "lib": ["libcryptopp"],
+      "eta": 60
+    }
+  },
+  "dav1d": {
+    "src": "https://code.videolan.org/videolan/dav1d.git",
+    "dsc": "AV1 cross-platform decoder, open-source, and focused on speed and correctness",
+    "lic": "GPL-2.0",
+    "bld": "meson",
+    "tls": "meson ninja",
+    "cfg": "-Db_pie=true -Db_lto=true",
+    "cbk": "enable_tools",
+    "pkg": {
+      "lpc": ["dav1d.pc"],
+      "inc": ["dav1d/*.h"],
+      "lib": ["libdav1d"],
+      "bin": ["dav1d"],
+      "eta": 40
+    }
+  },
+  "davs2": {
+    "src": "https://github.com/pkuvcl/davs2.git",
+    "dsc": "An open-source decoder of AVS2-P2/IEEE1857.4 video coding standard",
+    "lic": "GPL-2.0",
+    "bld": "gnu",
+    "tls": "meson ninja",
+    "cfg": "--cross-prefix=${CROSS_PREFIX}",
+    "cb0": "--disable-cli",
+    "dir": "build/linux",
+    "host_arm": "CFG+=' --disable-asm' CFLAGS+=' -mfpu=neon'",
+    "host_ndk": "LDFLAGS+=\" -L$SYSROOT/usr/lib -llog\"",
+    "pkg": {
+      "lpc": ["davs2.pc"],
+      "inc": [""],
+      "lib": ["libdavs2"],
+      "bin": [""],
+      "eta": 40
+    }
+  },
+  "expat": {
+    "src": "https://github.com/libexpat/libexpat.git",
+    "dsc": "Fast streaming XML parser written in C",
+    "lic": "MIT",
+    "bld": "gnu",
+    "tls": "meson ninja",
+    "cb0": "--without-examples",
+    "src_cfg": "./buildconf.sh",
+    "cfg": "--without-tests --without-docbook --without-xmlwf --disable-fast-install",
+    "dir": "expat",
+    "host_arm": "CFG+=' '",
+    "host_ndk": "LDFLAGS+=\" -L$SYSROOT/usr/lib -llog\"",
+    "pkg": {
+      "lpc": ["expat.pc"],
+      "inc": ["expat.h","expat_config.h","expat_external.h"],
+      "lib": ["libexpat"],
+      "cmake": ["lib/cmake/expat-2.4.1/*.cmake"],
+      "bin": [""],
+      "eta": 77
+    }
+  },
+  "fdk-aac": {
+    "src": "https://github.com/mstorsjo/fdk-aac.git",
+    "dsc": "A standalone library of the Fraunhofer FDK AAC code from Android",
+    "lic": "Other",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "cb1": "--enable-example",
+    "src_patch": "mkdir -p libSBRdec/include/log",
+    "patch": "LS0tIGxpYlNCUmRlYy9pbmNsdWRlL2xvZy9sb2cuaAkyMDIxLTExLTI2IDIzOjUwOjEzLjAzNjAwNDI4MyArMDAwMAorKysgbGliU0JSZGVjL2luY2x1ZGUvbG9nL2xvZy5oCTIwMjEtMTEtMjYgMjM6NDU6NTcuMzY2MDQ1NDM4ICswMDAwCkBAIC0wLDAgKzEsMTAgQEAKKyNwcmFnbWEgb25jZQorI2lmIGRlZmluZWQoX19BTkRST0lEX18pCisjaW5jbHVkZSA8Y3N0ZGludD4KK2lubGluZSBpbnQgYW5kcm9pZF9lcnJvcldyaXRlTG9nKGludCwgY29uc3QgY2hhciopIHsgcmV0dXJuIDA7IH07CitpbmxpbmUgaW50IGFuZHJvaWRfZXJyb3JXcml0ZVdpdGhJbmZvTG9nKGludCB0YWcsIGNvbnN0IGNoYXIqIHN1YlRhZywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW50MzJfdCB1aWQsIGNvbnN0IGNoYXIqIGRhdGEsCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVpbnQzMl90IGRhdGFMZW4pIHsKKyAgcmV0dXJuIDA7Cit9OworI2VuZGlmCg==",
+    "pkg": {
+      "lpc": ["fdk-aac.pc"],
+      "inc": ["fdk-aac/*.h"],
+      "lib": ["libfdk-aac"],
+      "bin": ["aac-enc"],
+      "eta": 77
+    }
+  },
+  "fftw3": {
+    "src": "http://fftw.org/fftw-3.3.10.tar.gz",
+    "dsc": "Library for computing Fourier transforms (version 3.x)",
+    "lic": "GPL-3.0",
+    "bld": "cmake",
+    "mkf": "fftw3 fftw3_static",
+    "cfg": "-DBUILD_TESTS=OFF -DENABLE_THREADS=ON -DWITH_COMBINED_THREADS=ON",
+    "src_patch": "<todo>",
+    "host_arm": "CFG+=' -DENABLE_SSE=ON -DENABLE_SSE2=ON -DENABLE_AVX=ON -DENABLE_AVX2=ON'",
+    "opts": {
+      "-f|--float": "CFG+=' -DENABLE_FLOAT=ON' pkg='fftwf' pc_llib='-lfftwf'",
+      "-l|--long": "CFG+=' -DENABLE_LONG_DOUBLE=ON' pkg='fftwl' pc_llib='-lfftwl'",
+      "-q|--quad": "CFG+=' -DENABLE_QUAD_PRECISION=ON' pkg='fftwq' pc_llib='-lfftwq'"
+    },
+    "pkg": {
+      "lpc": [""],
+      "inc": [""],
+      "lib": [""],
+      "bin": [""],
+      "eta": 120
+    }
+  },
+  "flac": {
+    "src": "https://github.com/xiph/flac.git",
+    "dsc": "Free Lossless Audio Codec",
+    "lic": "BSD",
+    "bld": "gnu",
+    "src_patch": "sed -i 's/MINGWPREF=\"i386-mingw32-\"/MINGWPREF=\"x86_64-w64-mingw32-\"/g' configure",
+    "host_ndk": "unset CPPFLAGS",
+    "pkg": {
+      "lpc": [""],
+      "inc": [""],
+      "lib": [""],
+      "bin": [""],
+      "eta": 80
+    }
+  },
+  "flite": {
+    "src": "https://github.com/festvox/flite.git",
+    "dsc": "A small fast portable speech synthesis system",
+    "url": "http://www.festvox.org/flite/",
+    "lic": "Other",
+    "bld": "gnu",
+    "pc_llib": "-lflite -lflite_cmu_grapheme_lang -lflite_cmu_grapheme_lex -lflite_cmu_indic_lang -lflite_cmu_indic_lex -lflite_cmulex -lflite_cmu_time_awb -lflite_cmu_us_awb -lflite_cmu_us_kal16 -lflite_cmu_us_kal -lflite_cmu_us_rms -lflite_cmu_us_slt -lflite_usenglish",
+    "pc_libsprivate": "-lm",
+    "src_patch": "sed -i 's/MINGWPREF=\"i386-mingw32-\"/MINGWPREF=\"x86_64-w64-mingw32-\"/g' configure",
+    "host_ndk": "unset CPPFLAGS",
+    "pkg": {
+      "lpc": [""],
+      "inc": [""],
+      "lib": [""],
+      "bin": [""],
+      "eta": 80
+    }
+  },
+  "fontconfig": {
+    "src": "https://gitlab.freedesktop.org/fontconfig/fontconfig.git",
+    "dsc": "Font customization and configuration library",
+    "lic": "Other",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "tls": "gperf gettext",
+    "dep": "libiconv freetype expat json-c libpng",
+    "cfg": "--disable-docs",
+    "pkg": {
+      "lpc": ["fontconfig.pc"],
+      "inc": ["fontconfig/*.h"],
+      "lib": ["libfontconfig"],
+      "bin": ["fc-match fc-cat fc-list fc-conflist fc-query fc-scan fc-pattern fc-validate fc-cache"],
+      "eta": 60
+    }
+  },
+  "freetype": {
+    "src": "https://git.savannah.nongnu.org/r/freetype/freetype2.git",
+    "dsc": "A free, high-quality, and portable font engine",
+    "lic": "BSD",
+    "bld": "cmake",
+    "dep": "libpng",
+    "pkg": {
+      "lpc": ["freetype2.pc"],
+      "inc": ["freetype2/*.h","freetype2/freetype/*.h"],
+      "lib": ["libfreetype"],
+      "bin": [""],
+      "cmake": ["lib/cmake/freetype/*.cmake"],
+      "eta": 120
+    }
+  },
+  "frei0r": {
+    "src": "https://github.com/dyne/frei0r.git",
+    "dsc": "A large collection of free and portable video plugins",
+    "lic": "GPL-2.0",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "cfg": "--enable-local-libopts --with-included-libtasn1 --with-included-unistring --without-p11-kit --disable-doc --disable-manpages --disable-guile --disable-tests",
+    "xdp": "gavl opencv libcairo",
+    "mki":"install",
+    "pkg": {
+      "lpc": [""],
+      "inc": [""],
+      "lib": ["frei0r-1/*.so"],
+      "bin": [""],
+      "eta": 275
+    }
+  },
+  "fribidi": {
+    "src": "https://github.com/fribidi/fribidi.git",
+    "dsc": "Unicode Bidirectional Algorithm Library",
+    "lic": "LGPL-2.1",
+    "bld": "meson",
+    "cfg": "-Db_lto=true -Ddocs=false",
+    "pkg": {
+      "lpc": ["fribidi.pc"],
+      "inc": ["fribidi/*.h"],
+      "lib": ["libfribidi"],
+      "bin": ["fribidi"],
+      "eta": 60
+    }
+  },
+  "giflib": {
+    "src": "https://git.code.sf.net/p/giflib/code.git",
+    "dsc": "Library for manipulating GIF files",
+    "lic": "LGPL-3.0",
+    "bld": "cmake",
+    "cbk": "BUILD_UTILITIES",
+    "pc_llib": "-lgif",
+    "patch": "LS0tIENNYWtlTGlzdHMudHh0CTIwMjEtMTItMTEgMTE6NDM6MDMuMDA2NDE1OTAwICswMDAwCisrKyBDTWFrZUxpc3RzLnR4dAkyMDIxLTEyLTExIDExOjQzOjI3LjIwNjQxNTkwMCArMDAwMApAQCAtMCwwICsxLDkxIEBACitjbWFrZV9taW5pbXVtX3JlcXVpcmVkKFZFUlNJT04gMi44LjEyKQorCitwcm9qZWN0KGdpZmxpYiBDKQorCitvcHRpb24oQlVJTERfU1RBVElDX0xJQlMgIkJ1aWxkIHN0YXRpYyBsaWJzIiBPTikKK29wdGlvbihCVUlMRF9VVElMSVRJRVMgIkJ1aWxkIHV0aWxpdGllcyIgT0ZGKQorb3B0aW9uKElOU1RBTExfTUFOICJJbnN0YWxsIG1hbiIgT0ZGKQorb3B0aW9uKElOU1RBTExfRE9DUyAiSW5zdGFsbCBkb2NzIiBPRkYpCisKK2V4ZWN1dGVfcHJvY2VzcyhDT01NQU5EIC4vZ2V0dmVyc2lvbgorICAgIFdPUktJTkdfRElSRUNUT1JZICR7Q01BS0VfU09VUkNFX0RJUn0KKyAgICBPVVRQVVRfVkFSSUFCTEUgVkVSU0lPTgorICAgIE9VVFBVVF9TVFJJUF9UUkFJTElOR19XSElURVNQQUNFCispCisKK3NldChMSUJNQUpPUiA3KQorc2V0KExJQk1JTk9SIDEpCitzZXQoTElCUE9JTlQgMCkKK3NldChMSUJWRVIgIiR7TElCTUFKT1J9LiR7TElCTUlOT1J9LiR7TElCUE9JTlR9IikKKworc2V0KGdpZmxpYl9TUkMgZGdpZl9saWIuYyBlZ2lmX2xpYi5jIGdldGFyZy5jCisgICAgZ2lmYWxsb2MuYyBnaWZfZXJyLmMgZ2lmX2ZvbnQuYyBnaWZfaGFzaC5jCisgICAgb3BlbmJzZC1yZWFsbG9jYXJyYXkuYyBxcHJpbnRmLmMgcXVhbnRpemUuYworKQorCitzZXQoZ2lmbGliX0lOU1RBTExBQkxFIGdpZjJyZ2IgZ2lmYnVpbGQgZ2lmZWNobworICAgIGdpZmZpbHRlciBnaWZmaXggZ2lmaW50byBnaWZ0ZXh0IGdpZnRvb2wKKyAgICBnaWZzcG9uZ2UgZ2lmY2xybXAKKykKKworc2V0KGdpZmxpYl9VVElMUyAke2dpZmxpYl9JTlNUQUxMQUJMRX0KKyAgICBnaWZiZyBnaWZjb2xvciBnaWZoaXN0byBnaWZ3ZWRnZQorKQorCitzZXQoZ2lmbGliX0RPQ1MgUkVBRE1FIE5FV1MgVE9ETyBDT1BZSU5HCisgICAgZ2V0dmVyc2lvbiBDaGFuZ2VMb2cgaGlzdG9yeS5hZG9jCisgICAgY29udHJvbCBkb2MvKi54bWwgZG9jLyoudHh0CisgICAgZG9jL2luZGV4Lmh0bWwuaW4gZG9jLzAwUkVBRE1FCispCisKK2lmKElOU1RBTExfTUFOKQorICBmaWxlKEdMT0IgZ2lmbGliX01BTiBkb2MvKi4xKQorZW5kaWYoKQorCitpZihCVUlMRF9TSEFSRURfTElCUykKKyAgYWRkX2xpYnJhcnkoZ2lmbGliIFNIQVJFRCAke2dpZmxpYl9TUkN9KQorICB0YXJnZXRfbGlua19saWJyYXJpZXMoZ2lmbGliIG0pCisgIHNldF90YXJnZXRfcHJvcGVydGllcyhnaWZsaWIgUFJPUEVSVElFUyBWRVJTSU9OICR7TElCVkVSfSBTT1ZFUlNJT04gJHtMSUJNQUpPUn0pCisgIGlmKFdJTjMyKQorICAgIHNldF90YXJnZXRfcHJvcGVydGllcyhnaWZsaWIgUFJPUEVSVElFUyBTVUZGSVggIi0ke0xJQk1BSk9SfSR7Q01BS0VfU0hBUkVEX0xJQlJBUllfU1VGRklYfSIpCisgIGVuZGlmKFdJTjMyKQorZW5kaWYoKQorCitpZihCVUlMRF9TVEFUSUNfTElCUykKKyAgYWRkX2xpYnJhcnkoZ2lmbGliX3N0YXRpYyBTVEFUSUMgJHtnaWZsaWJfU1JDfSkKKyAgc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGdpZmxpYl9zdGF0aWMgUFJPUEVSVElFUyBPVVRQVVRfTkFNRSBnaWZsaWIpCitlbmRpZigpCisKK2lmKEJVSUxEX1VUSUxJVElFUykKKyAgZm9yZWFjaChVVElMSVRZICR7Z2lmbGliX1VUSUxTfSkKKyAgICBhZGRfZXhlY3V0YWJsZSgke1VUSUxJVFl9ICR7VVRJTElUWX0uYykKKyAgICB0YXJnZXRfbGlua19saWJyYXJpZXMoJHtVVElMSVRZfSBnaWZsaWIpCisgIGVuZGZvcmVhY2goKQorZW5kaWYoKQorCitpZihCVUlMRF9TSEFSRURfTElCUykKKyAgaW5zdGFsbChUQVJHRVRTIGdpZmxpYgorICAgIFJVTlRJTUUgREVTVElOQVRJT04gYmluCisgICAgQVJDSElWRSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9CisgICAgTElCUkFSWSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9KQorZW5kaWYoKQorCitpZihCVUlMRF9TVEFUSUNfTElCUykKKyAgaW5zdGFsbChUQVJHRVRTIGdpZmxpYl9zdGF0aWMgQVJDSElWRSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9KQorZW5kaWYoKQorCitpZihCVUlMRF9VVElMSVRJRVMpCisgIGZvcmVhY2goVVRJTElUWSAke2dpZmxpYl9VVElMU30pCisgICAgaW5zdGFsbChUQVJHRVRTICR7VVRJTElUWX0gREVTVElOQVRJT04gYmluKQorICBlbmRmb3JlYWNoKCkKK2VuZGlmKCkKKworaW5zdGFsbChGSUxFUyBnaWZfbGliLmggREVTVElOQVRJT04gaW5jbHVkZSkKKworaWYoSU5TVEFMTF9NQU4pCisgIGluc3RhbGwoRklMRVMgJHtnaWZsaWJfTUFOfSBERVNUSU5BVElPTiAke0NNQUtFX0lOU1RBTExfUFJFRklYfS9tYW4vbWFuMSkKK2VuZGlmKCkKKworaW5zdGFsbChESVJFQ1RPUlkgJHtDTUFLRV9DVVJSRU5UX1NPVVJDRV9ESVJ9L2RvYworICAgIERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9QUkVGSVh9L3NoYXJlL2dpZgorICAgIEZJTEVTX01BVENISU5HIFBBVFRFUk4gIiptbCIpCg==",
+    "pkg": {
+      "lpc": [""],
+      "inc": ["gif_lib.h"],
+      "lib": ["libgiflib"],
+      "bin": ["giftext","gifsponge","giffilter","giffix","gifecho","gifbg","gifhisto","gifwedge","giftool","gifclrmp","gif2rgb","gifcolor","gifbuild","gifinto"],
+      "eta": 18
+    }
+  },
+  "gmp": {
+    "src": "https://gmplib.org/repo/gmp/",
+    "sty": "hg",
+    "tls": "mercurial",
+    "dsc": "GNU Multiple Precision Arithmetic Library",
+    "lic": "LGPL-3.0",
+    "bld": "gnu",
+    "cfg": "CC_FOR_BUILD=cc ABI=",
+    "host_mingw": "CFG+=' --enable-fat'",
+    "src_cfg": "rm -rf autom4te.cache && autoreconf -i -s",
+    "patch": "LS0tIGRvYy92ZXJzaW9uLnRleF8JMTk3MC0wMS0wMSAwMTowMDowMC4wMDAwMDAwMDAgKzAxMDAKKysrIGRvYy92ZXJzaW9uLnRleGkJMjAyMS0xMS0yNiAyMjoyMzoyMi4yNjQ4MTk1ODkgKzAwMDAKQEAgLTAsMCArMSw0IEBACitAc2V0IFVQREFURUQgMTkgSmFudWFyeSAyMDM4CitAc2V0IFVQREFURUQtTU9OVEggSmFudWFyeSAyMDM4CitAc2V0IEVESVRJT04gMTIuMzUKK0BzZXQgVkVSU0lPTiAxMi4zNQo=",
+    "pkg": {
+      "lpc": [""],
+      "inc": ["gmp.h"],
+      "lib": ["libgmp"],
+      "bin": [""],
+      "eta": 272
+    }
+  },
+  "gnutls": {
+    "src": "https://gitlab.com/gnutls/gnutls.git",
+    "dsc": "GnuTLS implements the TLS/SSL (Transport Layer Security aka Secure Sockets Layer) protocol",
+    "lic": "LGPL-2.1",
+    "vrs": "3.6.16",
+    "bld": "gnu",
+    "dep": "libiconv gmp nettle", 
+    "cfg": "--enable-local-libopts --with-included-libtasn1 --with-included-unistring --without-p11-kit --disable-doc --disable-manpages --disable-guile --disable-tests",
+    "tls": "gettext texinfo gperf autopoint",
+    "cbk": "able-tools",
+    "src_cfg": "./bootstrap",
+    "pkg": {
+      "lpc": ["gnutls.pc"],
+      "inc": ["gnutls/*.h"],
+      "lib": ["libgnutls","libgnutlsxx"],
+      "bin": ["gnutls-serv","srptool","psktool","gnutls-cli","ocsptool","certtool","gnutls-cli-debug"],
+      "eta": 690
+    }
+  },
+  "harfbuzz": {
+    "src": "https://github.com/harfbuzz/harfbuzz.git",
+    "dsc": "HarfBuzz text shaping engine",
+    "lic": "MIT",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "tls": "ragel",
+    "dep": "freetype",
+    "cfg": "--with-libstdc++=yes",
+    "mki":"install",
+    "pkg": {
+      "lpc": ["harfbuzz.pc","harfbuzz-subset.pc"],
+      "inc": ["harfbuzz/*.h"],
+      "lib": ["libharfbuzz-subset","libharfbuzz"],
+      "cmake": ["lib/cmake/harfbuzz/harfbuzz-config.cmake"],
+      "eta": 690
+    }
+  },
+  "jxrlib": {
+    "patch": "LS0tIENNYWtlTGlzdHMudHgwCTIwMjEtMTItMTEgMTY6NDQ6MzMuODczOTY5MTAwICswMDAwCisrKyBDTWFrZUxpc3RzLnR4dAkyMDIxLTEyLTExIDE3OjAxOjI2LjE4Mzk2OTEwMCArMDAwMApAQCAtMCwwICsxLDkyIEBACitjbWFrZV9taW5pbXVtX3JlcXVpcmVkKFZFUlNJT04gMi44KQorcHJvamVjdChqeHJsaWIgQykKKworc2V0KEpYUkxJQl9NQUpPUiAwKQorc2V0KEpYUkxJQl9NSU5PUiAwKQorCitzZXQoSlhSTElCX0xJQl9WRVJTSU9OICR7SlhSTElCX01BSk9SfS4ke0pYUkxJQl9NSU5PUn0uMCkKK3NldChKWFJMSUJfU09fVkVSU0lPTiAke0pYUkxJQl9NQUpPUn0pCisKK2luY2x1ZGUoVGVzdEJpZ0VuZGlhbikKK3Rlc3RfYmlnX2VuZGlhbihJU0JJR0VORElBTikKK2lmKElTQklHRU5ESUFOKQorICBzZXQoREVGX0VORElBTiAtRF9CSUdfX0VORElBTl8pCitlbmRpZigpCisKK2FkZF9kZWZpbml0aW9ucygtRF9fQU5TSV9fIC1ERElTQUJMRV9QRVJGX01FQVNVUkVNRU5UICR7REVGX0VORElBTn0pCisKK2luY2x1ZGVfZGlyZWN0b3JpZXMoCisgIGNvbW1vbi9pbmNsdWRlCisgIGltYWdlL3N5cworICBqeHJnbHVlbGliCisgIGp4cnRlc3RsaWIKKykKKworIyBKWFIgTGlicmFyeQorZmlsZShHTE9CIGpwZWd4cl9TUkMgaW1hZ2Uvc3lzLyouYyBpbWFnZS9kZWNvZGUvKi5jIGltYWdlL2VuY29kZS8qLmMpCitmaWxlKEdMT0IganBlZ3hyX0hEUiBpbWFnZS9zeXMvKi5oIGltYWdlL2RlY29kZS8qLmggaW1hZ2UvZW5jb2RlLyouaCkKKworYWRkX2xpYnJhcnkoanBlZ3hyX29iaiBPQkpFQ1QgJHtqcGVneHJfU1JDfSAke2pwZWd4cl9IRFJ9KQorCithZGRfbGlicmFyeShqcGVneHIgU0hBUkVEICQ8VEFSR0VUX09CSkVDVFM6anBlZ3hyX29iaj4pCitzZXRfdGFyZ2V0X3Byb3BlcnRpZXMoanBlZ3hyIFBST1BFUlRJRVMgVkVSU0lPTiAke0pYUkxJQl9MSUJfVkVSU0lPTn0gU09WRVJTSU9OICR7SlhSTElCX1NPX1ZFUlNJT059KQorCithZGRfbGlicmFyeShqcGVneHJfc3RhdGljIFNUQVRJQyAkPFRBUkdFVF9PQkpFQ1RTOmpwZWd4cl9vYmo+KQorc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGpwZWd4cl9zdGF0aWMgUFJPUEVSVElFUyBWRVJTSU9OICR7SlhSTElCX0xJQl9WRVJTSU9OfSBTT1ZFUlNJT04gJHtKWFJMSUJfU09fVkVSU0lPTn0gT1VUUFVUX05BTUUganBlZ3hyIFJVTlRJTUVfT1VUUFVUX05BTUUganBlZ3hyIEFSQ0hJVkVfT1VUUFVUX05BTUUganBlZ3hyKQorCitpbnN0YWxsKFRBUkdFVFMganBlZ3hyCisgIFJVTlRJTUUgREVTVElOQVRJT04gYmluCisgIExJQlJBUlkgREVTVElOQVRJT04gbGliJHtMSUJfU1VGRklYfQorICBBUkNISVZFIERFU1RJTkFUSU9OIGxpYiR7TElCX1NVRkZJWH0KKykKKworaW5zdGFsbChUQVJHRVRTIGpwZWd4cl9zdGF0aWMKKyAgUlVOVElNRSBERVNUSU5BVElPTiBiaW4KKyAgTElCUkFSWSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9CisgIEFSQ0hJVkUgREVTVElOQVRJT04gbGliJHtMSUJfU1VGRklYfQorKQorCisKKyMgSlhSLUdMVUUgTGlicmFyeQorZmlsZShHTE9CIGp4cmdsdWVfU1JDIGp4cmdsdWVsaWIvKi5jIGp4cnRlc3RsaWIvKi5jKQorZmlsZShHTE9CIGp4cmdsdWVfSERSIGp4cmdsdWVsaWIvKi5oIGp4cnRlc3RsaWIvKi5oKQorCithZGRfbGlicmFyeShqeHJfb2JqIE9CSkVDVCAke2p4cmdsdWVfU1JDfSAke2p4cmdsdWVfSERSfSkKKworYWRkX2xpYnJhcnkoanhyZ2x1ZSBTSEFSRUQgJDxUQVJHRVRfT0JKRUNUUzpqeHJfb2JqPikKK3NldF90YXJnZXRfcHJvcGVydGllcyhqeHJnbHVlIFBST1BFUlRJRVMgVkVSU0lPTiAke0pYUkxJQl9MSUJfVkVSU0lPTn0gU09WRVJTSU9OICR7SlhSTElCX1NPX1ZFUlNJT059KQordGFyZ2V0X2xpbmtfbGlicmFyaWVzKGp4cmdsdWUgUFJJVkFURSBqcGVneHIgbSkKKworYWRkX2xpYnJhcnkoanhyZ2x1ZV9zdGF0aWMgU1RBVElDICQ8VEFSR0VUX09CSkVDVFM6anhyX29iaj4pCitzZXRfdGFyZ2V0X3Byb3BlcnRpZXMoanhyZ2x1ZV9zdGF0aWMgUFJPUEVSVElFUyBWRVJTSU9OICR7SlhSTElCX0xJQl9WRVJTSU9OfSBTT1ZFUlNJT04gJHtKWFJMSUJfU09fVkVSU0lPTn0gT1VUUFVUX05BTUUganhyZ2x1ZSBSVU5USU1FX09VVFBVVF9OQU1FIGp4cmdsdWUgQVJDSElWRV9PVVRQVVRfTkFNRSBqeHJnbHVlKQordGFyZ2V0X2xpbmtfbGlicmFyaWVzKGp4cmdsdWVfc3RhdGljIGpwZWd4cl9zdGF0aWMgbSkKKworaW5zdGFsbChUQVJHRVRTIGp4cmdsdWUKKyAgUlVOVElNRSBERVNUSU5BVElPTiBiaW4KKyAgTElCUkFSWSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9CisgIEFSQ0hJVkUgREVTVElOQVRJT04gbGliJHtMSUJfU1VGRklYfQorKQorCitpbnN0YWxsKFRBUkdFVFMganhyZ2x1ZV9zdGF0aWMKKyAgUlVOVElNRSBERVNUSU5BVElPTiBiaW4KKyAgTElCUkFSWSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9CisgIEFSQ0hJVkUgREVTVElOQVRJT04gbGliJHtMSUJfU1VGRklYfQorKQorCisjIEp4ckVuY0FwcCBFeGVjdXRhYmxlCithZGRfZXhlY3V0YWJsZShKeHJFbmNBcHAganhyZW5jb2RlcmRlY29kZXIvSnhyRW5jQXBwLmMpCit0YXJnZXRfbGlua19saWJyYXJpZXMoSnhyRW5jQXBwIGp4cmdsdWUpCitpbnN0YWxsKFRBUkdFVFMgSnhyRW5jQXBwIFJVTlRJTUUgREVTVElOQVRJT04gYmluKQorCisjIEp4ckRlY0FwcCBFeGVjdXRhYmxlCithZGRfZXhlY3V0YWJsZShKeHJEZWNBcHAganhyZW5jb2RlcmRlY29kZXIvSnhyRGVjQXBwLmMpCit0YXJnZXRfbGlua19saWJyYXJpZXMoSnhyRGVjQXBwIGp4cmdsdWUpCitpbnN0YWxsKFRBUkdFVFMgSnhyRGVjQXBwIFJVTlRJTUUgREVTVElOQVRJT04gYmluKQorCisjIEhlYWRlcnMKK2luc3RhbGwoRklMRVMganhyZ2x1ZWxpYi9KWFJHbHVlLmgganhyZ2x1ZWxpYi9KWFJNZXRhLmgganhydGVzdGxpYi9KWFJUZXN0LmggaW1hZ2Uvc3lzL3dpbmRvd3NtZWRpYXBob3RvLmgKKyAgREVTVElOQVRJT04gaW5jbHVkZS9qeHJsaWIKKykKK2luc3RhbGwoRElSRUNUT1JZIGNvbW1vbi9pbmNsdWRlLyBERVNUSU5BVElPTiBpbmNsdWRlL2p4cmxpYgorICBGSUxFU19NQVRDSElORyBQQVRURVJOICIqLmgiCispClwgTm8gbmV3bGluZSBhdCBlbmQgb2YgZmlsZQo="
+  },
+  "kvazaar": {
+    "src": "https://github.com/ultravideo/kvazaar.git",
+    "dsc": "An open source C library for efficient image processing and image analysis operations",
+    "lic": "LGPL-2.1",
+    "bld": "ac",
+    "src_cfg": "./autogen.sh",
+    "pkg": {
+      "lpc": ["kvazaar.pc"],
+      "inc": ["kvazaar.h"],
+      "lib": ["libkvazaar"],
+      "bin": ["kvazaar"],
+      "eta": 70
+    }
+  },
+  "libcrypt": {
+    "src": "https://github.com/gpg/libgcrypt.git",
+    "dep": "libgpg-error",
+    "dsc": "The GNU crypto library",
+    "lic": "GPL-2.0",
+    "cfg": "--with-libgpg-error-prefix=$LIBSDIR"
+  },
+  "libiconv": {
+    "src": "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz",
+    "bld": "gnu",
+    "dep": "libicu, libxml2",
+    "dsc": "An implementation of iconv()",
+    "lic": "LGPL-2.0",
+    "url": "https://www.gnu.org/software/libiconv/",
+    "cfg": "--enable-extra-encodings",
+    "llb": "-liconv"
+  },
+  "libicu": {
+    "src": "https://github.com/unicode-org/icu.git",
+    "dir": "icu4c/source",
+    "bld": "gnu",
+    "dsc": "International Components for Unicode library",
+    "lic": "BSD",
+    "url": "http://site.icu-project.org/home",
+    "pkg": {
+      "lpc": ["icu-i18n.pc", "icu-uc.pc", "icu-io.pc"],
+      "inc": ["unicode/*.h"],
+      "lib": ["libicui18n","libicutu","libicuuc","libicuio","libicutest","libicudata"],
+      "bin": [""],
+      "eta": 480,
+      "out": 7 
+    }
+  },
+  "libshaderc": {
+    "src": "https://github.com/google/shaderc.git",
+    "bld": "cmake",
+    "dsc": "A collection of tools, libraries, and tests for Vulkan shader compilation",
+    "lic": "Apache-2.0",
+    "dep": "libglslc"
+  },
+  "libuuid": {
+    "src": "https://git.code.sf.net/p/libuuid/code",
+    "bld": "gnu",
+    "src_cfg": "autoreconf -fi",
+    "dep": "libusb",
+    "dsc": "Portable uuid C library",
+    "lic": "BSD 3-Clause",
+    "url": "https://sourceforge.net/projects/libuuid/"
+  },
+  "libusb": {
+    "src": "https://github.com/libusb/libusb.git",
+    "vrs": "v1.0.24",
+    "bld": "ab",
+    "dep": "libiconv systemd",
+    "dsc": "A C library that provides generic access to USB devices",
+    "lic": "LGPL-2.1",
+    "url": "https://libusb.in"
+  },
+  "libx11": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libx11.git",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "libxcb",
+    "dsc": "X11 client-side library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxau": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxau",
+    "dep": "libc++, libuuid, zlib",
+    "dsc": "X11 authorisation library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh"
+  },
+  "libxcb": {
+    "src": "https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.14.tar.xz",
+    "dep": "libxau, libxdmcp",
+    "dsc": "X11 client-side library",
+    "lic": "MIT",
+    "url": "https://xcb.freedesktop.org/",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh"
+  },
+  "libxdmcp": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxdmcp.git",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "libx11, libxfixes, libxrender",
+    "dsc": "X11 Display Manager Control Protocol library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxfixes": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxfixes.git",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "libx11",
+    "dsc": "X11 miscellaneous 'fixes' extension library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "libxml2": {
+    "src": "https://gitlab.gnome.org/GNOME/libxml2.git",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "cfg": "--without-debug --without-python",
+    "dep": "liblzma, zlib",
+    "dsc": "Library for parsing XML documents",
+    "lic": "MIT",
+    "url": "http://www.xmlsoft.org",
+    "pkg": "libxml-2.0"
+  },
+  "libxrender": {
+    "src": "https://gitlab.freedesktop.org/xorg/lib/libxrender.git",
+    "bld": "gnu",
+    "src_cfg": "./autogen.sh",
+    "dep": "libx11",
+    "dsc": "X Rendering Extension client library",
+    "lic": "MIT",
+    "url": "https://xorg.freedesktop.org/"
+  },
+  "oiio": {
+    "src": "https://github.com/OpenImageIO/oiio.git",
+    "url": "https://openimageio.org",
+    "bld": "cmake",
+    "dsc": "Reading, writing, and processing images in a wide variety of file formats, using a format-agnostic API, aimed at VFX applications",
+    "dep": "boost",
+    "lic": "BSD-3c",
+    "spdx": "BSD-3-Clause",
+    "cfg": "-DBUILD_DOCS=OFF -DINSTALL_DOCS=OFF",
+    "pkg": {
+      "lpc": [""],
+      "inc": [""],
+      "lib": [""],
+      "bin": [""],
+      "eta": 480,
+      "out": 7 
+    }
+  },
+  "vidstab": {
+    "patch": "LS0tIENNYWtlTGlzdHMudHh0CTIwMjEtMTAtMTAgMTg6MjQ6MzMuNDMzMzE0NDAwICswMTAwCisrKyBDTWFrZUxpc3RzLnR4dAkyMDIxLTEwLTEwIDE4OjI1OjEzLjYyMzMxNDQwMCArMDEwMApAQCAtMTYsNyArMTYsNyBAQAogaWYoTk9UIENNQUtFX0JVSUxEX1RZUEUgQU5EIE5PVCBDTUFLRV9DT05GSUdVUkFUSU9OX1RZUEVTKQogICBzZXQoQ01BS0VfQlVJTERfVFlQRSAiUmVsZWFzZSIpCiBlbmRpZigpCi0KK29wdGlvbihCVUlMRF9TVEFUSUNfTElCUyAiYnVpbGQgc3RhdGljIGxpYnMiIE9OKQogb3B0aW9uKEJVSUxEX1NIQVJFRF9MSUJTICJidWlsZCBzaGFyZWQgbGlicmFyaWVzIGluc3RlYWQgb2Ygc3RhdGljIGxpYnJhcmllcyIKICAgICAgICBPTikKIApAQCAtODEsMTMgKzgxLDI1IEBACiBzZXQoUEtHX0VYVFJBX0xJQlMgIiR7UEtHX0VYVFJBX0xJQlN9ICR7T3Blbk1QX0NfRkxBR1N9IikKIGVuZGlmKCkKIAotCitzZXQodGFyZ2V0cyB2aWRzdGFiKQoraWYoQlVJTERfU0hBUkVEX0xJQlMgQU5EIEJVSUxEX1NUQVRJQ19MSUJTKQorYWRkX2xpYnJhcnkgKHZpZHN0YWJfc3RhdGljIFNUQVRJQyAke1NPVVJDRVN9KQorc2V0X3RhcmdldF9wcm9wZXJ0aWVzKHZpZHN0YWJfc3RhdGljIFBST1BFUlRJRVMgT1VUUFVUX05BTUUgdmlkc3RhYikKK3RhcmdldF9saW5rX2xpYnJhcmllcyh2aWRzdGFiX3N0YXRpYyBtKQorbGlzdChBUFBFTkQgdGFyZ2V0cyB2aWRzdGFiX3N0YXRpYykKK2lmKE9SQ19GT1VORCkKK3RhcmdldF9saW5rX2xpYnJhcmllcyh2aWRzdGFiX3N0YXRpYyAke09SQ19MSUJSQVJJRVN9KQorZW5kaWYoKQoraWYoVVNFX09NUCBBTkQgT1BFTk1QX0ZPVU5EKQordGFyZ2V0X2xpbmtfbGlicmFyaWVzKHZpZHN0YWJfc3RhdGljIE9wZW5NUDo6T3Blbk1QX0MpCitlbmRpZigpCitlbmRpZigpCiAjaWYoIU5PSEVBREVSUykKIEZJTEUoR0xPQiBIRUFERVJTICIke0NNQUtFX0NVUlJFTlRfU09VUkNFX0RJUn0vc3JjLyouaCIpCiBJTlNUQUxMKEZJTEVTICR7SEVBREVSU30gREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9L3ZpZC5zdGFiKQogI2VuZGlmKCkKIAotSU5TVEFMTChUQVJHRVRTIHZpZHN0YWIKK0lOU1RBTEwoVEFSR0VUUyAke3RhcmdldHN9CiAgIFJVTlRJTUUgREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0JJTkRJUn0KICAgTElCUkFSWSBERVNUSU5BVElPTiAke0NNQUtFX0lOU1RBTExfTElCRElSfQogICBBUkNISVZFIERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9MSUJESVJ9Cg=="
+  },
+  "x264": {
+    "src": "https://code.videolan.org/videolan/x264.git",
+    "bld": "gnu",
+    "dsc": "x264, the best and fastest H.264 encoder",
+    "lic": "GPL-2.0",
+    "cbk": "able-cli",
+    "pkg": {
+      "lpc": [""],
+      "inc": ["x264.h x264_config.h"],
+      "lib": ["libx264"],
+      "bin": ["x264"],
+      "eta": 480,
+      "out": 7 
+    }
+  },
+  "systemd": {
+    "src": "https://github.com/systemd/systemd.git",
+    "dsc": "The systemd System and Service Manager",
+    "lic": "GPL-2.0",
+    "url": "https://github.com/systemd/systemd"
+  }
+}
