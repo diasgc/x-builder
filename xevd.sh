@@ -13,6 +13,6 @@ cstk="XEVD_APP_STATIC_BUILD"
 
 . xbuilder.sh
 
-case $arch in aarch64*|arm*) doErr "${lib} does not support cross-build for arm devices (${arch}).";; esac
+$host_arm && doErr "${lib} does not support cross-build for arm (${arch})."
 
 start

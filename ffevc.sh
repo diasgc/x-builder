@@ -1,8 +1,8 @@
 #!/bin/bash
 # cpu av8 av7 x86 x64
-# NDK +X+  .   .   .  clang
-# GNU +..  .   .   .  gcc
-# WIN +..  .   .   .  clang/gcc
+# NDK N/A N/A  .   .  clang
+# GNU N/A N/A  .   .  gcc
+# WIN N/A N/A  .   .  clang/gcc
 
 lib='ffevc'
 dsc='ffmpeg supporting EVC codec and file formats'
@@ -13,7 +13,7 @@ cstk="XEVE_APP_STATIC_BUILD"
 
 . xbuilder.sh
 
-case $arch in aarch64*|arm*) doErr "${lib} does not support cross-build for arm devices (${arch}).";; esac
+$host_arm && doErr "${lib} does not support cross-build for arm (${arch})."
 
 start
 

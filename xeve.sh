@@ -17,7 +17,7 @@ cstk="XEVE_APP_STATIC_BUILD"
 # and https://github.com/lighttransport/embree-aarch64/blob/master/common/math/AVX2NEON.h
 # port AVX/SSE port to aarch64
 
-case $arch in aarch64*|arm*) doErr "${lib} does not support cross-build for arm devices (${arch}).";; esac
+$host_arm && doErr "${lib} does not support cross-build for arm (${arch})."
 
 start
 
