@@ -8,24 +8,18 @@ src='https://github.com/tesseract-ocr/tesseract.git'
 cfg='ag'
 dep='leptonica'
 pkg='tesseract'
-mingw_posix=true
 
 . xbuilder.sh
 
 case $build_tool in
   cmake)  CFG="-DBUILD_TRAINING_TOOLS=OFF -DGRAPHICS_DISABLED=ON -DCOMPILER_SUPPORTS_MARCH_NATIVE=OFF"
-          case $arch in
-            *mingw32) CFG+=" -DSW_BUILD=OFF";;
-            *) CFG+=" -DOPENMP_BUILD=ON -DENABLE_LTO=ON";;
-          esac
+          $host_mingw && CFG+=" -DSW_BUILD=OFF" || CFG+=" -DOPENMP_BUILD=ON -DENABLE_LTO=ON"
           ;;
-  automake) CFG="--with-sysroot=${SYSROOT} --with-pic=1 --disable-debug \
+  automake) CFG="--disable-debug \
     --disable-graphics \
     --disable-tessdata-prefix \
     --disable-largefile"
-    mki="install-strip"
     eta='510'
-    [ -d $SRCDIR ] && [ ! -f $SRCDIR/configure ] && doAutogen $SRCDIR
     ;;
 esac
 
