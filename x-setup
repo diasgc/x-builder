@@ -22,6 +22,7 @@ case $1 in
         rm -Rf .git/logs/
         git gc --aggressive --prune=now
         echo -e "\nDone\n\n"
+        exit 0
         ;;
 esac
 
