@@ -332,7 +332,7 @@ install_llvm_mingw(){
         cd $d
         [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
         export llvm_mingw_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
-        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
+        wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-$(uname -m).tar.xz" "llvm-mingw"
         export LLVM_MINGW_HOME="$(pwd)/llvm-mingw"
         export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
         cd $od
@@ -347,22 +347,29 @@ if [ "$1" == "--ndk" ]; then
     exit 0
 fi
 
-echo -e "\n${CC1}${b} Toolchains${C0}"
-#ANDROID NDK
-check_android_ndk
+case $(uname -m) in
+    x86_64)
+        echo -e "\n${CC1}${b} Toolchains${C0}"
+        #ANDROID NDK
+        check_android_ndk
+        check_llvm_mingw
+        # https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
 
-check_llvm_mingw
+        #MINGW
+        #check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
+        #check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
 
-# https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+        #CROSS-ARCH-GNU
+        check4Pkg 'i686-GNU' 'i686-linux-gnu-gcc' 'gcc-i686-linux-gnu' 'g++-i686-linux-gnu'
+        check4Pkg 'Aarch64-GNU' 'aarch64-linux-gnu-gcc' 'gcc-aarch64-linux-gnu' 'g++-aarch64-linux-gnu' 'libstdc++-11-dev-arm64-cross'
+        check4Pkg 'Armhf-GNU' 'arm-linux-gnueabihf-gcc' 'gcc-arm-linux-gnueabihf' 'g++-arm-linux-gnueabihf' 'libstdc++6-armhf-cross'
+        ;;
+    aarch64)
+        check_llvm_mingw
+        ;;
+esac
 
-#MINGW
-#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
-#check4Pkg 'MinGW-w64' 'x86_64-w64-mingw32-gcc' 'mingw-w64'
 
-#CROSS-ARCH-GNU
-check4Pkg 'i686-GNU' 'i686-linux-gnu-gcc' 'gcc-i686-linux-gnu' 'g++-i686-linux-gnu'
-check4Pkg 'Aarch64-GNU' 'aarch64-linux-gnu-gcc' 'gcc-aarch64-linux-gnu' 'g++-aarch64-linux-gnu' 'libstdc++-11-dev-arm64-cross'
-check4Pkg 'Armhf-GNU' 'arm-linux-gnueabihf-gcc' 'gcc-arm-linux-gnueabihf' 'g++-arm-linux-gnueabihf' 'libstdc++6-armhf-cross'
 
 echo -e "\n${CC1}${b} Build tools${C0}"
 #MAKE

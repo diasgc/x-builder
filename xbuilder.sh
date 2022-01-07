@@ -1473,7 +1473,7 @@ while [ $1 ];do
     --refresh)  update=true;;
     --retry)    retry=true;;
     --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
-    --full|--all) build_shared=true build_static=true build_bin=true;;
+    --full|--all) build_shared=true build_static=true build_bin=true dep_build="--both --bin";;
     --shared)   build_shared=true build_static=false;;
     --static)   build_static=true build_shared=false;;
     --both)     build_static=true build_shared=true;;

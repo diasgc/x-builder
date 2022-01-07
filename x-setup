@@ -17,11 +17,13 @@ clear
 
 case $1 in
     --git-cleanup)
+        echo -e "size before cleanup: $(du -s .git)\n"
         git filter-branch --index-filter 'git rm --cached --ignore-unmatch *.tar.gz' -- --all
         rm -Rf .git/refs/original
         rm -Rf .git/logs/
         git gc --aggressive --prune=now
         echo -e "\nDone\n\n"
+        echo -e "size after cleanup: $(du -s .git)\n"
         exit 0
         ;;
 esac
