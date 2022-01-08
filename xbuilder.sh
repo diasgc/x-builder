@@ -1369,7 +1369,8 @@ showBanner(){
 
 while [ $1 ];do
   case $1 in
-    aa64|aa8|a*64-*android|android ) cpu_id=0 
+    aa64|aa8|a*64-*android|android ) cpu_id=0
+      target_trip=('aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64')
       arch='aarch64-linux-android' PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
       host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
@@ -1377,6 +1378,7 @@ while [ $1 ];do
       CT0=$CG3 CT1=$CG6
       ;;
     aa7|arm-*android*eabi|arm-android) cpu_id=1
+      target_trip=('arm' 'v7a' 'linux' 'android' 'eabi' 'armeabi-v7a' '32')
       arch='arm-linux-androideabi' PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
       host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
       host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
@@ -1384,6 +1386,7 @@ while [ $1 ];do
       CT0=$CG2 CT1=$CG5
       ;;
     a86|ax86|*86-*android) cpu_id=2
+      target_trip=('i686' '' 'linux' 'android' '' 'x86' '32')
       arch='i686-linux-android' PLATFORM="Android" CPU="i686" ABI="x86" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
       host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=true
@@ -1391,6 +1394,7 @@ while [ $1 ];do
       CT0=$CG0 CT1=$CG1
       ;;
     a64|ax64|*64-*android) cpu_id=3
+      target_trip=('x86_64' '' 'linux' 'android' '' 'x86_64' '64')
       arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
       host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
@@ -1398,6 +1402,7 @@ while [ $1 ];do
       CT0=$CG0 CT1=$CG1
       ;;
     la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4
+      target_trip=('aarch64' '' 'linux' 'gnu' '' 'arm64' '64')
       arch='aarch64-linux-gnu' PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
       host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
@@ -1405,6 +1410,7 @@ while [ $1 ];do
       CT0=$CM0 CT1=$CM1
       ;;
     la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5
+      target_trip=('arm' '' 'linux' 'gnu' 'eabihf' 'armv7' '32')
       arch='arm-linux-gnueabihf' PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
       host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
       host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
@@ -1412,6 +1418,7 @@ while [ $1 ];do
       CT0=$CY0 CT1=$CY1
       ;;
     l86|lx86|*86-linux*|linux*32 ) cpu_id=6
+      target_trip=('i686' '' 'linux' 'gnu' '' 'x86' '32')
       arch='i686-linux-gnu' PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
       host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=false
@@ -1419,6 +1426,7 @@ while [ $1 ];do
       CT0=$CM0 CT1=$CM1
       ;;
     l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7
+      target_trip=('x86_64' '' 'linux' 'gnu' '' 'x86_64' '64')
       arch='x86_64-linux-gnu' PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
       host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
@@ -1426,6 +1434,7 @@ while [ $1 ];do
       CT0=$CM0 CT1=$CM1
       ;;
     wa8|a*64-w64*|a*64-*mingw*) cpu_id=8
+      target_trip=('aarch64' '' 'w64' 'mingw32' '' 'arm64' '64')
       [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for aarch64-w64-mingw32 is not installed"
       arch='aarch64-w64-mingw32' PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
@@ -1434,6 +1443,7 @@ while [ $1 ];do
       CT0=$CC0 CT1=$CC1
       ;;
     wa7|arm*-w64*|arm*-*mingw*) cpu_id=9
+      target_trip=('arm' 'v7' 'w64' 'mingw32' '' 'armv7' '32')
       [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
       arch='armv7-w64-mingw32' PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
@@ -1442,6 +1452,7 @@ while [ $1 ];do
       CT0=$CC0 CT1=$CC1
       ;;
     w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10
+      target_trip=('i686' '' 'w64' 'mingw32' '' 'x86' '32')
       arch='i686-w64-mingw32' PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
       host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
       host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=win32; host_clang=true
@@ -1449,6 +1460,7 @@ while [ $1 ];do
       CT0=$CB0 CT1=$CB1
       ;;
     w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11
+      target_trip=('x86_64' '' 'w64' 'mingw32' '' 'x86_64' '64')
       arch='x86_64-w64-mingw32' PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
       host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
       host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=win32; host_clang=true
@@ -1544,17 +1556,24 @@ done
 [ -z ${mingw_posix} ] && mingw_posix=false
 
 # Set default Host
+
 if [ -z "${arch}" ];then
-  arch="$(uname -m)-$(OSTYPE)"
-  host_arch=$arch; host_eabi=; host_vnd=linux; host_os=gnu; host_mingw=false
-  host_sys=linux; host_clang=false
+  arch="$(uname -m)-${OSTYPE}"
+  target_trip=("$(uname -m)" )
   LIBSDIR=$(pwd)/builds/linux/$(uname -m)
-  SYSTEM_NAME="Linux" CPU="$(uname -m)" ABI="$(uname -m)" EABI=
-  case $(uname -m) in
-    aarch64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
-    x86_64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
-  esac
 fi
+# target_trip=(0='arm' 1='v7a' 2='linux' 3='android' 4='eabi' 5='armeabi-v7a' 6='32')
+case ${target_trip[0]} in
+  aarch64) host_arm=true; host_arm32=false; host_arm64=true; host_x86=false; host_x64=false;;
+  arm) host_arm=true; host_arm32=true; host_arm64=true; host_x86=false; host_x64=false;;
+  i686) host_arm=false; host_arm32=false; host_arm64=false; host_x86=true; host_x64=false;;
+  x86_64) host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
+esac
+case ${target_trip[3]} in
+  android) host_sys=linux; host_mingw=false; host_os=android; host_ndk=true; host_clang=true;;
+  gnu) host_sys=linux; host_mingw=false; host_os=gnu; host_ndk=false; host_clang=false;;
+  mingw32) host_sys=windows; host_mingw=true; host_os=mingw32; host_clang=true;;
+esac
 
 # is cross-compile?
 [ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
@@ -1567,7 +1586,7 @@ if [ -z "$ISRUNNING" ]; then
 fi
 if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  ${sudo} echo -ne "\r"
+  ${sudo} echo -ne "\r                                   "
 fi
 
 
