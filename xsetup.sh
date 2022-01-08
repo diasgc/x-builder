@@ -7,6 +7,7 @@
 # load config
 [ -f ".config" ] && . .config
 install=false
+install_all=false
 
 #check config
 if [ -z "${BUILD_ARCH}" ];then
@@ -65,9 +66,14 @@ checkPackage(){
         else
             echo -e "${CC0}  ${b} ${1}${C0}\t\t${v0}\t\t${v1}"
         fi
+    elif $install_all; then
+        tput rc && shift && shift && aptInstall --nover $@
     else
-        echo -ne "${CR0}  ${b} ${1}${C0}\t" && tput sc && echo -ne "not installed.\t" && read -p 'Install now? [Y|n]' ca
-        [ $ca=y ] && tput rc && shift && shift && aptInstall --nover $@
+        echo -ne "${CR0}  ${b} ${1}${C0}\t" && tput sc && echo -ne "not installed.\t" && read -p 'Install now? [A]ll|[Y]es|[N]o]' ca
+        case $ca in
+            y*|Y*) tput rc && shift && shift && aptInstall --nover $@;;
+            a*|A*) install_all=true; tput rc && shift && shift && aptInstall --nover $@;;
+        esac
     fi
 }
 
