@@ -1545,12 +1545,12 @@ done
 
 # Set default Host
 if [ -z "${arch}" ];then
-  arch="$(uname-m)-$(OSTYPE)"
+  arch="$(uname -m)-$(OSTYPE)"
   host_arch=$arch; host_eabi=; host_vnd=linux; host_os=gnu; host_mingw=false
   host_sys=linux; host_clang=false
-  LIBSDIR=$(pwd)/builds/linux/$(uname-m)
-  SYSTEM_NAME="Linux" CPU="$(uname-m)" ABI="$(uname-m)" EABI=
-  case $(uname-m) in
+  LIBSDIR=$(pwd)/builds/linux/$(uname -m)
+  SYSTEM_NAME="Linux" CPU="$(uname -m)" ABI="$(uname -m)" EABI=
+  case $(uname -m) in
     aarch64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
     x86_64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
   esac
