@@ -1545,11 +1545,15 @@ done
 
 # Set default Host
 if [ -z "${arch}" ];then
-  arch="x86_64-linux-gnu"
-  host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-  host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
-  LIBSDIR=$(pwd)/builds/linux/x86_64
-  SYSTEM_NAME="Linux" CPU="x86_64" ABI="x86_64" EABI=
+  arch="$(uname-m)-$(OSTYPE)"
+  host_arch=$arch; host_eabi=; host_vnd=linux; host_os=gnu; host_mingw=false
+  host_sys=linux; host_clang=false
+  LIBSDIR=$(pwd)/builds/linux/$(uname-m)
+  SYSTEM_NAME="Linux" CPU="$(uname-m)" ABI="$(uname-m)" EABI=
+  case $(uname-m) in
+    aarch64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
+    x86_64) host_arm=true; host_arm64=true; host_x86=false; host_x64=false; host_clang=true;;
+  esac
 fi
 
 # is cross-compile?
