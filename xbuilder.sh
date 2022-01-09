@@ -2,11 +2,14 @@
 # ................................................
 # X-Builder util 0.3.1 2021-diasgc
 # ................................................
-[ -z ${vsh+x} ] && . .common
 
-set -o pipefail
-
-trap err ERR
+# first load .common functions and error trap
+[ -z ${vsh+x} ] && {
+  . .common
+  set -o pipefail
+  [ "${1}" == "--debug" ] && set -x && debug=true
+  trap err ERR
+}
 
 sudo=$(which sudo)
 # defvar debug=false 
@@ -358,8 +361,8 @@ start(){
         MAKE_EXECUTABLE=make
         ;;
       meson)
-        local MESON_CFG="$SRCDIR/${arch}.meson"
-        [ -f "$MESON_CFG" ] && rm $MESON_CFG
+        local MESON_CFG="${CONFIG_DIR}/${arch}.meson"
+        [ -f "${MESON_CFG}" ] && rm ${MESON_CFG}
         $host_clang || LD="bfd"
         meson_create_toolchain $MESON_CFG
         MAKE_EXECUTABLE=ninja
@@ -379,9 +382,11 @@ start(){
 
   [ -n "${WFLAGS}" ] && CPPFLAGS+=" ${WFLAGS}"
   
+  static_ldflag='-static'
   # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
   # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
-  $build_static && LDFLAGS="-all-static $LDFLAGS"
+  $host_clang && static_ldflag="-all${static_ldflag}"
+  $build_static && LDFLAGS="${static_ldflag} $LDFLAGS"
 
   log_vars CFLAGS CXXFLAGS WFLAGS CPPFLAGS LDFLAGS LIBS
 
@@ -1558,9 +1563,22 @@ done
 # Set default Host
 
 if [ -z "${arch}" ];then
-  arch="$(uname -m)-${OSTYPE}"
-  target_trip=("$(uname -m)" )
-  LIBSDIR=$(pwd)/builds/linux/$(uname -m)
+  target_trip[5]=$(uname -m)
+  arch="${target_trip[5]}-${OSTYPE}"
+  target_trip[0]=${target_trip[5]}
+  if [ "${target_triple[0]::3}" == "arm" ]; then
+    target_trip[1]="${target_triple[0]:3}"
+    target_trip[0]="${target_triple[0]::3}"
+  fi
+  local arr=(${OSTYPE//-/ })
+  target_trip[2]=$arr[0]
+  target_trip[3]=$arr[1]
+  if [ -z "${target_trip[3]##*eabi*}" ] ;then
+    local a2=${target_trip[3]%eabi*}
+    target_trip[4]=${target_trip[3]#${a2}*}
+    target_trip[3]=${a2}
+  fi
+  LIBSDIR=$(pwd)/builds/${target_trip[3]}/${target_trip[5]}
 fi
 # target_trip=(0='arm' 1='v7a' 2='linux' 3='android' 4='eabi' 5='armeabi-v7a' 6='32')
 case ${target_trip[0]} in

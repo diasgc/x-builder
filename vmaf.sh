@@ -3,6 +3,7 @@
 # NDK +++  .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+# latest: 2.3.0
 
 lib='vmaf'
 pkg='libvmaf'
@@ -10,11 +11,8 @@ dsc='Perceptual video quality assessment based on multi-method fusion'
 lic='BSD-2c Patent'
 src='https://github.com/Netflix/vmaf.git'
 cfg='meson'
-eta='0'
+eta='52'
 dir_config="libvmaf"
-#cshk=''
-#cstk=''
-#cbk=''
 CFG='-Denable_docs=false -Denable_tests=false'
 lst_inc='libvmaf/model.h libvmaf/feature.h libvmaf/picture.h
     libvmaf/libvmaf.h libvmaf/version.h libvmaf/compute_vmaf.h'

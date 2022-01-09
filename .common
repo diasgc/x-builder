@@ -41,7 +41,10 @@ hwinfoCountCoresReadable(){
 }
 
 hwinfoProcessor(){
-  cat /proc/cpuinfo | grep -Po 'model name\s+: \K(.*)' | head -n1
+  local i=$(cat /proc/cpuinfo | grep -Po '^.odel.*: \K(.*)' | tail -n1)
+  [ -z "$i" ] && i=$(cat /proc/cpuinfo | grep -Po '^.ardware.*: \K(.*)' | tail -n1)
+  [ -z "$i" ] && i=Unknown
+  echo $i
 }
 
 banner(){
