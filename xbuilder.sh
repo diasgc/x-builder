@@ -27,6 +27,7 @@ sudo=$(which sudo)
 : "${update:=false}"
 : "${build_dist:=true}"
 : "${dep_build:=--static}"
+: "${build_strip:=true}"
 
 $req_update_deps && update=true
 pkg_fmt="tgz"
@@ -393,12 +394,14 @@ start(){
   ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
   
 
+
   ifdef_function 'patch_install' && patch_install
 
   [ -z ${mki} ] && mki="install"
   ifdef_function 'build_install' && {
     doLog 'install' build_install
   } || {
+    $build_strip && doLog 'strip' doStrip
     doLog 'install' ${MAKE_EXECUTABLE} ${mki}
   }
 
@@ -427,6 +430,13 @@ start(){
 
   #stat_savestats
   end_script
+}
+
+doStrip(){
+  local libdir
+  for dd in $(find ${SRCDIR} \( -name "*.a" -o -name "*.so" \));do
+    ${STRIP} --strip-unneeded $dd
+  done
 }
 
 end_script(){
@@ -1136,6 +1146,34 @@ ndk_assert_h_sys_soundcard(){
   return 0
 }
 
+toolchain_android(){
+  [ -d "${ANDROID_NDK_HOME}" ] || doErr "No ANDROID NDK Toolchain found. Aborting."
+
+  TOOLCHAIN="${ndk_toolchain}"
+  SYSROOT="${TOOLCHAIN}/sysroot"
+  CROSS_PREFIX="${TOOLCHAIN}/bin"
+  
+  CC="${TOOLCHAIN}/bin/${target_trip[0]}${target_trip[1]}-${target_trip[2]}-${target_trip[3]}${target_trip[4]}${API}-"
+  CXX="${CC}${ndk_cc[1]}"
+  CC="${CC}${ndk_cc[0]}"
+  LD="${TOOLCHAIN}/bin/ld.lld"
+  YASM=${TOOLCHAIN}/bin/yasm
+  arch="${target_trip[0]}-${target_trip[2]}-${target_trip[3]}${target_trip[4]}"
+
+  if [ ${xv_ndk_major} -gt 22 ];then
+    AS=${CC}  
+    CROSS_PREFIX+="/llvm-"
+  else
+    CROSS_PREFIX+="/${arch}-"
+    AS="${CROSS_PREFIX}as"
+  fi
+  
+  CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
+  LT_SYS_LIBRARY_PATH="${SYSROOT}/usr/lib/$arch:${SYSROOT}/usr/lib/${arch}/${API}"
+  CPPFLAGS+=" -I${SYSROOT}/usr/include -I${SYSROOT}/usr/include/${arch} -I${SYSROOT}/usr/local/include"
+  LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+}
+
 loadToolchain(){
 
   CMAKE_EXECUTABLE=cmake
@@ -1172,7 +1210,7 @@ loadToolchain(){
       #fi
       CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch}"
       CPPFLAGS+=" -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-      ${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
+      #$${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
       YASM=${TOOLCHAIN}/bin/yasm
       #PKG_CONFIG_LIBDIR=${ANDROID_NDK_HOME}/pkgconfig
       #[ ! -f "$LIBSDIR/lib/pkgconfig/zlib.pc" ] && patch_zlib_createpc "${SYSROOT}/usr"
@@ -1539,6 +1577,7 @@ while [ $1 ];do
     --nobanner) banner=false;;
     --debug) debug=true && set -x;;
     --nodev) nodev=true;;
+    --no-strip) build_strip=false;;
     --vlatest) echo $(githubLatestTarGz) && exit 0;;
     --wipeall) read -p "Wipe all data? [y|N]" r
       case $r in y|Y) rm -rf builds sources

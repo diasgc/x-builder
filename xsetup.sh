@@ -270,6 +270,8 @@ writeConfig(){
            ROOTDIR="$(pwd)" \\
            build_arch="${build_arch}" \\
            ANDROID_NDK_HOME="${ANDROID_NDK_HOME}" \\
+           ndk_cc=(clang clang++) \\
+           ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64" \\
            xv_ndk="${xv_ndk}" \\
            xv_ndk_major="${xv_ndk%%.*}" \\
            MAKE_EXECUTABLE="$(which make)" \\
