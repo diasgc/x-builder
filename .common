@@ -62,7 +62,7 @@ banner(){
     echo -e "${CW}  $(hwinfoCountCoresReadable) $(hwinfoProcessor)${C0}"
 }
 
-ifdef_function(){
+fn_defined(){
   [ "$(type -t $1)" = 'function' ]
 }
 

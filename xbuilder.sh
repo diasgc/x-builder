@@ -128,8 +128,8 @@ main(){
   gitjson=$(git_api_tojson $src)
   if [ -n "${gitjson}" ];then
     #echo -ne "${CY1}${b}${C0}"
-    [ -z "${lic}" ] && lic=$(echo "$gitjson" | jq .licence)
-    [ -z "${dsc}" ] && dsc=$(echo "$gitjson" | jq .description)
+    : "${lic:=$(echo "$gitjson" | jq .licence)}"
+    : "${dsc:=$(echo "$gitjson" | jq .description)}"
   fi
   # show package info
   [ -f "${PKGDIR}/${pkg}.pc" ] || pkgInfo
@@ -252,7 +252,7 @@ start(){
   local req_src_config=false
   if [ ! -d $SRCDIR ];then
     # check whether to custom get source
-    if ifdef_function 'source_get'; then
+    if fn_defined 'source_get'; then
       source_get
     else
       case $sty in
@@ -274,15 +274,18 @@ start(){
 
   pushdir $CONFIG_DIR
   
-  [ -z "$cfg" ] && guess_cfg
+  if [ -z "$cfg" ]; then
+    guess_cfg
+  fi
 
   if $req_src_config; then
     # check whether to custom config source
-    if ifdef_function 'source_config'; then
+    if fn_defined 'source_config'; then
       doLog 'config' source_config
     elif [ -n "$automake_cmd" ];then
       doLog 'automake' $automake_cmd
       unset automake_cmd
+    elif 
     else case $cfg in
       ab) [ -f "${CONFIG_DIR}/boostrap" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap
           [ -f "${CONFIG_DIR}/boostrap.sh" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap.sh
@@ -302,7 +305,7 @@ start(){
     fi
 
     # check whether to custom patch source
-    if ifdef_function 'source_patch'; then
+    if fn_defined 'source_patch'; then
       doLog 'patch' source_patch
     fi
 
@@ -322,63 +325,68 @@ start(){
   fi
   
   [ -d "${BUILD_DIR}" ] || mkdir -p "${BUILD_DIR}"
-  popdir; pushdir ${BUILD_DIR}
+  cd ${BUILD_DIR}
   
   log_vars SRCDIR dep PKG_CONFIG_LIBDIR
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
-  ifdef_function 'build_all' && {
+  if fn_defined 'build_all'; then
     build_all
     end_script
-  }
+  fi
 
-  ifdef_function 'build_prepare' && build_prepare
+  if fn_defined 'build_prepare'; then
+    build_prepare
+  fi
 
-  ifdef_function 'build_clean' && build_clean || {
+  if fn_defined 'build_clean'; then
+    build_clean
+  else
     [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
     [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   }
 
-  if ifdef_function 'build_config'; then
+  if fn_defined 'build_config'; then
     build_config
-  else
-    case $build_tool in
-      cmake)
-        [ -z "$exec_config" ] && exec_config=${CMAKE_EXECUTABLE}
-        [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${BUILD_DIR}
-        [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-        doLog 'cmake' $exec_config ${CONFIG_DIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
-        case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
-        MAKE_EXECUTABLE=make
-        ;;
-      automake)
-        [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
-        [ -z "$exec_config" ] && exec_config='configure' # default config executable
-        ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
-        ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
-        ! $ac_nopic && CFG+=" --with-pic=1"
-        doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
-        MAKE_EXECUTABLE=make
-        ;;
-      meson)
-        local MESON_CFG="${CONFIG_DIR}/${arch}.meson"
-        [ -f "${MESON_CFG}" ] && rm ${MESON_CFG}
-        $host_clang || LD="bfd"
-        meson_create_toolchain $MESON_CFG
-        MAKE_EXECUTABLE=ninja
-        doLog 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
-        ;;
-      make)
-        mkf=$CFG
-        MAKE_EXECUTABLE=make
-        ;;
-      *)
-        doErr "No cfg found or unknown for $cfg. Use build_config to custom configure makefile"
-        ;;
+  else case $build_tool in
+    cmake)
+      : "${exec_config:=${CMAKE_EXECUTABLE}}"
+      [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${BUILD_DIR}
+      [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
+      doLog 'cmake' $exec_config ${CONFIG_DIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+      case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
+      MAKE_EXECUTABLE=make
+      ;;
+    automake)
+      [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
+      [ -z "$exec_config" ] && exec_config='configure' # default config executable
+      ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
+      ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
+      ! $ac_nopic && CFG+=" --with-pic=1"
+      doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
+      MAKE_EXECUTABLE=make
+      ;;
+    meson)
+      local MESON_CFG="${CONFIG_DIR}/${arch}.meson"
+      [ -f "${MESON_CFG}" ] && rm ${MESON_CFG}
+      $host_clang || LD="bfd"
+      meson_create_toolchain $MESON_CFG
+      MAKE_EXECUTABLE=ninja
+      doLog 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+      ;;
+    make)
+      mkf=$CFG
+      MAKE_EXECUTABLE=make
+      ;;
+    *)
+      doErr "No cfg found or unknown for $cfg. Use build_config to custom configure makefile"
+      ;;
     esac
   fi
 
-  ifdef_function 'build_patch_config' && doLog 'patch' build_patch_config
+  if fn_defined 'build_patch_config'; then
+    doLog 'patch' build_patch_config
+  fi
 
   [ -n "${WFLAGS}" ] && CPPFLAGS+=" ${WFLAGS}"
   
@@ -390,19 +398,24 @@ start(){
 
   log_vars CFLAGS CXXFLAGS WFLAGS CPPFLAGS LDFLAGS LIBS
 
-  ifdef_function 'build_make' && doLog 'make' build_make || doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+  if fn_defined 'build_make'; then
+    doLog 'make' build_make
+  else
+    doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+  fi
   
+  if fn_defined 'patch_install';then
+    patch_install
+  fi
 
-
-  ifdef_function 'patch_install' && patch_install
 
   [ -z ${mki} ] && mki="install"
-  ifdef_function 'build_install' && {
+  if fn_defined 'build_install'; then
     doLog 'install' build_install
-  } || {
+  else
     $build_strip && doLog 'strip' doStrip
     doLog 'install' ${MAKE_EXECUTABLE} ${mki}
-  }
+  fi
 
   # check whether to create pkg-config .pc file
   if [ -n "${req_pcforlibs+x}" ];then
@@ -412,7 +425,7 @@ start(){
       create_pkgconfig_file $pcf "-l$pcf"
     done
   else
-    ifdef_function 'build_pkgconfig_file' && \
+    fn_defined 'build_pkgconfig_file' && \
     doLog 'pkgcfg' build_pkgconfig_file || \
     [ -n "$pc_llib" ] && \
     doLog 'write_pc' create_pkgconfig_file $pkg $pc_llib
@@ -425,7 +438,7 @@ start(){
 
   logver "$PKGDIR/${pkg}.pc"
 
-  ifdef_function 'on_end' && on_end
+  fn_defined 'on_end' && on_end
 
   #stat_savestats
   end_script
@@ -1403,7 +1416,13 @@ showBanner(){
   fi
 }
 
-
+menu_settune(){
+  case $1 in
+    smd855) CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
+    smd865) CPPFLAGS+=" -mtune=cortex-a77.cortex-a55";;
+    smd888) CPPFLAGS+=" -mtune=cortex-x1.cortex-a78.cortex-a55";;
+  esac
+}
 
 
 
@@ -1534,6 +1553,7 @@ while [ $1 ];do
     --bin)      build_bin=true;;
     --nobin)    build_bin=false;;
     --nodist)   bdist=false;;
+    --tune)     shift; menu_settune $1; shift;;
     --clear) shift
       while [ -n "$1" ];do
         case $1 in
