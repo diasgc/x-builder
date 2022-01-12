@@ -335,8 +335,8 @@ start(){
   ifdef_function 'build_prepare' && build_prepare
 
   ifdef_function 'build_clean' && build_clean || {
-    [ -z "$mkc" ] && mkc="clean"
-    [ -f "Makefile" ] && doNoLog 'clean' ${MAKE_EXECUTABLE} $mkc
+    [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
+    [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   }
 
   if ifdef_function 'build_config'; then
@@ -353,12 +353,11 @@ start(){
         ;;
       automake)
         [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
-        [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
         [ -z "$exec_config" ] && exec_config='configure' # default config executable
         ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
         ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
         ! $ac_nopic && CFG+=" --with-pic=1"
-        doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+        doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
         MAKE_EXECUTABLE=make
         ;;
       meson)
@@ -445,7 +444,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki mingw_posix
+  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki mingw_posix cfg_args
   dec_tab
   echo
   exit 0
@@ -810,11 +809,11 @@ doLogNoErr(){
   logok $var
 }
 
-doNoLog(){
+do_quietly(){
   local var=$1; shift
   echo -ne "${CD}${var}${C0}"
   echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  "$@" 2>&1 >/dev/null
+  "$@" >/dev/null 2>&1
   logok $var
 }
 

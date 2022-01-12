@@ -8,12 +8,11 @@ lib='openh264'
 dsc='Open Source H.264 Codec'
 lic='BSD-2c'
 src='https://github.com/cisco/openh264.git'
-sty='git'
 cfg='meson'
 eta='160'
 
 . xbuilder.sh
-MAKE_EXECUTABLE=ninja
+
 CFG="-Db_pie=true -Db_lto=true"
 
 build_make_package(){

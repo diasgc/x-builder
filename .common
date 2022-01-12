@@ -385,6 +385,12 @@ github_jq(){
   echo "${1}" | jq "${2}" | sed 's/"//g'
 }
 
+#usage: str_concat 'sep' [arg_list]
+str_concat(){
+  local IFS="$1" && shift
+  echo "$*"
+}
+
 #usage: arch_fromid out_arm64 out_arm out_x86 out_x64
 arch_fromid(){
   local xid=$(expr "$cpu_id" % 4)

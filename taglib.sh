@@ -1,6 +1,6 @@
 #!/bin/bash
 # cpu av8 av7 x86 x64
-# NDK PP  PP   .   .  clang
+# NDK PP+ PP   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 

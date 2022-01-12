@@ -20,7 +20,7 @@ lst_bin='wavpack wvgain wvtag wvunpack'
 . xbuilder.sh
 
 # cli has glob header that requires api28 for ndk
-$build_bin && [ "$host_os" == "android" ] && [ $API -lt 28 ] && set_ndk_api 28
+$build_bin && $host_ndk && [ $API -lt 28 ] && set_ndk_api 28
 
 CFG="--enable-maintainer-mode"
 
