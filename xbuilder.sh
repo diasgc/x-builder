@@ -1,6 +1,6 @@
 #!$SHELL
 # ................................................
-# X-Builder util 0.3.1 2021-diasgc
+# X-Builder util 0.3.2 2021-diasgc
 # ................................................
 
 # first load .common functions and error trap
@@ -117,13 +117,21 @@ main(){
 
   PKGDIST="${ROOTDIR}/dist/${lib}"
   INSTALL_DIR=$LIBSDIR
-
   SOURCES=$ROOTDIR/sources
   SRCDIR=$SOURCES/$lib
   PKGDIR=$INSTALL_DIR/lib/pkgconfig
-  
   export PKGDIST LIBSDIR SOURCES SRCDIR INSTALL_DIR PKGDIR
-  [ -d "${SOURCES}" ] || mkdir -p ${SOURCES}
+
+  export dir_sources="${ROOTDIR}/sources"
+  export dir_src="${dir_sources}/${lib}"
+  export dir_install="${LIBSDIR}"
+  export dir_install_include="${dir_install}/include"
+  export dir_install_lib="${dir_install}/lib"
+  export dir_install_bin="${dir_install}/bin"
+  export dir_install_pc="${dir_install_lib}/pkgconfig"
+  export dir_pkgdist="${ROOTDIR}/packages"
+  
+  [ -d "${dir_sources}" ] || mkdir -p ${dir_sources}
 
   gitjson=$(git_api_tojson $src)
   if [ -n "${gitjson}" ];then
@@ -132,9 +140,9 @@ main(){
     : "${dsc:=$(echo "$gitjson" | jq .description)}"
   fi
   # show package info
-  [ -f "${PKGDIR}/${pkg}.pc" ] || pkgInfo
+  [ -f "${dir_install_pc}/${pkg}.pc" ] || pkgInfo
 
-  LOGFILE=$LIBSDIR/${lib}.log
+  LOGFILE="${dir_install}/${lib}.log"
 }
 
 pkgInfo(){
@@ -146,8 +154,8 @@ pkgInfo(){
   [ -n "${dep}" ] && DP="${DP}${CT0}lib deps: ${C0}$dep"
   if [ "$sty" == "git" ];then
     local vgit=$(git_remote_version $src)
-    if [ -d $SRCDIR ];then
-      pushdir $SRCDIR
+    if [ -d ${dir_src} ];then
+      pushdir ${dir_src}
       local vrep=$(git describe --abbrev=0 --tags 2>/dev/null)
       popdir
       VS="${CT0}vrs: ${C0}$vrep "
@@ -180,25 +188,25 @@ aptLongDesc(){
 gitjson=
 
 guess_cfg(){
-  if [ -f "${CONFIG_DIR}/CMakeLists.txt" ]; then
+  if [ -f "${dir_config}/CMakeLists.txt" ]; then
     build_tool="cmake"
     cfg="cmake"
-  elif [ -f "${CONFIG_DIR}/autogen.sh" ]; then
+  elif [ -f "${dir_config}/autogen.sh" ]; then
     build_tool="automake"
     cfg="ac"
-    automake_cmd="${CONFIG_DIR}/autogen.sh"
-  elif [ -f "${CONFIG_DIR}/bootstrap.sh" ]; then
+    automake_cmd="${dir_config}/autogen.sh"
+  elif [ -f "${dir_config}/bootstrap.sh" ]; then
     build_tool="automake"
     cfg="ac"
-    automake_cmd="${CONFIG_DIR}/bootstrap.sh"
-  elif [ -f "${CONFIG_DIR}/bootstrap" ]; then
+    automake_cmd="${dir_config}/bootstrap.sh"
+  elif [ -f "${dir_config}/bootstrap" ]; then
     build_tool="automake"
     cfg="ac"
-    automake_cmd="${CONFIG_DIR}/bootstrap"
-  elif [ -f "${CONFIG_DIR}/configure.ac" ] || [ -f "${CONFIG_DIR}/configure.in" ]; then
+    automake_cmd="${dir_config}/bootstrap"
+  elif [ -f "${dir_config}/configure.ac" ] || [ -f "${dir_config}/configure.in" ]; then
     build_tool="automake"
     cfg="ar"
-  elif [ -f "${CONFIG_DIR}/meson.build" ]; then
+  elif [ -f "${dir_config}/meson.build" ]; then
     build_tool="meson"
     cfg="meson"
   else
@@ -212,7 +220,7 @@ start(){
   
   # check whether to update source of main lib and dependencies
   if $update; then
-    rm -rf "${SOURCES}/${lib}"
+    rm -rf "${dir_sources}/${lib}"
     ! $req_update_deps && update=false
   else
     [ -f "${PKGDIR}/${pkg}.pc" ] && exit
@@ -222,8 +230,8 @@ start(){
   [ -f "${LOGFILE}" ] && rm -f $LOGFILE
 
   # Create INSTALL_DIR and PKGCONFIG DIR
-  mkdir -p $PKGDIR
-  export PKG_CONFIG_LIBDIR="$PKGDIR:$PKG_CONFIG_LIBDIR"
+  mkdir -p ${dir_install_pc}
+  export PKG_CONFIG_LIBDIR="${dir_install_pc}:${PKG_CONFIG_LIBDIR}"
 
   check_tools $tls
   o_vrs=$vrs
@@ -240,17 +248,17 @@ start(){
   $build_static && bss="${SSB}[static]" || bss="${CD}[static]"
   $build_shared && bss="${bss}${SSB}[shared]" || bss="${bss}${CD}[shared]"
   $build_bin && echo -ne "${bss}${SSB}[bin]${C0} " || echo -ne "${bss}${CD}[bin]${C0} "
-  cd $SOURCES
+  cd ${dir_sources}
 
-  ! $retry && [ "${BUILD_DIR}" != "$SRCDIR" ] && rm -rf ${BUILD_DIR}
+  ! $retry && [ "${dir_build}" != "${dir_src}" ] && rm -rf ${dir_build}
   
   # deprecated
-  [ -z ${CONFIG_DIR+x} ] && CONFIG_DIR=${SRCDIR}
+  [ -z ${dir_config+x} ] && dir_config=${dir_src}
   # use this instead
-  [ -n "${dir_config+x}" ] && CONFIG_DIR="${SOURCES}/${lib}/${dir_config}"
+  [ -n "${dir_config+x}" ] && dir_config="${dir_sources}/${lib}/${dir_config}"
 
   local req_src_config=false
-  if [ ! -d $SRCDIR ];then
+  if [ ! -d ${dir_src} ];then
     # check whether to custom get source
     if fn_defined 'source_get'; then
       source_get
@@ -272,7 +280,7 @@ start(){
     req_src_config=true
   fi
 
-  pushdir $CONFIG_DIR
+  pushdir ${dir_config}
   
   if [ -z "$cfg" ]; then
     guess_cfg
@@ -287,17 +295,17 @@ start(){
       unset automake_cmd
     elif 
     else case $cfg in
-      ab) [ -f "${CONFIG_DIR}/boostrap" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap
-          [ -f "${CONFIG_DIR}/boostrap.sh" ] && doLog 'bootstrap' ${CONFIG_DIR}/boostrap.sh
+      ab) [ -f "${dir_config}/boostrap" ] && doLog 'bootstrap' ${dir_config}/boostrap
+          [ -f "${dir_config}/boostrap.sh" ] && doLog 'bootstrap' ${dir_config}/boostrap.sh
           ;;
-      ag) doAutogen $CONFIG_DIR --noconfigure;;
-      ar) doAutoreconf $CONFIG_DIR;;
+      ag) doAutogen ${dir_config} --noconfigure;;
+      ar) doAutoreconf ${dir_config};;
       am|autom*)
-        if [ ! -f "${CONFIG_DIR}/configure" ];then
-          if [ -f "${CONFIG_DIR}/autogen.sh" ];then
-            doAutogen $CONFIG_DIR --noconfigure
+        if [ ! -f "${dir_config}/configure" ];then
+          if [ -f "${dir_config}/autogen.sh" ];then
+            doAutogen ${dir_config} --noconfigure
           else
-            doAutoreconf $CONFIG_DIR
+            doAutoreconf ${dir_config}
           fi
         fi
         ;;
@@ -315,19 +323,19 @@ start(){
 
   $only_repo && end_script
   
-  if [ -z "$BUILD_DIR" ];then
-    case $build_tool in
-      cmake|meson) BUILD_DIR="${CONFIG_DIR}/build_${arch}"
-        [ -d "${BUILD_DIR}" ] && rm -rf ${BUILD_DIR}
+  if [ -z "${dir_build}" ];then
+    case ${build_tool} in
+      cmake|meson) dir_build="${dir_config}/build_${arch}"
+        [ -d "${dir_build}" ] && rm -rf ${dir_build} 2>/dev/null
         ;;
-      *) BUILD_DIR=${CONFIG_DIR};;
+      *) dir_build=${dir_config};;
     esac
   fi
   
-  [ -d "${BUILD_DIR}" ] || mkdir -p "${BUILD_DIR}"
-  cd ${BUILD_DIR}
+  [ -d "${dir_build}" ] || mkdir -p "${dir_build}"
+  cd ${dir_build}
   
-  log_vars SRCDIR dep PKG_CONFIG_LIBDIR
+  log_vars {dir_src} dep PKG_CONFIG_LIBDIR
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
   if fn_defined 'build_all'; then
@@ -351,9 +359,9 @@ start(){
   else case $build_tool in
     cmake)
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
-      [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${BUILD_DIR}
+      [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${dir_build}
       [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-      doLog 'cmake' $exec_config ${CONFIG_DIR} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+      doLog 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       ;;
@@ -363,11 +371,11 @@ start(){
       ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
       ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
       ! $ac_nopic && CFG+=" --with-pic=1"
-      doLog 'configure' ${CONFIG_DIR}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
+      doLog 'configure' ${dir_config}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
     meson)
-      local MESON_CFG="${CONFIG_DIR}/${arch}.meson"
+      local MESON_CFG="${dir_config}/${arch}.meson"
       [ -f "${MESON_CFG}" ] && rm ${MESON_CFG}
       $host_clang || LD="bfd"
       meson_create_toolchain $MESON_CFG
@@ -436,7 +444,7 @@ start(){
 
   popdir
 
-  logver "$PKGDIR/${pkg}.pc"
+  logver "${dir_install_pc}/${pkg}.pc"
 
   fn_defined 'on_end' && on_end
 
@@ -446,7 +454,7 @@ start(){
 
 doStrip(){
   local libdir
-  for dd in $(find ${SRCDIR} \( -name "*.a" -o -name "*.so" \));do
+  for dd in $(find ${dir_src} \( -name "*.a" -o -name "*.so" \));do
     ${STRIP} --strip-unneeded $dd
   done
 }
@@ -457,7 +465,7 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset CONFIG_DIR CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki mingw_posix cfg_args
+  unset {dir_config} CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki mingw_posix cfg_args
   dec_tab
   echo
   exit 0
@@ -479,11 +487,11 @@ check_xbautopatch(){
     local block=$(awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0)
     echo -e "\npatch this: \n$block" >>$LOGFILE
     case $match in
-      XB_CREATE_CMAKELISTS) echo "${block}" >$SRCDIR/CMakeLists.txt;;
-      XB_APPLY_PATCH) pushdir $SRCDIR
+      XB_CREATE_CMAKELISTS) echo "${block}" >${dir_src}/CMakeLists.txt;;
+      XB_APPLY_PATCH) pushdir ${dir_src}
         patch -p0 <<<$(echo "${block}") 2>&1 >$LOGFILE
         popdir;;
-      XB64_PATCH) pushdir $SRCDIR
+      XB64_PATCH) pushdir ${dir_src}
         patch -p0 <<<$(echo "${block}" | base64 -d) 2>&1 >$LOGFILE
         popdir;;
     esac
@@ -503,9 +511,9 @@ create_pkgconfig_file(){
     [ -z "$pc_libs" ] && pc_libs="-L\${libdir}"
     [ -z "$pc_url" ] && pc_url=$(dirname $src)
     [ -z "$pc_vrs" ] && {
-      [ -d "${SRCDIR}/.git" ] && pc_vrs=$(git_getversion ${SRCDIR}) || pc_vrs=$vrs
+      [ -d "${dir_src}/.git" ] && pc_vrs=$(git_getversion ${dir_src}) || pc_vrs=$vrs
     }
-    cat <<-EOF >$PKGDIR/${pc_file}.pc
+    cat <<-EOF >${dir_install_pc}/${pc_file}.pc
 		prefix=${pc_prefix}
 		exec_prefix=\${prefix}
 		libdir=\${exec_prefix}${pc_libdir}
@@ -527,7 +535,7 @@ create_pkgconfig_file(){
 }
 
 build_packages_getdistdir(){
-  [ -f "$PKGDIR/${pkg}.pc" ] && vrs=$(pkg-config $PKGDIR/${pkg}.pc --modversion)
+  [ -f "${dir_install_pc}/${pkg}.pc" ] && vrs=$(pkg-config ${dir_install_pc}/${pkg}.pc --modversion)
   [ -z "$vrs" ] && set_git_version
   echo "${ROOTDIR}/packages/${lib}_${vrs}_${arch}"
 }
@@ -548,7 +556,7 @@ build_packages_bin(){
     if [ "$(type -t build_make_package)" = 'function' ]; then
       build_make_package $xb_distdir
     elif [ "$MAKE_EXECUTABLE" = "ninja" ];then
-      DESTDIR=${xb_distdir} ninja -C ${BUILD_DIR} install
+      DESTDIR=${xb_distdir} ninja -C ${dir_build} install
     else
       [ -z "$mkd" ] && mkd="DESTDIR=${xb_distdir} install"
       ${MAKE_EXECUTABLE} $mkd
@@ -562,10 +570,10 @@ build_packages_bin(){
       [ ! -d "${xb_pkgd}" ] && mkdir -p $xb_pkgd
       if [ -n "${pc_filelist}" ];then
         for pp in ${pc_filelist}; do
-          cp $PKGDIR/${pp} ${xb_pkgd}/
+          cp ${dir_install_pc}/${pp} ${xb_pkgd}/
         done
       else
-        cp $PKGDIR/${pkg}.pc ${xb_pkgd}/
+        cp ${dir_install_pc}/${pkg}.pc ${xb_pkgd}/
       fi
     fi
     build_packages_filelist
@@ -615,7 +623,7 @@ meson_create_toolchain(){
     i686*)   cpu1="x86"     cpu2="i686";;
     x86_64*) cpu1="x86_64"  cpu2="x86_64";;
   esac
-  cmake_create_toolchain ${BUILD_DIR}
+  cmake_create_toolchain ${dir_build}
   cat <<-EOF >${1}
   [binaries]
   c = '${CC}'
@@ -781,9 +789,9 @@ log_vars(){
 doErr(){
   echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
   if [ -f $LOGFILE ];then
-    if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
-      echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
-      cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $LOGFILE
+    if [ -f ${dir_build}/CMakeFiles/CMakeError.log ];then
+      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
+      cat ${dir_build}/CMakeFiles/CMakeError.log >> $LOGFILE
     fi
     echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
     [ "$openlog" != "n" ] && nano $LOGFILE
@@ -797,9 +805,9 @@ err(){
     echo -e "${CR1} fail ${CR0}[$(secs2time $(($logtime_end-$logtime_start)))]${C0}\n"
   fi
   if [ -f $LOGFILE ];then
-    if [ -f ${BUILD_DIR}/CMakeFiles/CMakeError.log ];then
-      echo -e "\n\n${BUILD_DIR}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
-      cat ${BUILD_DIR}/CMakeFiles/CMakeError.log >> $LOGFILE
+    if [ -f ${dir_build}/CMakeFiles/CMakeError.log ];then
+      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
+      cat ${dir_build}/CMakeFiles/CMakeError.log >> $LOGFILE
     fi
     echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
     [ "$openlog" != "n" ] && nano $LOGFILE
@@ -913,7 +921,7 @@ do_hg(){
 }
 
 set_git_version(){
-  pushdir $SRCDIR
+  pushdir ${dir_src}
   local v=$(git describe --abbrev=0 --tags 2>/dev/null)
   [ -n "$v" ] && export vrs=$v
   popdir
@@ -1094,39 +1102,6 @@ download(){
   echo -ne "${CS0} decompressing... ${C0}"
   unzip tmp.zip >/dev/null 2>&1 && rm tmp.zip || err
 }
-
-patch_ndk_libpthread(){
-  if [ "${host_os}" == "android" ]; then
-    # NDK Patch: create missing libpthread in NDK
-	  local lpthread="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/${arch}/libpthread.a"
-	  [ ! -f $lpthread ] && ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64//bin/llvm-ar cr $lpthread
-  fi
-}
-
-patch_ndk_librt(){
-  if [ "${host_os}" == "android" ]; then
-    # NDK Patch: create missing librt in NDK
-    local lrt="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/${arch}/librt.a"
-    [ ! -f $lrt ] && ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64//bin/llvm-ar cr $lrt
-  fi
-}
-
-# usage: patch_zlib_createpc <sysroot-prefix>
-_patch_zlib_createpc(){
-  [ -d "$LIBSDIR/lib/pkgconfig" ] && mkdir -p "$LIBSDIR/lib/pkgconfig"
-  cat <<-EOF >$LIBSDIR/lib/pkgconfig/zlib.pc
-  prefix=${1}
-  libdir=\${prefix}/lib/${arch}
-  includedir=\${prefix}/include
-
-  Name: zlib
-  Description: zlib compression library
-  Version: 1.2.11
-  Libs: -L\${libdir} -lz
-  Cflags: -I\${includedir}
-	EOF
-}
-
 
 aptInstall(){
   while [ "$1" != "" ];do
@@ -1416,12 +1391,46 @@ showBanner(){
   fi
 }
 
-menu_settune(){
+menu_tune(){
   case $1 in
     smd855) CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
     smd865) CPPFLAGS+=" -mtune=cortex-a77.cortex-a55";;
     smd888) CPPFLAGS+=" -mtune=cortex-a78.cortex-a55";;
   esac
+}
+
+menu_clear(){
+  while [ -n "$1" ];do
+    case $1 in
+      srclib) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
+      sources) rm -rf sources 2>/dev/null;;
+      builds) rm -rf builds 2>/dev/null;;
+      packages) rm -rf packages 2>/dev/null;;
+    esac
+    shift
+  done
+  return 0
+}
+
+menu_get(){
+  local pkgfile="${dir_install_pc}/${pkg}.pc"
+  case $1 in
+    cflags)     [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --cflags)";;
+    ldflags)    [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs)";;
+    ldstatic)   [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs --static)";;
+    pc-ver)     [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --modversion)";;
+    pc-path|pc) echo "${pkgfile}";;
+    pc-name)    echo "${pkg}";;
+    prefix)     echo "${dir_install}";;
+    libname)    echo "${lib}";;
+    aptname)    echo "${apt}";;
+    var)        shift; echo "${!1}";;
+    vrs_remote) git_remote_version $src;;
+    vrs_local)  git_remote_version $src;;
+    vrs_latest) echo "$(githubLatestTarGz)";;
+    cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";;
+  esac
+  return 0
 }
 
 set_target(){
@@ -1433,154 +1442,104 @@ set_target(){
   CPU=${0}
   ABI=${7}
   EABI=${6}
-  LIBSDIR="$(pwd)/builds/${5}/${7}"
+  set_env
+}
+
+set_env(){
+  case ${target_trip[0]} in
+    aarch64) host_arm=true;  host_arm32=false; host_arm64=true;  host_x86=false; host_x64=false;;
+    arm)     host_arm=true;  host_arm32=true;  host_arm64=true;  host_x86=false; host_x64=false;;
+    i686)    host_arm=false; host_arm32=false; host_arm64=false; host_x86=true;  host_x64=false;;
+    x86_64)  host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
+  esac
+  case ${target_trip[3]} in
+    android) host_sys=linux;   host_mingw=false; host_os=android; host_ndk=true;  host_clang=true;  PLATFORM="Android";;
+    gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false; PLATFORM="Linux";;
+    mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;  PLATFORM="Windows";;
+  esac
+  LIBSDIR="$(pwd)/builds/${PLATFORM,,}/${7}"
+  dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${7}"
+  dir_install_bin="${dir_install}/bin"
+  dir_install_include="${dir_install}/include"
+  dir_install_lib="${dir_install}/lib"
+  dir_install_pc="${dir_install_lib}/pkgconfig"
 }
 
 # main
+export ROOTDIR=$(dirname @0)
+export target_trip=
 
 while [ $1 ];do
   case $1 in
-    aa64|aa8|a*64-*android|android )   set_target '0' 'aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64' $CG3 $CG6;;
-    aa7|arm-*android*eabi|arm-android) set_target '1' 'arm' 'v7a' 'linux' 'android' 'eabi' 'armeabi-v7a' '32' $CG2 $CG5;;
-    a86|ax86|*86-*android)             set_target '2' 'i686' '' 'linux' 'android' '' 'x86' '32' $CG0 $CG1;;
-    a64|ax64|*64-*android)             set_target '3' 'x86_64' '' 'linux' 'android' '' 'x86_64' '64' $CG0 $CG1
-                                       ;;
-    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4
-      target_trip=('aarch64' '' 'linux' 'gnu' '' 'arm64' '64')
-      arch='aarch64-linux-gnu' PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/aarch64
-      CT0=$CM0 CT1=$CM1
+    aa64|aa8|a*64-*android|android )
+      set_target '0' 'aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64' $CG3 $CG6;;
+    aa7|arm-*android*eabi|arm-android)
+      set_target '1' 'arm' 'v7a' 'linux' 'android' 'eabi' 'armeabi-v7a' '32' $CG2 $CG5;;
+    a86|ax86|*86-*android)
+      set_target '2' 'i686' '' 'linux' 'android' '' 'x86' '32' $CG0 $CG1;;
+    a64|ax64|*64-*android)
+      set_target '3' 'x86_64' '' 'linux' 'android' '' 'x86_64' '64' $CG0 $CG1
       ;;
-    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*) cpu_id=5
-      target_trip=('arm' '' 'linux' 'gnu' 'eabihf' 'armv7' '32')
-      arch='arm-linux-gnueabihf' PLATFORM="Linux" CPU="arm" ABI="arm" EABI="eabihf"
-      host_arch=$arch; host_64=false; host_eabi=eabihf; host_vnd=linux; host_arm=true; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/armeabihf
-      CT0=$CY0 CT1=$CY1
+    la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu)
+      set_target '4' 'aarch64' '' 'linux' 'gnu' '' 'aarch64' '64' $CY0 $CY1;;
+    la7|lahf|arm*hf|arm-linux*|rpi*32|rpi2*)
+      set_target '5' 'arm' '' 'linux' 'gnu' 'eabihf' 'armv7' '32' $CY0 $CY1;;
+    l86|lx86|*86-linux*|linux*32 )
+      set_target '6' 'i686' '' 'linux' 'gnu' '' 'x86' '32' $CM0 $CM1;;
+    l64|lx64|*64-linux*|linux*64|linux )
+      set_target '7' 'x86_64' '' 'linux' 'gnu' '' 'x86_64' '64' $CM0 $CM1;;
       ;;
-    l86|lx86|*86-linux*|linux*32 ) cpu_id=6
-      target_trip=('i686' '' 'linux' 'gnu' '' 'x86' '32')
-      arch='i686-linux-gnu' PLATFORM="Linux" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/i686
-      CT0=$CM0 CT1=$CM1
+    wa8|a*64-w64*|a*64-*mingw*)
+      set_target '8' 'aarch64' '' 'w64' 'mingw32' '' 'arm64' '64' $CC0 $CC1;;
+    wa7|arm*-w64*|arm*-*mingw*)
+      set_target '9' 'arm' 'v7' 'w64' 'mingw32' '' 'armv7' '32' $CC0 $CC1;;
+    w86|wx86|*86-win*|*86-*mingw*|w*32)
+      set_target '10' 'i686' '' 'w64' 'mingw32' '' 'x86' '32' $CB0 $CB1;;
+    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64)
+      set_target '10' 'i686' '' 'w64' 'mingw32' '' 'x86' '32' $CB0 $CB1
       ;;
-    l64|lx64|*64-linux*|linux*64|linux ) cpu_id=7
-      target_trip=('x86_64' '' 'linux' 'gnu' '' 'x86_64' '64')
-      arch='x86_64-linux-gnu' PLATFORM="Linux" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=gnu; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=false
-      LIBSDIR=$(pwd)/builds/linux/x86_64
-      CT0=$CM0 CT1=$CM1
+    
+    --help|-h)  showBanner; usage; exit 0
       ;;
-    wa8|a*64-w64*|a*64-*mingw*) cpu_id=8
-      target_trip=('aarch64' '' 'w64' 'mingw32' '' 'arm64' '64')
-      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for aarch64-w64-mingw32 is not installed"
-      arch='aarch64-w64-mingw32' PLATFORM="Windows" CPU="aarch64" ABI="aarch64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/aarch64
-      CT0=$CC0 CT1=$CC1
+    
+    --full|--all) build_shared=true; build_static=true; build_bin=true; build_dist=true; dep_build="--both --bin";;
+    --shared)   build_shared=true; build_static=false;;
+    --static)   build_static=true; build_shared=false;;
+    --both)     build_static=true; build_shared=true;;
+    --bin)      build_bin=true;;
+    --no-bin)   build_bin=false;;
+    --no-dist)  build_dist=false;;
+    --no-strip) build_strip=false;;
+    --api)      shift; export API=$1;;
+    --clang)    use_clang=true;;
+    --tune)     shift; menu_tune $1
       ;;
-    wa7|arm*-w64*|arm*-*mingw*) cpu_id=9
-      target_trip=('arm' 'v7' 'w64' 'mingw32' '' 'armv7' '32')
-      [ -z "${LLVM_MINGW_HOME}" ] && doErr "Toolchain for armv7-w64-mingw32 is not installed"
-      arch='armv7-w64-mingw32' PLATFORM="Windows" CPU="arm" ABI="arm" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=true; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/armv7
-      CT0=$CC0 CT1=$CC1
-      ;;
-    w86|wx86|*86-win*|*86-*mingw*|w*32) cpu_id=10
-      target_trip=('i686' '' 'w64' 'mingw32' '' 'x86' '32')
-      arch='i686-w64-mingw32' PLATFORM="Windows" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/i686
-      CT0=$CB0 CT1=$CB1
-      ;;
-    w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64) cpu_id=11
-      target_trip=('x86_64' '' 'w64' 'mingw32' '' 'x86_64' '64')
-      arch='x86_64-w64-mingw32' PLATFORM="Windows" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=w64; host_arm=false; host_os=mingw32; host_mingw=true
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=win32; host_clang=true
-      LIBSDIR=$(pwd)/builds/windows/x86_64
-      CT0=$CB0 CT1=$CB1
-      ;;
-    --api) shift && export API=$1;;
-    --clang) use_clang=true;;
-    --prefix) shift && LIBSDIR=$1;;
-    --stable) git_stable=true;;
-    --desc ) echo $dsc && exit 0;;
-    --help|-h) showBanner && usage && exit 0;;
-    --clean ) clean && exit 0;;
-    --clearsrc ) rm -rf "$(pwd)/sources/${lib}" && exit 0;;
-    --update )  update=true;;
-    --updateall )  update=true; req_update_deps=true;;
-    --vrep)     git_remote_version $src && exit 0;;
-    --opts)     showOpts "$(pwd)/sources/$lib" && exit 0;;
-    --checkPkg) checkPkg && exit 0;;
-    --libName)  echo $lib && exit 0;;
-    --getVar)   shift && echo $($1) && exit 0;;
+
+    --prefix)   shift; LIBSDIR=$1;;
+    --stable)   git_stable=true;;
+    
+    --update)   update=true;;
+    --upd-all)  update=true; req_update_deps=true;;
+    --opts)     showOpts "$(pwd)/sources/$lib"; exit 0;;
+    --checkPkg) checkPkg; exit 0;;
+    --libName)  echo "${lib}"; exit 0;;
+    --var)      shift; echo "$($1)"; exit 0;;
     --refresh)  update=true;;
     --retry)    retry=true;;
-    --rebuild|--force) [ -f "$LIBSDIR/lib/pkgconfig/${pkg}.pc" ] && rm $LIBSDIR/lib/pkgconfig/${pkg}.pc;;
-    --full|--all) build_shared=true build_static=true build_bin=true dep_build="--both --bin";;
-    --shared)   build_shared=true build_static=false;;
-    --static)   build_static=true build_shared=false;;
-    --both)     build_static=true build_shared=true;;
-    --bin)      build_bin=true;;
-    --nobin)    build_bin=false;;
-    --nodist)   bdist=false;;
-    --tune)     shift; menu_settune $1; shift;;
-    --clear) shift
-      while [ -n "$1" ];do
-        case $1 in
-          source|src) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
-          all-sources) rm -rf sources 2>/dev/null;;
-          all-builds) rm -rf builds 2>/dev/null;;
-          all-packages) rm -rf packages 2>/dev/null;;
-        esac
-        shift
-      done
-      exit 0
-      ;;
-    --get) shift
-      pkgfile="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
-      case $1 in
-        cflags)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --cflags) && exit 0;;
-        ldflags)    [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs) && exit 0;;
-        ldstatic)   [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --libs --static) && exit 0;;
-        pc-ver)     [ -f "${pkgfile}" ] && echo $(pkg-config ${pkgfile} --modversion) && exit 0;;
-        pc-path|pc) echo ${pkgfile} && exit 0;;
-        pc-name)    echo ${pkg} && exit 0;;
-        prefix)     echo $LIBSDIR && exit 0;;
-        libname)    echo ${lib} && exit 0;;
-        aptname)    echo ${apt} && exit 0;;
-        var) shift; echo ${!1} && exit 0;;
-        cmake_include)
-          if [ -z "$cmake_path" ];then
-            echo
-          else
-            echo "$LIBSDIR/$cmake_path"
-          fi
-          exit 0
-          ;;
-      esac
-      ;;
-    --clone) only_repo=true;;   
-    --cmake) cfg='cm';;
+    --force)    [ -f "${dir_install_pc}/${pkg}.pc" ] && rm "${dir_install_pc}/${pkg}.pc" 2>/dev/null;;
+    
+    --clear)    shift; menu_clear @0; exit 0;;
+    --desc )    echo $dsc && exit 0;;
+    
+    --get)      shift; menu_get @0; exit 0;;
+      
+    --clone)    only_repo=true;;   
+    --cmake)    cfg='cmake';;
     --ndkcmake) ndkcmake=true;;
-    --ccmake) cfg='ccm';;
+    --ccmake)   cfg='ccm';;
     --nobanner) banner=false;;
-    --debug) debug=true && set -x;;
-    --nodev) nodev=true;;
-    --no-strip) build_strip=false;;
-    --vlatest) echo $(githubLatestTarGz) && exit 0;;
+    --nodev)    nodev=true;;
+    
     --wipeall) read -p "Wipe all data? [y|N]" r
       case $r in y|Y) rm -rf builds sources
       esac && exit 0
@@ -1603,7 +1562,7 @@ done
 
 # Set default Host
 
-if [ -z "${arch}" ];then
+if [ -z "${target_trip}" ];then
   target_trip[5]=$(uname -m)
   arch="${target_trip[5]}-${OSTYPE}"
   target_trip[0]=${target_trip[5]}
@@ -1619,24 +1578,8 @@ if [ -z "${arch}" ];then
     target_trip[4]=${target_trip[3]#${a2}*}
     target_trip[3]=${a2}
   fi
-  LIBSDIR=$(pwd)/builds/${target_trip[3]}/${target_trip[5]}
+  set_env
 fi
-# target_trip=(0='arm' 1='v7a' 2='linux' 3='android' 4='eabi' 5='armeabi-v7a' 6='32')
-#arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
-#host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
-#host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
-
-case ${target_trip[0]} in
-  aarch64) host_arm=true;  host_arm32=false; host_arm64=true;  host_x86=false; host_x64=false;;
-  arm)     host_arm=true;  host_arm32=true;  host_arm64=true;  host_x86=false; host_x64=false;;
-  i686)    host_arm=false; host_arm32=false; host_arm64=false; host_x86=true;  host_x64=false;;
-  x86_64)  host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
-esac
-case ${target_trip[3]} in
-  android) host_sys=linux;   host_mingw=false; host_os=android; host_ndk=true;  host_clang=true;;
-  gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false;;
-  mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;;
-esac
 
 # is cross-compile?
 [ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
