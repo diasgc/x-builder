@@ -229,7 +229,7 @@ start(){
   fi
   
   # Reset LOGFILE
-  [ -f "${LOGFILE}" ] && rm -f ${log_file}
+  [ -f "${log_file}" ] && rm -f ${log_file}
 
   # Create INSTALL_DIR and PKGCONFIG DIR
   mkdir -p ${dir_install_pc}
@@ -254,9 +254,9 @@ start(){
 
   ! $retry && [ "${dir_build}" != "${dir_src}" ] && rm -rf ${dir_build}
   
-  # deprecated
-  [ -z ${dir_config+x} ] && dir_config=${dir_src}
-  # use this instead
+  # default dir_config is dir_src
+  : "${dir_config:=${dir_src}}"
+  # check if defined custom dir_config location (config_dir)
   [ -n "${config_dir+x}" ] && dir_config="${dir_sources}/${lib}/${config_dir}"
 
   local req_src_config=false
@@ -291,14 +291,14 @@ start(){
   if $req_src_config; then
     # check whether to custom config source
     if fn_defined 'source_config'; then
-      doLog 'config' source_config
+      do_log 'config' source_config
     elif [ -n "$automake_cmd" ];then
-      doLog 'automake' $automake_cmd
+      do_log 'automake' $automake_cmd
       unset automake_cmd
     elif 
     else case $cfg in
-      ab) [ -f "${dir_config}/boostrap" ] && doLog 'bootstrap' ${dir_config}/boostrap
-          [ -f "${dir_config}/boostrap.sh" ] && doLog 'bootstrap' ${dir_config}/boostrap.sh
+      ab) [ -f "${dir_config}/boostrap" ] && do_log 'bootstrap' ${dir_config}/boostrap
+          [ -f "${dir_config}/boostrap.sh" ] && do_log 'bootstrap' ${dir_config}/boostrap.sh
           ;;
       ag) doAutogen ${dir_config} --noconfigure;;
       ar) doAutoreconf ${dir_config};;
@@ -316,7 +316,7 @@ start(){
 
     # check whether to custom patch source
     if fn_defined 'source_patch'; then
-      doLog 'patch' source_patch
+      do_log 'patch' source_patch
     fi
 
     # check whether to auto patch source
@@ -363,7 +363,7 @@ start(){
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
       [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${dir_build}
       [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-      doLog 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       ;;
@@ -373,7 +373,7 @@ start(){
       ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
       ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
       ! $ac_nopic && CFG+=" --with-pic=1"
-      doLog 'configure' ${dir_config}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
+      do_log 'configure' ${dir_config}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
     meson)
@@ -382,7 +382,7 @@ start(){
       $host_clang || LD="bfd"
       meson_create_toolchain $MESON_CFG
       MAKE_EXECUTABLE=ninja
-      doLog 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+      do_log 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
       ;;
     make)
       mkf=$CFG
@@ -395,7 +395,7 @@ start(){
   fi
 
   if fn_defined 'build_patch_config'; then
-    doLog 'patch' build_patch_config
+    do_log 'patch' build_patch_config
   fi
 
   [ -n "${WFLAGS}" ] && CPPFLAGS+=" ${WFLAGS}"
@@ -409,9 +409,9 @@ start(){
   log_vars CFLAGS CXXFLAGS WFLAGS CPPFLAGS LDFLAGS LIBS
 
   if fn_defined 'build_make'; then
-    doLog 'make' build_make
+    do_log 'make' build_make
   else
-    doLogP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+    do_logP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
   fi
   
   if fn_defined 'patch_install';then
@@ -421,10 +421,10 @@ start(){
 
   [ -z ${mki} ] && mki="install"
   if fn_defined 'build_install'; then
-    doLog 'install' build_install
+    do_log 'install' build_install
   else
-    $build_strip && doLog 'strip' doStrip
-    doLog 'install' ${MAKE_EXECUTABLE} ${mki}
+    $build_strip && do_log 'strip' doStrip
+    do_log 'install' ${MAKE_EXECUTABLE} ${mki}
   fi
 
   # check whether to create pkg-config .pc file
@@ -436,13 +436,13 @@ start(){
     done
   else
     fn_defined 'build_pkgconfig_file' && \
-    doLog 'pkgcfg' build_pkgconfig_file || \
+    do_log 'pkgcfg' build_pkgconfig_file || \
     [ -n "$pc_llib" ] && \
-    doLog 'write_pc' create_pkgconfig_file $pkg $pc_llib
+    do_log 'write_pc' create_pkgconfig_file $pkg $pc_llib
   fi
 
   # create package
-  $build_package && doLog 'tar' build_packages_bin
+  $build_package && do_log 'tar' build_packages_bin
 
   popdir
 
@@ -467,7 +467,11 @@ end_script(){
   local parent=$(ps -o comm= $PPID)
   [ "${parent: -3}" == ".sh" ] || echo -e "\n${ind}${CT1}::Done${C0}\n"
   $debug && set +x
-  unset {dir_config} CSH CBN exec_config vrs ac_nohost ac_nopic ac_nosysroot req_pcforlibs mkc mki mingw_posix cfg_args
+  unset dir_config dir_build dir_src \
+        CSH CBN exec_config vrs \
+        ac_nohost ac_nopic ac_nosysroot \
+        req_pcforlibs mkc mki mingw_posix \
+        cfg_args
   dec_tab
   echo
   exit 0
@@ -661,12 +665,12 @@ meson_create_toolchain(){
   endian = 'little'
   cpu = '${cpu2}'
 	EOF
-  echo "\nMeson file:(${1})\n\n" >>${LOGFILE} 2>&1
-  cat ${1} >>${LOGFILE} 2>&1
+  echo "\nMeson file:(${1})\n\n" >>${log_file} 2>&1
+  cat ${1} >>${log_file} 2>&1
 }
 
 cmake_include_directories(){
-  printf "include_directories($@)" >> $cmake_toolchain_file
+  printf "include_directories($@)" >>$cmake_toolchain_file
 }
 
 
@@ -824,13 +828,6 @@ log_this() {
   logok
 }
 
-doLogNoErr(){
-  local var=$1; shift
-  echo -ne "${CD}${var}${C0}"
-  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
-  "$@" 2>> "${log_file}" 1>> "${log_file}"
-  logok $var
-}
 
 do_quietly(){
   local var=$1; shift
@@ -840,14 +837,14 @@ do_quietly(){
   logok $var
 }
 
-doLog() {
+do_log() {
   local var=$1; shift
   echo -ne "${CD}${var}${C0}"
   log_this $@
   logok $var
 }
 
-doLogP() {
+do_progress() {
   local var=$1; shift
   echo -ne "${CD}${var}"
   echo -e "\n$(date +"%T"): $@" >> "${log_file}"
@@ -878,10 +875,10 @@ isBottomRow(){
 
 # usage: do_git giturl [libname]
 do_git(){
-  doLog 'git' git clone $1 $2
+  do_log 'git' git clone $1 $2
   cd $2
-  [ -n "${vrs}" ] && doLog ${vrs} git checkout tags/${vrs}
-  [ -n "${sub}" ] && doLog 'sub' git ${sub}
+  [ -n "${vrs}" ] && do_log ${vrs} git checkout tags/${vrs}
+  [ -n "${sub}" ] && do_log 'sub' git ${sub}
   cd ..
 }
 
@@ -904,7 +901,7 @@ git_clone(){
   [ -d "$2" ] && cd $2 || err
   $nodev && vrs=$(git describe --abbrev=0 --tags)
   if [ -n "${vrs}" ];then
-    doLog ${vrs} git checkout tags/${vrs};
+    do_log ${vrs} git checkout tags/${vrs};
   fi
   cd ..
 }
@@ -919,7 +916,7 @@ do_svn(){
 
 do_hg(){
   [ $(which hg) ] || aptInstall mercurial || err
-  doLog 'clone' hg clone $1 $2
+  do_log 'clone' hg clone $1 $2
 }
 
 set_git_version(){
@@ -929,7 +926,7 @@ set_git_version(){
   popdir
 }
 
-githubLatestTarGz(){
+github_latest_tgz(){
   case $src in
     *github.*)
       local dst=$(echo $src | sed -e 's|\.git||g')
@@ -1429,7 +1426,7 @@ menu_get(){
     var)        shift; echo "${!1}";;
     vrs_remote) git_remote_version $src;;
     vrs_local)  git_remote_version $src;;
-    vrs_latest) echo "$(githubLatestTarGz)";;
+    vrs_latest) echo "$(github_latest_tgz)";;
     cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";;
   esac
   return 0
