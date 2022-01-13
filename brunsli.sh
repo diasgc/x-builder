@@ -27,9 +27,7 @@ CFG="-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF"
 . xbuilder.sh
 
 source_patch(){
-    pushdir $SRCDIR
     git submodule update --init
-    popdir
 }
 
 start

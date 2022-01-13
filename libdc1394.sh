@@ -1,26 +1,23 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  .   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK --------------- clang
+# GNU  .   .   .   .  gcc
+# WIN --------------- clang/gcc
 
-# ISSUES:
-# android/clang (https://clang.debian.net/status.php?version=3.6.0&key=VARIABLE_LENGTH_ARRAY)
-#   control.c:286:19 (juju)
-#   capture.c:324:9
-#    > error: fields must have a constant size: 'variable length array in structure'
-#            __u32 buffer[cam->max_response_quads];
+# CLANG: capture.c contains clang-incompatible VLAiS 
 
 lib='libdc1394'
 apt='libdc1394-dev'
 dsc='IIDC Camera Control Library '
 lic='LGPL-2.1'
 src='https://github.com/indigo-astronomy/libdc1394.git'
-sty='git'
-cfg='ac'
+#src='https://git.code.sf.net/p/libdc1394/code.git'
+#automake_cmd='autoreconf -is'
 eta='60'
 
 . xbuilder.sh
+
+$host_clang && doErr "Clang does not support compile code with VLAiS. Aborting."
 
 source_config(){
     pushd $SRCDIR

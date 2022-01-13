@@ -4,12 +4,16 @@
 # ................................................
 
 # first load .common functions and error trap
-[ -z ${vsh+x} ] && {
+if [ -z ${vsh+x} ];then
   . .common
   set -o pipefail
-  [ "${1}" == "--debug" ] && set -x && debug=true
+  if [ "${1}" == "--debug" ];then
+    shift
+    set -x
+    debug=true
+  fi
   trap err ERR
-}
+fi
 
 sudo=$(which sudo)
 # defvar debug=false 
@@ -52,6 +56,22 @@ only_repo=false
 pc_filelist=
 
 shell_dstack=
+
+logtime_start=0
+logtime_end=0
+
+export ROOTDIR=$(pwd)
+export target_trip=
+export CPPFLAGS=
+export dir_sources="${ROOTDIR}/sources"
+export dir_src="${dir_sources}/${lib}"
+export dir_pkgdist="${ROOTDIR}/packages"
+
+# decaprated, legacy support only
+export SRCDIR=${dir_src}
+# to remove after 
+
+[ -d "${dir_sources}" ] || mkdir -p ${dir_sources}
 
 # variables defined in .config file
 # config_lastupdate
@@ -109,29 +129,7 @@ main(){
     return 0
   }
 
-  test -z $LIBSDIR || test -z $src && errCall
-
-  #[ -z "${cmake_toolchain_file}" ] && 
-  logtime_start=0
-  logtime_end=0
-
-  PKGDIST="${ROOTDIR}/dist/${lib}"
-  INSTALL_DIR=$LIBSDIR
-  SOURCES=$ROOTDIR/sources
-  SRCDIR=$SOURCES/$lib
-  PKGDIR=$INSTALL_DIR/lib/pkgconfig
-  export PKGDIST LIBSDIR SOURCES SRCDIR INSTALL_DIR PKGDIR
-
-  export dir_sources="${ROOTDIR}/sources"
-  export dir_src="${dir_sources}/${lib}"
-  export dir_install="${LIBSDIR}"
-  export dir_install_include="${dir_install}/include"
-  export dir_install_lib="${dir_install}/lib"
-  export dir_install_bin="${dir_install}/bin"
-  export dir_install_pc="${dir_install_lib}/pkgconfig"
-  export dir_pkgdist="${ROOTDIR}/packages"
-  
-  [ -d "${dir_sources}" ] || mkdir -p ${dir_sources}
+  test -z ${dir_install} || test -z $src && errCall
 
   gitjson=$(git_api_tojson $src)
   if [ -n "${gitjson}" ];then
@@ -190,31 +188,29 @@ aptLongDesc(){
 gitjson=
 
 guess_cfg(){
-  if [ -f "${dir_config}/CMakeLists.txt" ]; then
-    build_tool="cmake"
-    cfg="cmake"
-  elif [ -f "${dir_config}/autogen.sh" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${dir_config}/autogen.sh"
-  elif [ -f "${dir_config}/bootstrap.sh" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${dir_config}/bootstrap.sh"
-  elif [ -f "${dir_config}/bootstrap" ]; then
-    build_tool="automake"
-    cfg="ac"
-    automake_cmd="${dir_config}/bootstrap"
-  elif [ -f "${dir_config}/configure.ac" ] || [ -f "${dir_config}/configure.in" ]; then
-    build_tool="automake"
-    cfg="ar"
-  elif [ -f "${dir_config}/meson.build" ]; then
+  if [ -f "${dir_config}/meson.build" ]; then
     build_tool="meson"
     cfg="meson"
+  elif [ -f "${dir_config}/CMakeLists.txt" ]; then
+    build_tool="cmake"
+    cfg="cmake"
+  elif [ -n "$(ls ${dir_config}/configure.* 2>/dev/null)" ]; then
+    build_tool="automake"
+    cfg='ac'
+    if [ -f "${dir_config}/autogen.sh" ]; then
+      automake_cmd="${dir_config}/autogen.sh"
+    elif [ -f "${dir_config}/bootstrap.sh" ]; then
+      automake_cmd="${dir_config}/bootstrap.sh"
+    elif [ -f "${dir_config}/bootstrap" ]; then
+      automake_cmd="${dir_config}/bootstrap"
+    elif [ ! -f "${dir_config}/configure" ]; then
+      automake_cmd="autoreconf -fiv ${dir_config}/bootstrap"
+    else
+      return 1
+    fi
   else
     return 1
   fi
-  
   return 0
 }
 
@@ -222,10 +218,10 @@ start(){
   
   # check whether to update source of main lib and dependencies
   if $update; then
-    rm -rf "${dir_sources}/${lib}"
+    [ -d "${dir_src}" ] && rm -rf "${dir_src}" 2>/dev/null
     ! $req_update_deps && update=false
   else
-    [ -f "${PKGDIR}/${pkg}.pc" ] && exit
+    [ -f "${dir_install_pc}/${pkg}.pc" ] && exit
   fi
   
   # Reset LOGFILE
@@ -260,6 +256,8 @@ start(){
   [ -n "${config_dir+x}" ] && dir_config="${dir_sources}/${lib}/${config_dir}"
 
   local req_src_config=false
+
+  # get source
   if [ ! -d ${dir_src} ];then
     # check whether to custom get source
     if fn_defined 'source_get'; then
@@ -284,7 +282,7 @@ start(){
 
   pushdir ${dir_config}
   
-  if [ -z "$cfg" ]; then
+  if [ -z ${cfg} ]; then
     guess_cfg
   fi
 
@@ -295,7 +293,6 @@ start(){
     elif [ -n "$automake_cmd" ];then
       do_log 'automake' $automake_cmd
       unset automake_cmd
-    elif 
     else case $cfg in
       ab) [ -f "${dir_config}/boostrap" ] && do_log 'bootstrap' ${dir_config}/boostrap
           [ -f "${dir_config}/boostrap.sh" ] && do_log 'bootstrap' ${dir_config}/boostrap.sh
@@ -337,7 +334,7 @@ start(){
   [ -d "${dir_build}" ] || mkdir -p "${dir_build}"
   cd ${dir_build}
   
-  log_vars {dir_src} dep PKG_CONFIG_LIBDIR
+  log_vars dir_src dep PKG_CONFIG_LIBDIR
   log_vars CC CXX LD AS AR NM RANLIB STRIP
   
   if fn_defined 'build_all'; then
@@ -354,16 +351,16 @@ start(){
   else
     [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
     [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
-  }
+  fi
 
   if fn_defined 'build_config'; then
     build_config
   else case $build_tool in
     cmake)
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
-      [ -z "$cmake_toolchain_file" ] && cmake_create_toolchain ${dir_build}
-      [ -f "$cmake_toolchain_file" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+      [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
+      [ -f "${cmake_toolchain_file}" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
+      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       ;;
@@ -373,7 +370,7 @@ start(){
       ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
       ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
       ! $ac_nopic && CFG+=" --with-pic=1"
-      do_log 'configure' ${dir_config}/${exec_config} --prefix=${INSTALL_DIR} ${CFG} $CSH $CBN "${cfg_args[@]}"
+      do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} $CSH $CBN "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
     meson)
@@ -382,7 +379,7 @@ start(){
       $host_clang || LD="bfd"
       meson_create_toolchain $MESON_CFG
       MAKE_EXECUTABLE=ninja
-      do_log 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${INSTALL_DIR} $CFG $CSH $CBN
+      do_log 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${dir_install} $CFG $CSH $CBN
       ;;
     make)
       mkf=$CFG
@@ -411,7 +408,7 @@ start(){
   if fn_defined 'build_make'; then
     do_log 'make' build_make
   else
-    do_logP 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+    do_progress 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
   fi
   
   if fn_defined 'patch_install';then
@@ -510,7 +507,7 @@ check_xbautopatch(){
 create_pkgconfig_file(){
     [ -z "${1}" ] && pc_file=${lib} || pc_file=${1}
     [ -z "${2}" ] && pc_llib="-l${pc_file}" || pc_llib=${2}
-    [ -z "${3}" ] && pc_prefix=${INSTALL_DIR} || pc_prefix=${3}
+    [ -z "${3}" ] && pc_prefix=${dir_install} || pc_prefix=${3}
     [ -z "$pc_libdir" ] && pc_libdir="/lib"
     [ -z "$pc_incdir" ] && pc_incdir="/include"
     [ -z "$pc_cflags" ] && pc_cflags="-I\${includedir}"
@@ -567,7 +564,7 @@ build_packages_bin(){
       [ -z "$mkd" ] && mkd="DESTDIR=${xb_distdir} install"
       ${MAKE_EXECUTABLE} $mkd
     fi
-    [ -z "$mkd_suffix" ] && mkd_suffix=${LIBSDIR}
+    [ -z "$mkd_suffix" ] && mkd_suffix=${dir_install}
     pushdir "${xb_distdir}${mkd_suffix}"
     
     # also include .pc manually-built file
@@ -670,7 +667,7 @@ meson_create_toolchain(){
 }
 
 cmake_include_directories(){
-  printf "include_directories($@)" >>$cmake_toolchain_file
+  printf "include_directories($@)" >>${cmake_toolchain_file}
 }
 
 
@@ -770,8 +767,8 @@ log_start(){
 log_end(){
   if [ -n "${logtime_start}" ]; then
     logtime_end=$(date +%s)
-    #local pkgsize=$(du -sk ${INSTALL_DIR} | cut -f1)
-    #local libsize=$(du -sk ${INSTALL_DIR}/lib | cut -f1)
+    #local pkgsize=$(du -sk ${dir_install} | cut -f1)
+    #local libsize=$(du -sk ${dir_install}/lib | cut -f1)
     local secs=$(($logtime_end-$logtime_start))
     local msg="${CT1} done ${CD}in $(secs2time ${secs})"
     [ $secs -gt 60 ] && msg="$msg (${secs}s)"
@@ -1166,9 +1163,9 @@ loadToolchain(){
   YASM=yasm
   PKG_CONFIG=pkg-config
   #reset flags
-  unset LIBS CPPFLAGS CFLAGS CXXFLAGS LDFLAGS WFLAGS
-  CPPFLAGS="-I$LIBSDIR/include"
-  LDFLAGS="-L$LIBSDIR/lib"
+  unset LIBS CFLAGS CXXFLAGS LDFLAGS WFLAGS
+  CPPFLAGS+=" -I${dir_install_include}"
+  LDFLAGS="-L${dir_install_lib}"
 
   case $PLATFORM in
     Android)
@@ -1306,7 +1303,7 @@ clearAll(){
 }
 
 checkPkg(){
-  local pf="$LIBSDIR/lib/pkgconfig/${pkg}.pc"
+  local pf="${dir_install_pc}/${pkg}.pc"
   [ -f "$pf" ] && echo $pf
   return 0
 }
@@ -1376,6 +1373,19 @@ hwinfoProcessor(){
   cat /proc/cpuinfo | grep -Po 'model name\s+: \K(.*)' | head -n1
 }
 
+prompt_remove(){
+  while [ -n "${1}" ]; do
+    echo -ne "\n  Are you sure you want do remove ${CY1}$(basename $1)?${C0} Type 'Yes' to proceed: "; read q
+    if [ "${q}" == "Yes" ]; then
+      echo -ne "  > Removing $1... " && rm -rf $1 2>/dev/null && echo -e " ${CG1}done${C0}" || echo -e "${CR1} Fail${C0}"
+    else
+      break
+    fi
+    shift
+  done
+  echo
+}
+
 showBanner(){
   if $banner; then
     echo -ne "\n\n${ind}${CW}Cross Builder Scripts ${vsh} for Linux${C0}\n${ind}"
@@ -1392,19 +1402,21 @@ showBanner(){
 
 menu_tune(){
   case $1 in
-    smd855) CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
-    smd865) CPPFLAGS+=" -mtune=cortex-a77.cortex-a55";;
-    smd888) CPPFLAGS+=" -mtune=cortex-a78.cortex-a55";;
+    smd855)   CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
+    smd865)   CPPFLAGS+=" -mtune=cortex-a77.cortex-a55";;
+    smd888)   CPPFLAGS+=" -mtune=cortex-a78.cortex-a55";;
+    cortex-*) CPPFLAGS+=" -mtune=$1";;
   esac
 }
 
 menu_clear(){
   while [ -n "$1" ];do
     case $1 in
-      srclib) [ -n "${lib}" ] && rm -rf sources/${lib} 2>/dev/null;;
-      sources) rm -rf sources 2>/dev/null;;
-      builds) rm -rf builds 2>/dev/null;;
-      packages) rm -rf packages 2>/dev/null;;
+      srclib)   prompt_remove ${dir_src};;
+      sources)  prompt_remove ${dir_sources};;
+      builds)   prompt_remove ${dir_install};;
+      packages) prompt_remove ${dir_pkgdist};;
+      wipe*)    prompt_remove ${dir_pkgdist} ${dir_install} ${dir_sources};;
     esac
     shift
   done
@@ -1438,7 +1450,7 @@ set_target(){
   arch="${2}${3}-${4}-${5}${6}"
   CT0="${9}"
   CT1="${10}"
-  CPU=${0}
+  CPU=${2}
   ABI=${7}
   EABI=${6}
   set_env
@@ -1456,17 +1468,15 @@ set_env(){
     gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false; PLATFORM="Linux";;
     mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;  PLATFORM="Windows";;
   esac
-  LIBSDIR="$(pwd)/builds/${PLATFORM,,}/${7}"
-  dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${7}"
-  dir_install_bin="${dir_install}/bin"
-  dir_install_include="${dir_install}/include"
-  dir_install_lib="${dir_install}/lib"
-  dir_install_pc="${dir_install_lib}/pkgconfig"
+  #LIBSDIR="$(pwd)/builds/${PLATFORM,,}/${target_trip[5]}"
+  export dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}"
+  export dir_install_bin="${dir_install}/bin"
+  export dir_install_include="${dir_install}/include"
+  export dir_install_lib="${dir_install}/lib"
+  export dir_install_pc="${dir_install_lib}/pkgconfig"
 }
 
 # main
-export ROOTDIR=$(dirname @0)
-export target_trip=
 
 while [ $1 ];do
   case $1 in
@@ -1486,7 +1496,7 @@ while [ $1 ];do
     l86|lx86|*86-linux*|linux*32 )
       set_target '6' 'i686' '' 'linux' 'gnu' '' 'x86' '32' $CM0 $CM1;;
     l64|lx64|*64-linux*|linux*64|linux )
-      set_target '7' 'x86_64' '' 'linux' 'gnu' '' 'x86_64' '64' $CM0 $CM1;;
+      set_target '7' 'x86_64' '' 'linux' 'gnu' '' 'x86_64' '64' $CM0 $CM1
       ;;
     wa8|a*64-w64*|a*64-*mingw*)
       set_target '8' 'aarch64' '' 'w64' 'mingw32' '' 'arm64' '64' $CC0 $CC1;;
@@ -1514,7 +1524,7 @@ while [ $1 ];do
     --tune)     shift; menu_tune $1
       ;;
 
-    --prefix)   shift; LIBSDIR=$1;;
+    --prefix)   shift; dir_install=$1; LIBSDIR=$1;;
     --stable)   git_stable=true;;
     
     --update)   update=true;;
@@ -1527,10 +1537,10 @@ while [ $1 ];do
     --retry)    retry=true;;
     --force)    [ -f "${dir_install_pc}/${pkg}.pc" ] && rm "${dir_install_pc}/${pkg}.pc" 2>/dev/null;;
     
-    --clear)    shift; menu_clear @0; exit 0;;
+    --clear)    shift; menu_clear $@; exit 0;;
     --desc )    echo $dsc && exit 0;;
     
-    --get)      shift; menu_get @0; exit 0;;
+    --get)      shift; menu_get $@; exit 0;;
       
     --clone)    only_repo=true;;   
     --cmake)    cfg='cmake';;
@@ -1649,6 +1659,7 @@ unset cst0 cst1 csh0 csh1 cb0 cb1 cstk cshk cbk
 
 export arch update retry \
   build_shared build_static build_bin build_tool \
+  dir_install \
   CSH CBN LIBSDIR PLATFORM CPU ABI EABI \
   host_arch host_64 host_eabi host_vnd host_arm host_os \
   mingw_posix MAKE_EXECUTABLE=make cmake_includes

@@ -10,7 +10,6 @@ pkg='libvmaf'
 dsc='Perceptual video quality assessment based on multi-method fusion'
 lic='BSD-2c Patent'
 src='https://github.com/Netflix/vmaf.git'
-cfg='meson'
 eta='52'
 config_dir="libvmaf"
 CFG='-Denable_docs=false -Denable_tests=false'
@@ -21,7 +20,7 @@ lst_bin='vmaf'
 
 . xbuilder.sh
 
-$host_arm || CFG+=' -enable_avx512=true'
+$host_arm || CFG+=' -Denable_avx512=true'
 
 start
 
