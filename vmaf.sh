@@ -12,7 +12,7 @@ lic='BSD-2c Patent'
 src='https://github.com/Netflix/vmaf.git'
 cfg='meson'
 eta='52'
-dir_config="libvmaf"
+config_dir="libvmaf"
 CFG='-Denable_docs=false -Denable_tests=false'
 lst_inc='libvmaf/model.h libvmaf/feature.h libvmaf/picture.h
     libvmaf/libvmaf.h libvmaf/version.h libvmaf/compute_vmaf.h'

@@ -12,7 +12,7 @@ lic='BSD-2c'
 src='https://github.com/MediaArea/MediaInfoLib.git'
 cfg='cmake'
 eta='10'
-dir_config='Project/CMake'
+config_dir='Project/CMake'
 lst_inc='MediaInfo/MediaInfoList.h
 	MediaInfo/MediaInfo_Events.h
 	MediaInfo/MediaInfo.h

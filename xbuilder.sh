@@ -142,33 +142,35 @@ main(){
   # show package info
   [ -f "${dir_install_pc}/${pkg}.pc" ] || pkgInfo
 
-  LOGFILE="${dir_install}/${lib}.log"
+  log_file="${dir_install}/${lib}.log"
 }
 
 pkgInfo(){
-  local DP=
-  local VS=
+  local dp=
+  local vs=
   local longdesc=$(aptLongDesc)
   [ -z "$(echo $longdesc | xargs 2>/dev/null)" ] && unset longdesc
-  [ -n "${tls}" ] && DP="${CT0}build deps: ${C0}$tls "
-  [ -n "${dep}" ] && DP="${DP}${CT0}lib deps: ${C0}$dep"
+  [ -n "${tls}" ] && dp="${CT0}build deps: ${C0}$tls "
+  [ -n "${dep}" ] && dp="${dp}${CT0}lib deps: ${C0}$dep"
   if [ "$sty" == "git" ];then
     local vgit=$(git_remote_version $src)
     if [ -d ${dir_src} ];then
-      pushdir ${dir_src}
+      pushd ${dir_src}
       local vrep=$(git describe --abbrev=0 --tags 2>/dev/null)
-      popdir
-      VS="${CT0}vrs: ${C0}$vrep "
-      str_contains $vgit $vrs && \
-        pushvar_l VS 'updated' || \
-        pushvar_l VS "$VS ${CT0}latest: ${CT1}${vgit}${C0}"
+      popd
+      vs="${CT0}vrs: ${C0}$vrep "
+      if str_contains $vgit $vrs; then
+        vs+=" updated"
+      else
+        vs+=" ${CT0}latest: ${CT1}${vgit}${C0}"
+      fi
     else
-      VS="${CT0}vrs: ${C0}${vgit}"
+      vs="${CT0}vrs: ${C0}${vgit}"
     fi
   fi
   [ -n "${dsc}" ] && echo -e "\n${CW}${ind}${lib^^} - ${C0}${dsc}"
   [ -n "${longdesc}" ] && echo -e "${CD}${longdesc}" | sed 's|\*|\u2605|g; s|\..\..|. |g' # sed 's|^|'${ind}|g'
-  echo -e "${CT0}${ind}Licence ${C0}$lic ${DP} ${VS}"
+  echo -e "${CT0}${ind}Licence ${C0}$lic ${dp} ${vs}"
 }
 
 aptLongDesc(){
@@ -227,7 +229,7 @@ start(){
   fi
   
   # Reset LOGFILE
-  [ -f "${LOGFILE}" ] && rm -f $LOGFILE
+  [ -f "${LOGFILE}" ] && rm -f ${log_file}
 
   # Create INSTALL_DIR and PKGCONFIG DIR
   mkdir -p ${dir_install_pc}
@@ -255,7 +257,7 @@ start(){
   # deprecated
   [ -z ${dir_config+x} ] && dir_config=${dir_src}
   # use this instead
-  [ -n "${dir_config+x}" ] && dir_config="${dir_sources}/${lib}/${dir_config}"
+  [ -n "${config_dir+x}" ] && dir_config="${dir_sources}/${lib}/${config_dir}"
 
   local req_src_config=false
   if [ ! -d ${dir_src} ];then
@@ -472,11 +474,11 @@ end_script(){
 }
 
 make_findtarget(){
-  ${MAKE_EXECUTABLE} ${1} -n 2>>$LOGFILE
+  ${MAKE_EXECUTABLE} ${1} -n 2>>${log_file}
   test $? -eq 2 && {
-    echo "${2}"; echo "make: target ${1} not found, setting default ${2} target." >>$LOGFILE
+    echo "${2}"; echo "make: target ${1} not found, setting default ${2} target." >>${log_file}
   } || {
-    echo "${2}"; echo "make: target ${1} found." >>$LOGFILE
+    echo "${2}"; echo "make: target ${1} found." >>${log_file}
   }
 }
 
@@ -485,14 +487,14 @@ check_xbautopatch(){
   local match=$(grep -oP "(?<=^<<').*?(?=')" $0)
   if [ -n "$match" ]; then
     local block=$(awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0)
-    echo -e "\npatch this: \n$block" >>$LOGFILE
+    echo -e "\npatch this: \n$block" >>${log_file}
     case $match in
       XB_CREATE_CMAKELISTS) echo "${block}" >${dir_src}/CMakeLists.txt;;
       XB_APPLY_PATCH) pushdir ${dir_src}
-        patch -p0 <<<$(echo "${block}") 2>&1 >$LOGFILE
+        patch -p0 <<<$(echo "${block}") 2>&1 >${log_file}
         popdir;;
       XB64_PATCH) pushdir ${dir_src}
-        patch -p0 <<<$(echo "${block}" | base64 -d) 2>&1 >$LOGFILE
+        patch -p0 <<<$(echo "${block}" | base64 -d) 2>&1 >${log_file}
         popdir;;
     esac
   fi
@@ -734,7 +736,7 @@ chkAutotools(){
 
 # make args...
 doMake(){
-  make $@ 2>&1 | tee -a $LOGFILE | grep -Eo "\[.+%\]" 
+  make $@ 2>&1 | tee -a ${log_file} | grep -Eo "\[.+%\]" 
 }
 
 errCall(){
@@ -780,21 +782,21 @@ log(){
 
 log_vars(){
   while [ -n "$1" ]; do
-    echo "$1=${!1}" >>$LOGFILE 2>&1
+    echo "$1=${!1}" >>${log_file} 2>&1
     shift
   done
-  echo >>$LOGFILE
+  echo >>${log_file}
 }
 
 doErr(){
   echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
-  if [ -f $LOGFILE ];then
+  if [ -f ${log_file} ];then
     if [ -f ${dir_build}/CMakeFiles/CMakeError.log ];then
-      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
-      cat ${dir_build}/CMakeFiles/CMakeError.log >> $LOGFILE
+      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> ${log_file}
+      cat ${dir_build}/CMakeFiles/CMakeError.log >> ${log_file}
     fi
     echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
-    [ "$openlog" != "n" ] && nano $LOGFILE
+    [ "$openlog" != "n" ] && nano ${log_file}
   fi
   exit 1
 }
@@ -804,36 +806,36 @@ err(){
     logtime_end=$(date +%s)
     echo -e "${CR1} fail ${CR0}[$(secs2time $(($logtime_end-$logtime_start)))]${C0}\n"
   fi
-  if [ -f $LOGFILE ];then
+  if [ -f ${log_file} ];then
     if [ -f ${dir_build}/CMakeFiles/CMakeError.log ];then
-      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> $LOGFILE
-      cat ${dir_build}/CMakeFiles/CMakeError.log >> $LOGFILE
+      echo -e "\n\n${dir_build}/CMakeFiles/CMakeError.log:\n" >> ${log_file}
+      cat ${dir_build}/CMakeFiles/CMakeError.log >> ${log_file}
     fi
     echo -ne "${CY1}${ind}Open log? [Y|n]:${C0}" && read openlog
-    [ "$openlog" != "n" ] && nano $LOGFILE
+    [ "$openlog" != "n" ] && nano ${log_file}
   fi
   echo
   exit 1
 }
 
 log_this() {
-  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  "$@" 2>> "$LOGFILE" 1>> "$LOGFILE" || err
+  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
+  "$@" 2>> "${log_file}" 1>> "${log_file}" || err
   logok
 }
 
 doLogNoErr(){
   local var=$1; shift
   echo -ne "${CD}${var}${C0}"
-  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  "$@" 2>> "$LOGFILE" 1>> "$LOGFILE"
+  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
+  "$@" 2>> "${log_file}" 1>> "${log_file}"
   logok $var
 }
 
 do_quietly(){
   local var=$1; shift
   echo -ne "${CD}${var}${C0}"
-  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
+  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
   "$@" >/dev/null 2>&1
   logok $var
 }
@@ -848,8 +850,8 @@ doLog() {
 doLogP() {
   local var=$1; shift
   echo -ne "${CD}${var}"
-  echo -e "\n$(date +"%T"): $@" >> "$LOGFILE"
-  ("$@" |& tee -a $LOGFILE | topct) || doErr "in ${var}:\n\n...\n$(tail -n5 $LOGFILE)${C0}"
+  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
+  ("$@" |& tee -a ${log_file} | topct) || doErr "in ${var}:\n\n...\n$(tail -n5 ${log_file})${C0}"
   logok $var
 }
 
@@ -952,7 +954,7 @@ wget_tarxx(){
   local tag="get"
   local args=
   echo -ne "${CD}${tag}${C0}"
-  echo "$(date): $@" >> "$LOGFILE"
+  echo "$(date): $@" >> "${log_file}"
   
   case $src in
     *.tar.lz) 
@@ -965,7 +967,7 @@ wget_tarxx(){
 
   [ -d "tmp" ] && rm -rf tmp
   mkdir tmp
-  wget -qO- $1 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
+  wget -qO- $1 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
   cd tmp
   mv * $2 && mv $2 ..
   cd ..
@@ -982,8 +984,8 @@ wget_tar(){
   local tag="source"
   local args=
   echo -ne "${CD}${tag}${C0}"
-  echo -e "\n\n$@\n----------------------------------------\n" >> "$LOGFILE"
-  echo "$(date): $@" >> "$LOGFILE"
+  echo -e "\n\n$@\n----------------------------------------\n" >> "${log_file}"
+  echo "$(date): $@" >> "${log_file}"
   case $sty in
     tlz|tar_lz) 
       test -z $(which lzip) && aptInstall lzip
@@ -992,9 +994,9 @@ wget_tar(){
     tgz|tar_gz) args="-xvz";;
     txz|tar_xz) args="-xvJ";;
   esac
-  wget -qO- $src 2>>$LOGFILE | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args >/dev/null 2>&1 || err
+  wget -qO- $src 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args >/dev/null 2>&1 || err
   mv ${1}* ${lib}
-  echo -e "----------------------------------------\n" >> "$LOGFILE"
+  echo -e "----------------------------------------\n" >> "${log_file}"
   logok $tag
 }
 
@@ -1057,7 +1059,7 @@ doAutogen(){
   pushdir $1
   shift
   case $1 in
-    --noerr ) ./autogen.sh >>$LOGFILE 2>&1;;
+    --noerr ) ./autogen.sh >>${log_file} 2>&1;;
     --noconfigure ) NOCONFIGURE=1 log_this ./autogen.sh;;
     * ) log_this ./autogen.sh;;
   esac

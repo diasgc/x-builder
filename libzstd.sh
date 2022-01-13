@@ -14,7 +14,7 @@ eta='134'
 cstk="ZSTD_BUILD_STATIC"
 cshk="ZSTD_BUILD_SHARED"
 cbk="ZSTD_BUILD_PROGRAMS"
-dir_config='build/cmake'
+config_dir='build/cmake'
 
 . xbuilder.sh
 

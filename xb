@@ -50,7 +50,7 @@ mkc=$(jval mkc)     cb0=$(jval cb0)     cb1=$(jval cb1)
 cbk=$(jval cbk)     tls=$(jval tls)     vrs=$(jval vrs)
 
 src_cfg=$(jval src_cfg)
-dir_config=$(jval dir)
+config_dir=$(jval dir)
 src_patch=$(jval src_patch)
 patch=$(jval patch)
 pc_llib=$(jval pc_llib)
