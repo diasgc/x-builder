@@ -1420,48 +1420,31 @@ menu_settune(){
   case $1 in
     smd855) CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
     smd865) CPPFLAGS+=" -mtune=cortex-a77.cortex-a55";;
-    smd888) CPPFLAGS+=" -mtune=cortex-x1.cortex-a78.cortex-a55";;
+    smd888) CPPFLAGS+=" -mtune=cortex-a78.cortex-a55";;
   esac
 }
 
-
+set_target(){
+  cpu_id="${1}"
+  target_trip=("${2}" "${3}" "${4}" "${5}" "${6}" "${7}" "${8}")
+  arch="${2}${3}-${4}-${5}${6}"
+  CT0="${9}"
+  CT1="${10}"
+  CPU=${0}
+  ABI=${7}
+  EABI=${6}
+  LIBSDIR="$(pwd)/builds/${5}/${7}"
+}
 
 # main
 
 while [ $1 ];do
   case $1 in
-    aa64|aa8|a*64-*android|android ) cpu_id=0
-      target_trip=('aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64')
-      arch='aarch64-linux-android' PLATFORM="Android" CPU="aarch64" ABI="arm64-v8a" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
-      host_arm64=true; host_arm32=false; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/arm64-v8a
-      CT0=$CG3 CT1=$CG6
-      ;;
-    aa7|arm-*android*eabi|arm-android) cpu_id=1
-      target_trip=('arm' 'v7a' 'linux' 'android' 'eabi' 'armeabi-v7a' '32')
-      arch='arm-linux-androideabi' PLATFORM="Android" CPU="arm" ABI="armeabi-v7a" EABI="eabi"
-      host_arch=$arch; host_64=false; host_eabi=eabi; host_vnd=linux; host_arm=true; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=true; host_x86=false; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/armeabi-v7a
-      CT0=$CG2 CT1=$CG5
-      ;;
-    a86|ax86|*86-*android) cpu_id=2
-      target_trip=('i686' '' 'linux' 'android' '' 'x86' '32')
-      arch='i686-linux-android' PLATFORM="Android" CPU="i686" ABI="x86" EABI=
-      host_arch=$arch; host_64=false; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=true; host_x64=false; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/x86
-      CT0=$CG0 CT1=$CG1
-      ;;
-    a64|ax64|*64-*android) cpu_id=3
-      target_trip=('x86_64' '' 'linux' 'android' '' 'x86_64' '64')
-      arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
-      host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
-      host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
-      LIBSDIR=$(pwd)/builds/android/x86_64
-      CT0=$CG0 CT1=$CG1
-      ;;
+    aa64|aa8|a*64-*android|android )   set_target '0' 'aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64' $CG3 $CG6;;
+    aa7|arm-*android*eabi|arm-android) set_target '1' 'arm' 'v7a' 'linux' 'android' 'eabi' 'armeabi-v7a' '32' $CG2 $CG5;;
+    a86|ax86|*86-*android)             set_target '2' 'i686' '' 'linux' 'android' '' 'x86' '32' $CG0 $CG1;;
+    a64|ax64|*64-*android)             set_target '3' 'x86_64' '' 'linux' 'android' '' 'x86_64' '64' $CG0 $CG1
+                                       ;;
     la8|la64|a*64-linux|a*64-*gnu|a*64-linux-gnu|rpi*64|rpi3b*) cpu_id=4
       target_trip=('aarch64' '' 'linux' 'gnu' '' 'arm64' '64')
       arch='aarch64-linux-gnu' PLATFORM="Linux" CPU="aarch64" ABI="aarch64" EABI=
@@ -1639,16 +1622,20 @@ if [ -z "${arch}" ];then
   LIBSDIR=$(pwd)/builds/${target_trip[3]}/${target_trip[5]}
 fi
 # target_trip=(0='arm' 1='v7a' 2='linux' 3='android' 4='eabi' 5='armeabi-v7a' 6='32')
+#arch='x86_64-linux-android' PLATFORM="Android" CPU="x86_64" ABI="x86_64" EABI=
+#host_arch=$arch; host_64=true; host_eabi=; host_vnd=linux; host_arm=false; host_os=android; host_mingw=false
+#host_arm64=false; host_arm32=false; host_x86=false; host_x64=true; host_sys=linux; host_clang=true
+
 case ${target_trip[0]} in
-  aarch64) host_arm=true; host_arm32=false; host_arm64=true; host_x86=false; host_x64=false;;
-  arm) host_arm=true; host_arm32=true; host_arm64=true; host_x86=false; host_x64=false;;
-  i686) host_arm=false; host_arm32=false; host_arm64=false; host_x86=true; host_x64=false;;
-  x86_64) host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
+  aarch64) host_arm=true;  host_arm32=false; host_arm64=true;  host_x86=false; host_x64=false;;
+  arm)     host_arm=true;  host_arm32=true;  host_arm64=true;  host_x86=false; host_x64=false;;
+  i686)    host_arm=false; host_arm32=false; host_arm64=false; host_x86=true;  host_x64=false;;
+  x86_64)  host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
 esac
 case ${target_trip[3]} in
-  android) host_sys=linux; host_mingw=false; host_os=android; host_ndk=true; host_clang=true;;
-  gnu) host_sys=linux; host_mingw=false; host_os=gnu; host_ndk=false; host_clang=false;;
-  mingw32) host_sys=windows; host_mingw=true; host_os=mingw32; host_clang=true;;
+  android) host_sys=linux;   host_mingw=false; host_os=android; host_ndk=true;  host_clang=true;;
+  gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false;;
+  mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;;
 esac
 
 # is cross-compile?
