@@ -32,6 +32,7 @@ sudo=$(which sudo)
 : "${build_dist:=true}"
 : "${dep_build:=--static}"
 : "${build_strip:=true}"
+: "${API:=24}"
 
 $req_update_deps && update=true
 pkg_fmt="tgz"
@@ -618,6 +619,7 @@ build_dependencies(){
   done
 }
 
+
 #usage: meson_create_toolchain <out.meson.file>
 meson_create_toolchain(){
   case $arch in
@@ -674,6 +676,45 @@ cmake_include_directories(){
 # usage cmake_create_toolchain <dir>
 cmake_create_toolchain(){
   export cmake_toolchain_file="${ROOTDIR}/xbuilder.cmake"
+}
+
+cmake_create_toolchainfile(){
+  cmake_toolchain_file="${dir_build}/${arch}.cmake"
+  cat <<-EOF >${cmake_toolchain_file}
+    set(CMAKE_SYSTEM_NAME "${PLATFORM}")
+    set(CMAKE_SYSTEM_PROCESSOR "${target_trip[0]}${target_trip[1]}")
+    set(CMAKE_C_COMPILER ${CC})
+    set(CMAKE_CXX_COMPILER ${CXX})
+    set(CMAKE_FIND_ROOT_PATH ${SYSROOT}/usr
+        ${SYSROOT}/usr/lib/${arch}
+        ${SYSROOT}/usr/lib/${arch}/${API}
+        ${dir_install})
+    ${cmake_tcf_arch}
+
+        set(CMAKE_SYSTEM_NAME Linux)
+    set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
+    if(XB_HOST MATCHES "^a")
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION}
+            ${XB_INSTALL}})
+    elseif(XB_HOST MATCHES "^i")
+        set(CMAKE_SYSTEM_PROCESSOR "x86")
+        set(CMAKE_C_COMPILER_ARG1 "-m32")
+        set(CMAKE_CXX_COMPILER_ARG1 "-m32")
+        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
+            /usr/lib/gcc-cross/${XB_HOST}/${XB_X86LINUX_TCVERSION}
+            ${XB_INSTALL})
+    endif()
+    if(XB_HOST MATCHES "^x86_64")
+        set(CMAKE_C_COMPILER gcc)
+        set(CMAKE_CXX_COMPILER g++)
+    else()
+        set(CMAKE_C_COMPILER ${XB_HOST}-gcc)
+        set(CMAKE_CXX_COMPILER ${XB_HOST}-g++)
+        set(CMAKE_AR ${XB_HOST}-ar CACHE FILEPATH Archiver)
+        set(CMAKE_RANLIB ${XB_HOST}-ranlib CACHE FILEPATH Indexer)
+    endif()
+EOF
 }
 
 cargo_create_toolchain(){
@@ -1159,13 +1200,18 @@ toolchain_android(){
 
 loadToolchain(){
 
+  ${host_cross} && return 0
+
   CMAKE_EXECUTABLE=cmake
   YASM=yasm
   PKG_CONFIG=pkg-config
+
   #reset flags
   unset LIBS CFLAGS CXXFLAGS LDFLAGS WFLAGS
   CPPFLAGS+=" -I${dir_install_include}"
   LDFLAGS="-L${dir_install_lib}"
+
+
 
   case $PLATFORM in
     Android)
@@ -1186,17 +1232,15 @@ loadToolchain(){
       [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
       LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
       LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      #if $build_shared;then
-      #  LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      #else
-      #  LDFLAGS="-L${SYSROOT}/usr/lib/${arch} -L${SYSROOT}/usr/lib/${arch}/${API} ${LDFLAGS}"
-      #fi
-      CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch}"
-      CPPFLAGS+=" -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-      #$${ndkcmake} && [ -d "${ANDROID_HOME}/cmake" ] && CMAKE_EXECUTABLE="${ANDROID_HOME}/cmake/3.10.2.4988404/bin/cmake"
+      CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
       YASM=${TOOLCHAIN}/bin/yasm
-      #PKG_CONFIG_LIBDIR=${ANDROID_NDK_HOME}/pkgconfig
-      #[ ! -f "$LIBSDIR/lib/pkgconfig/zlib.pc" ] && patch_zlib_createpc "${SYSROOT}/usr"
+      cmake_tcf_arch="set(ANDROID_ABI ${target_trip[5]})\n
+    set(ANDROID_PLATFORM ${API})\n
+    set(ANDROID_NDK ${ANDROID_NDK_HOME})\n
+    set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)\n
+    set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${XB_HOST})\n
+    set(ZLIB_VERSION_STRING 1.2.11)\n
+    include(${CMAKE_TOOLCHAIN})"
       ;;
     Linux)
       local cross
