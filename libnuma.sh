@@ -9,21 +9,19 @@ cfg='ac'
 eta='90'
 pkg='numa'
 eta='30'
-API=26 # min api necessary for declaration of functions like 'shmget'
+#API=26 # min api necessary for declaration of functions like 'shmget'
 
 . xbuilder.sh
 
-case ${PLATFORM} in
-  Windows) doErr "Non-posix OS cannot use LUMA. Exiting...\n";;
-esac
+$host_mingw && doErr "Non-posix OS cannot use LUMA. Exiting...\n"
 
-CFG="--with-sysroot=${SYSROOT}"
+#CFG="--with-sysroot=${SYSROOT}"
 
 source_config(){
-  pushdir $SRCDIR
+  #pushdir $SRCDIR
   NOCONFIGURE=1 ./autogen.sh
   autoconf -i
-  popdir
+  #popdir
 }
 
 start

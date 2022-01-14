@@ -8,6 +8,7 @@
 [ -f ".config" ] && . .config
 install=false
 install_all=false
+ndk_requestupdate=false
 
 #check config
 if [ -z "${BUILD_ARCH}" ];then
@@ -122,28 +123,41 @@ getAndroidNdkLatestAvailableVersion(){
 }
 
 getAndroidNdkLatestDownloadUrl(){
-    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip"
+    wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip" | tail -n1
 }
 
 # usage installNdk <version>
 installNdk(){
+    local dhome
+    local dparent
     local url=$(getAndroidNdkLatestDownloadUrl)
     [ $(which unzip) ] || sudo apt -qq install unzip -y >/dev/null 2>&1
     echo -ne "${CM0} downloading... ${url}${C0}"
     tput sc && echo -ne "\e[$(tput lines);0H${CY1}"
-    [ -z "$ANDROID_HOME" ] && ANDROID_HOME="~/Android"
-    [ ! -d "$ANDROID_HOME" ] && mkdir -p $ANDROID_HOME
-    pushd $ANDROID_HOME >/dev/null
-    wget --progress=dot $url -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
+
+    [ -z "${ANDROID_HOME}" ] && ANDROID_HOME="~/Android"
+    [ -d "${ANDROID_HOME}" ] || mkdir -p ${ANDROID_HOME}
+    
+    if [ -z "${ANDROID_NDK_HOME}" ];then
+        dparent=${ANDROID_HOME}
+        dhome="android-ndk"
+    else
+        dparent=$(dirname ${ANDROID_NDK_HOME})
+        dhome=$(basename ${ANDROID_NDK_HOME})
+        [ -d "${ANDROID_NDK_HOME}" ] && mv "${ANDROID_NDK_HOME}" "${ANDROID_NDK_HOME}.old"
+    fi
+    
+    pushd ${dparent} >/dev/null
+    wget --progress=dot ${url} -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
     tput rc
     echo -ne "${CM0} decompressing... ${C0}"
     unzip tmp.zip >/dev/null 2>&1
     rm tmp.zip
-    mv android-ndk-* android-ndk
+    mv android-ndk-* ${dhome}
     popd >/dev/null
     echo -ne "${CC0} done. ${C0}\r"
-    export ANDROID_HOME ANDROID_NDK_HOME="$ANDROID_HOME/android-ndk"
-    printf "\nexport ANDROID_HOME=$ANDROID_HOME\nexport ANDROID_NDK_HOME=$ANDROID_NDK_HOME\n" >> ~/.bashrc && source ~/.bashrc
+    export ANDROID_HOME ANDROID_NDK_HOME="${dparent}/${dhome}"
+    printf "\nexport ANDROID_HOME=${ANDROID_HOME}\nexport ANDROID_NDK_HOME=${ANDROID_NDK_HOME}\n" >> ~/.bashrc && source ~/.bashrc
     check_android_ndk
 }
 
@@ -204,7 +218,7 @@ check_android_ndk(){
         local ndkv=$(getAndroidNdkHomeVersion $ANDROID_NDK_HOME)
         local latest
         case $(vercomp $ndkv $latestNdk) in
-            *) latest="(latest ${CC0}$latestNdk${C0})";;
+            *) latest="(latest ${CC0}$latestNdk${C0})"; ndk_requestupdate=true;;
             0) latest="${CC0}${c}${C0}";;
         esac
         #[ $latestNdk -gt $ndkv ] && latest="(latest ${CC0}$latestNdk${C0}" || latest="${CC0}${c}${C0}"
@@ -411,6 +425,11 @@ check4Pkg --pkg 'Bison    ' 'bison'
 check4Pkg --pkg 'Texinfo  ' 'texinfo'
 check4Pkg --pkg 'Patch    ' 'patch'
 check4Pkg --pkg 'Jq       ' 'jq'
+
+if $ndk_requestupdate; then
+    echo -e "\n\n  Update NDK to latest version? Type 'Yes' to proceed. "; read r
+    [ "${r}" == "Yes" ] && clear && installNdk
+fi
 
 echo -ne "\n  ${CC0}Writing config... "
 

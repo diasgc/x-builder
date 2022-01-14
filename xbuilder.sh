@@ -149,7 +149,30 @@ pkgInfo(){
   local vs=
   local longdesc=$(aptLongDesc)
   [ -z "$(echo $longdesc | xargs 2>/dev/null)" ] && unset longdesc
-  [ -n "${tls}" ] && dp="${CT0}build deps: ${C0}$tls "
+
+  # Main Description
+  [ -n "${dsc}" ] && echo -e "\n${CW}${ind}${lib^^} - ${C0}${dsc}"
+  [ -n "${longdesc}" ] && echo -e "${CD}${longdesc}" | sed 's|\*|\u2605|g; s|\..\..|. |g' # sed 's|^|'${ind}|g'
+
+  # Licence
+  echo -ne "${CT0}${ind}Licence ${C0}$lic "
+  
+  # Build Tools
+  if [ -n "${tls}" ]; then
+    echo -ne "${CT0}build deps: "
+    tput sc; echo -ne "${CD}$tls "; tput rc
+    for t in ${tls}; do
+      if [ -z $(which ${t}) ];then
+        aptInstall ${t} || {
+          echo -ne "${CR1}${t} ${C0}" && doErr "Unable to install ${t}, aborting..."
+        }
+        echo -ne "${CW}${t} "
+      fi
+      shift
+    done
+  fi
+
+  # Build Deps
   [ -n "${dep}" ] && dp="${dp}${CT0}lib deps: ${C0}$dep"
   if [ "$sty" == "git" ];then
     local vgit=$(git_remote_version $src)
@@ -167,9 +190,8 @@ pkgInfo(){
       vs="${CT0}vrs: ${C0}${vgit}"
     fi
   fi
-  [ -n "${dsc}" ] && echo -e "\n${CW}${ind}${lib^^} - ${C0}${dsc}"
-  [ -n "${longdesc}" ] && echo -e "${CD}${longdesc}" | sed 's|\*|\u2605|g; s|\..\..|. |g' # sed 's|^|'${ind}|g'
-  echo -e "${CT0}${ind}Licence ${C0}$lic ${dp} ${vs}"
+
+  echo -e " ${vs}"
 }
 
 aptLongDesc(){
@@ -232,7 +254,9 @@ start(){
   mkdir -p ${dir_install_pc}
   export PKG_CONFIG_LIBDIR="${dir_install_pc}:${PKG_CONFIG_LIBDIR}"
 
+  # check build tools
   check_tools $tls
+
   o_vrs=$vrs
   o_csh=$CSH
   o_cbn=$CBN
@@ -753,17 +777,17 @@ check_tool_dependency(){
 
 check_tools(){
   while [ -n "$1" ]; do
-  toolname=$1
-  toolpkg=$1
-  case $1 in
-    rust ) installRust && continue;;
-    libtool ) toolname=libtoolize;;
-    texinfo ) toolname=makeinfo;;
-    autotools )  chkAutotools && continue;;
-    * ) ;;
-  esac
-  [ -z $(which $toolname) ] && aptInstall $toolpkg
-  shift
+    toolname=$1
+    toolpkg=$1
+    case $1 in
+      rust ) installRust && continue;;
+      libtool ) toolname=libtoolize;;
+      texinfo ) toolname=makeinfo;;
+      autotools )  chkAutotools && continue;;
+      * ) ;;
+    esac
+    [ -z $(which $toolname) ] && aptInstall $toolpkg
+    shift
   done
 }
 
@@ -1200,7 +1224,7 @@ toolchain_android(){
 
 loadToolchain(){
 
-  ${host_cross} && return 0
+  ${host_cross} || return 0
 
   CMAKE_EXECUTABLE=cmake
   YASM=yasm
@@ -1623,7 +1647,7 @@ if [ -z "${target_trip}" ];then
     target_trip[1]="${target_triple[0]:3}"
     target_trip[0]="${target_triple[0]::3}"
   fi
-  local arr=(${OSTYPE//-/ })
+  arr=(${OSTYPE//-/ })
   target_trip[2]=$arr[0]
   target_trip[3]=$arr[1]
   if [ -z "${target_trip[3]##*eabi*}" ] ;then
@@ -1632,10 +1656,15 @@ if [ -z "${target_trip}" ];then
     target_trip[3]=${a2}
   fi
   set_env
+  STRIP=strip
 fi
 
 # is cross-compile?
-[ "${build_arch}" == "${arch}" ] && host_cross=false || host_cross=true
+if [ "${build_arch}" == "${arch}" ]; then
+  host_cross=false
+else
+  host_cross=true
+fi
 
 loadToolchain
 

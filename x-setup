@@ -31,14 +31,15 @@ esac
 
 # first-time load common functions
 [ -z ${vsh+x} ] && . .common
-CH=${CC1}
+CH=${CC0}
 # load config
 [ -f ".config" ] && . .config
 
+echo -e "\n${CC1}This Machine:"
 [ -z "${build_arch}" ] && build_arch=$(gcc -dumpmachine)
 [ -z "${build_os}" ] && build_os=$(uname -s)
 [ -z "${build_cpu}" ] && build_cpu=$(uname -m)
-printf "${CH}%-20s: ${C0}%s\n" 'build arch' ${build_arch}
+printf "${CH}%-20s: ${C0}%s\n" '  build arch' ${build_arch}
 printf "${CH}%-20s: ${C0}%s\n" '  build os' ${build_os}
 printf "${CH}%-20s: ${C0}%s\n" '  build cpu' ${build_cpu}
 
@@ -58,7 +59,7 @@ if [ ! -d "builds/toolchain" ]; then
 fi
 export dir_toolchain="$(pwd)/builds/toolchain"
 
-echo -e "\n${CH}LLVM-Clang:"
+echo -e "\n${CC1}LLVM-Clang:"
 if [ -z "$(which clang)" ]; then
     echo -e "not found. Install?"; read -p "[Y|n]" pndk
     case $pndk in y|Y) $cmd_apt_install llvm clang;; esac
@@ -81,7 +82,7 @@ if [ -n "$(which clang)" ]; then
     #done
 fi
 
-echo -e "\n${CH}Android NDK:"
+echo -e "\n${CC1}Android NDK:"
 if [ -z "${ANDROID_NDK_HOME}" ]; then
     ndk_clang_bin_dir=$(find ~ -name "aarch64-linux-android30-clang")
     if [ -z "${ndk_clang_bin_dir}" ]; then
@@ -148,7 +149,7 @@ else
     echo -e "  not installed"
 fi
 
-echo -e "\n${CH}LLVM MINGW:"
+echo -e "\n${CC1}LLVM MINGW:"
 if [ -z "${LLVM_MINGW_HOME}" ]; then
     llvm_mingw_bin_dir=$(find ~ -name "aarch64-w64-mingw32-clang")
     if [ -z "${llvm_mingw_bin_dir}" ]; then
