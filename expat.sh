@@ -4,10 +4,10 @@ lib='expat'
 dsc='Fast streaming XML parser written in C'
 lic=''
 src='https://github.com/libexpat/libexpat.git'
-sty='git'
+#sty='git'
 cfg='ac'
 eta='77'
-dir_config="expat"
+config_dir="expat"
 case $cfg in
     a*) cb0="--without-examples" CFG="--without-tests --without-docbook --without-xmlwf --disable-fast-install";;
     c*) cshk="EXPAT_SHARED_LIBS" cbk="EXPAT_BUILD_TOOLS" CFG="-DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF";;
@@ -15,8 +15,8 @@ esac
 
 . xbuilder.sh
 
-source_patch(){
-    doLog 'buildconf' ./buildconf.sh
+source_config(){
+    ./buildconf.sh
 }
 
 start
