@@ -10,19 +10,18 @@ lib='libdc1394'
 apt='libdc1394-dev'
 dsc='IIDC Camera Control Library '
 lic='LGPL-2.1'
-src='https://github.com/indigo-astronomy/libdc1394.git'
-#src='https://git.code.sf.net/p/libdc1394/code.git'
-#automake_cmd='autoreconf -is'
+#src='https://github.com/indigo-astronomy/libdc1394.git'
+src='https://git.code.sf.net/p/libdc1394/code.git'
 eta='60'
 
 . xbuilder.sh
 
 $host_clang && doErr "Clang does not support compile code with VLAiS. Aborting."
+CFG='--disable-examples'
 
 source_config(){
-    pushd $SRCDIR
-    autoreconf -i -s
-    popd
+    autoreconf -is
+    sed -i 's/^AM_PATH_SDL/#&/' configure
 }
 
 start

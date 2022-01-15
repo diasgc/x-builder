@@ -39,11 +39,11 @@ source_patch(){
 
 build_all(){
     pushd $SRCDIR >/dev/null
-    doLog 'clean' make clean
+    do_log 'clean' make clean
     log 'make '
-    LDFLAGS=$LDFLAGS CFLAGS=$CFLAGS OBJS=$OBJS make $CFG -j4 >>"$LOGFILE" || err
+    LDFLAGS=$LDFLAGS CFLAGS=$CFLAGS OBJS=$OBJS make $CFG -j4 >>"$log_file" || err
     logok
-    doLog 'install' install -s -D -m 700 $SRCDIR/tree $INSTALL_DIR/bin
+    do_log 'install' install -s -D -m 700 $SRCDIR/tree $INSTALL_DIR/bin
     popd >/dev/null 
 }
 

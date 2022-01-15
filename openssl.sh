@@ -16,13 +16,13 @@ cfg='other'
 tls='nasm perl'
 dep='cryptopp'
 eta='360'
-
+mki="install"
 csh0="-static no-shared pic"
 csh1="-static shared pic"
 
 . xbuilder.sh
 
-BUILD_DIR=$SRCDIR/build_${arch}
+BUILD_DIR="${dir_src}/build_${arch}"
 PATH=$TOOLCHAIN/bin:$PATH
 case $arch in
   x86_64-w64-mingw32 )    CFG="no-idea no-mdc2 no-rc5 mingw64 --cross-compile-prefix=x86_64-w64-mingw32-";;
@@ -34,14 +34,15 @@ case $arch in
 esac
 #AS=$YASM
 export ANDROID_NDK_ROOT=$ANDROID_NDK_HOME
-mki="install_sw"
+
+WFLAGS='-Wno-macro-redefined'
 
 build_config(){
-  doLog 'config' $SRCDIR/Configure $CFG --prefix=${INSTALL_DIR}
+  do_log 'config' $dir_src/Configure $CFG --prefix=${dir_install}
 }
 
 build_make(){
-  sed -i "0,/^install:(.*)install_docs$/{s/ install_docs//}" $SRCDIR/Makefile
+  sed -i "0,/^install:(.*)install_docs$/{s/ install_docs//}" $dir_src/Makefile
   $MAKE_EXECUTABLE depend && $MAKE_EXECUTABLE -j${HOST_NPROC}
 }
 

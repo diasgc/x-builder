@@ -8,7 +8,6 @@ lib='cmake'
 dsc='cross-platform, open-source make system'
 lic='BSD 3-clause'
 src='https://github.com/Kitware/CMake.git'
-sty='git'
 cfg=''
 tls=''
 dep=''
@@ -26,8 +25,7 @@ arch="x86_64-linux-gnu"
 MAKE_EXECUTABLE=gmake
 
 source_patch(){
-  pushdir $SRCDIR
-  doLog 'bootstrap' ./bootstrap
+  ./bootstrap
 }
 
 start

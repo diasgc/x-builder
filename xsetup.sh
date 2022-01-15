@@ -16,7 +16,7 @@ if [ -z "${BUILD_ARCH}" ];then
         Linux)  build_arch=$(echo $(uname -m)-linux-gnu)
                 [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && build_arch="${build_arch}eabihf"    
                 build_osid=0
-                if [ -n "$(which getprop)" ];then
+                if [ -n "$(command -v getprop)" ];then
                     build_osid=0
                     build_cpuid=$(get_cpuid $(uname -m))
                     build_arch=$(echo $(uname -m)-linux-android)
@@ -59,7 +59,7 @@ aptInstall(){
 
 # usage: check4Pkg label binName pkgName
 checkPackage(){
-    if [ $(which ${2}) ];then
+    if [ $(command -v ${2}) ];then
         local v0=$(apt-cache policy ${3} | grep -Po '(Installed:).\K.*')
         local v1=$(apt-cache policy ${3} | grep -Po '(Candidate:).\K.*')
         if [ $v0=$v1 ]; then
@@ -95,7 +95,7 @@ check4Pkg(){
             [ $ca=y ] && tput rc && shift && aptInstall --nover $@
         fi
     else
-        if [ $(which $2) ];then
+        if [ $(command -v $2) ];then
             local v0=$(dpkg-query -W ${3} 2>/dev/null | cut -f2)
             local v1=$(apt-cache madison ${3} | head -n1 | cut -d'|' -f2 | xargs)
             #local v0=$(apt-cache policy ${3} | grep -Po '(Installed:).\K.*')
@@ -131,7 +131,7 @@ installNdk(){
     local dhome
     local dparent
     local url=$(getAndroidNdkLatestDownloadUrl)
-    [ $(which unzip) ] || sudo apt -qq install unzip -y >/dev/null 2>&1
+    [ $(command -v unzip) ] || sudo apt -qq install unzip -y >/dev/null 2>&1
     echo -ne "${CM0} downloading... ${url}${C0}"
     tput sc && echo -ne "\e[$(tput lines);0H${CY1}"
 
@@ -269,7 +269,7 @@ writeConfig(){
     case "$(uname -s)" in
         Linux)  build_arch=$(echo $(uname -m)-linux-gnu)
         [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && build_arch="${build_arch}eabihf"    
-        if [ -n "$(which getprop)" ];then
+        if [ -n "$(command -v getprop)" ];then
             build_arch=$(echo $(uname -m)-linux-android)
             export API=$(getprop ro.build.version.sdk)
         fi
@@ -288,10 +288,10 @@ writeConfig(){
            ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64" \\
            xv_ndk="${xv_ndk}" \\
            xv_ndk_major="${xv_ndk%%.*}" \\
-           MAKE_EXECUTABLE="$(which make)" \\
-           CMAKE_EXECUTABLE="$(which cmake)" \\
-           NASM_EXECUTABLE="$(which nasm)" \\
-           PKG_CONFIG="$(which pkg-config)" \\
+           MAKE_EXECUTABLE="$(command -v make)" \\
+           CMAKE_EXECUTABLE="$(command -v cmake)" \\
+           NASM_EXECUTABLE="$(command -v nasm)" \\
+           PKG_CONFIG="$(command -v pkg-config)" \\
            HOST_NPROC="$(nproc)" \\
            LLVM_MINGW_HOME="${llvm_mingw}" \\
            LLVM_MINGW_REL="${llvm_mingw_rel}" \\

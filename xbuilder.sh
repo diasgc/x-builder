@@ -15,7 +15,7 @@ if [ -z ${vsh+x} ];then
   trap err ERR
 fi
 
-sudo=$(which sudo)
+sudo=$(command -v sudo)
 # defvar debug=false 
 : "${debug:=false}"
 : "${nodev:=false}"
@@ -162,7 +162,7 @@ pkgInfo(){
     echo -ne "${CT0}build deps: "
     tput sc; echo -ne "${CD}$tls "; tput rc
     for t in ${tls}; do
-      if [ -z $(which ${t}) ];then
+      if [ -z $(command -v ${t}) ];then
         aptInstall ${t} || {
           echo -ne "${CR1}${t} ${C0}" && doErr "Unable to install ${t}, aborting..."
         }
@@ -768,8 +768,8 @@ check_tool_dependency(){
   if [ -n "$1" ];then
     nm=$1
     [ -n "$2" ] && pk=$2 || pk=$1
-    [ -z $(which $nm) ] && aptInstall $pk
-    nm=$(which $nm)
+    [ -z $(command -v $nm) ] && aptInstall $pk
+    nm=$(command -v $nm)
   fi
   echo $nm
 }
@@ -786,14 +786,14 @@ check_tools(){
       autotools )  chkAutotools && continue;;
       * ) ;;
     esac
-    [ -z $(which $toolname) ] && aptInstall $toolpkg
+    [ -z $(command -v $toolname) ] && aptInstall $toolpkg
     shift
   done
 }
 
 # usage: chkTools tools...
 chkAutotools(){
-  if [ -z $(which automake) ];then
+  if [ -z $(command -v automake) ];then
     tput sc
     $sudo apt -qq install automake autogen autoconf m4 libtool-bin -y >/dev/null 2>&1 
     tput rc
@@ -969,7 +969,7 @@ git_clone(){
 }
 
 do_svn(){
-  [ $(which svn) ] || aptInstall subversion || err
+  [ $(command -v svn) ] || aptInstall subversion || err
   local var="svn"
   echo -ne "${CD}${var}"
   svn checkout $1 $2 >/dev/null || err
@@ -977,7 +977,7 @@ do_svn(){
 }
 
 do_hg(){
-  [ $(which hg) ] || aptInstall mercurial || err
+  [ $(command -v hg) ] || aptInstall mercurial || err
   do_log 'clone' hg clone $1 $2
 }
 
@@ -1017,7 +1017,7 @@ wget_tarxx(){
   
   case $src in
     *.tar.lz) 
-      test -z $(which lzip) && aptInstall lzip
+      test -z $(command -v lzip) && aptInstall lzip
       args="--lzip -xv"
       ;;
     *.tar.gz|*.tgz) args="-xvz";;
@@ -1047,7 +1047,7 @@ wget_tar(){
   echo "$(date): $@" >> "${log_file}"
   case $sty in
     tlz|tar_lz) 
-      test -z $(which lzip) && aptInstall lzip
+      test -z $(command -v lzip) && aptInstall lzip
       ags="--lzip -xv"
       ;;
     tgz|tar_gz) args="-xvz";;
@@ -1060,7 +1060,7 @@ wget_tar(){
 }
 
 getZip(){
-  [ -z $(which unzip) ] && aptInstall unzip
+  [ -z $(command -v unzip) ] && aptInstall unzip
   log download
   wget $1 -O tmp.zip || err
   log extract unzip tmp.zip
@@ -1140,7 +1140,7 @@ checkUrl(){
 }
 
 checkCmd(){
-  [ -z "$(which $1)"] $sudo apt -qq install $1 -y >/dev/null 2>&1
+  [ -z "$(command -v $1)"] $sudo apt -qq install $1 -y >/dev/null 2>&1
 }
 
 downloadP(){
@@ -1155,7 +1155,7 @@ download(){
   # bsdtar from stdin doesn't extract file +x permission
   # wget -qO- $1 | bsdtar -xvf- >/dev/null 2>&1
   echo -ne " ${CD}checking tools"
-  test -z $(which unzip) && aptInstallBr unzip
+  test -z $(command -v unzip) && aptInstallBr unzip
   echo -ne " ${CS0}downloading..."
   tput sc && echo -ne "\e[$(tput lines);0H${CY1}"
   wget --progress=dot $1 -O tmp.zip 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\r%4s %s eta:%s  ",$2,$1,$4)}'
@@ -1457,7 +1457,7 @@ prompt_remove(){
 showBanner(){
   if $banner; then
     echo -ne "\n\n${ind}${CW}Cross Builder Scripts ${vsh} for Linux${C0}\n${ind}"
-    [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
+    [ -n $(command -v lsb_release) ] && echo -ne "$(lsb_release -sd) "
     if [ -n "$(uname -r | grep 'microsoft')" ];then
       echo -ne "WSL2 "
     elif [ -n "$(uname -r | grep 'Microsoft')" ];then

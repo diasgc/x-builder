@@ -27,8 +27,7 @@ build_patch_config(){
 	"INSTALL_PLUGINS_DIR=${INSTALL_DIR}/lib" \
 	"INSTALL_INCLUDE_DIR=${INSTALL_DIR}/include" \
 	"INSTALL_BINARY_DIR=${INSTALL_DIR}/bin")
-	#doLog 'clean' make clean
-	#sed '/pattern1/,/pattern2/s//& INSERT THIS TEXT/g' inputFile
+
 	sed -i "s|-I.$|-I. -I$LIBSDIR/include|g" Makefile
 	sed -i "s|-ldl -lm -lsndfile|-ldl -lm -L$LIBSDIR/lib -lsndfile|g" Makefile
 	sed -i "s|-Werror|-Wno-error|g" Makefile

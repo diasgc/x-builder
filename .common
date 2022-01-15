@@ -50,7 +50,7 @@ hwinfoProcessor(){
 banner(){
     echo -ne "\n\n  ${CW}${1} for X-Builder ${vsh}${C0}\n  "
     echo -ne "Running on $(uname -m) $(uname -o) "
-    [ -n $(which lsb_release) ] && echo -ne "$(lsb_release -sd) "
+    [ -n $(command -v lsb_release) ] && echo -ne "$(lsb_release -sd) "
     if [ -n "$(uname -r | grep 'microsoft')" ];then
         echo -ne "${CD}WSL2 "
     elif [ -n "$(uname -r | grep 'Microsoft')" ];then
@@ -348,7 +348,7 @@ wget_untar(){
   local args
   case $1 in
     *.tar.lz) 
-      [ -z $(which lzip) ] || exit 1
+      [ -z $(command -v lzip) ] || exit 1
       args="--lzip -xv"
       ;;
     *.tar.gz|*.tgz) args="-xvz";;

@@ -9,29 +9,28 @@ apt="${lib}-dev"
 dsc='Jack Audio Connection Kit: a low-latency synchronous callback-based media server'
 lic='GPL-2.0'
 src='https://github.com/jackaudio/jack2.git'
-sty='git'
 cfg='waf'
 tls='python'
 eta='30'
 
 . xbuilder.sh
 
-CFG="--prefix=${INSTALL_DIR} --doxygen=no"
+CFG="--prefix=${dir_install} --doxygen=no"
 
 build_clean(){
-  doLog 'clean' $SRCDIR/waf distclean
+  do_log 'clean' $dir_src/waf distclean
 }
 build_config(){
-  doLog 'config' $SRCDIR/waf configure $CFG
+  do_log 'config' $dir_src/waf configure $CFG
 }
 build_make(){
-  $SRCDIR/waf build $CFG
+  $dir_src/waf build $CFG
 }
 build_install(){
-  $SRCDIR/waf install --prefix=${INSTALL_DIR}
+  $dir_src/waf install --prefix=${dir_install}
 }
 build_make_package(){
-  $SRCDIR/waf install --prefix=${1}
+  $dir_src/waf install --prefix=${1}
 }
 
 start

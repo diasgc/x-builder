@@ -4,7 +4,6 @@ lib='expat'
 dsc='Fast streaming XML parser written in C'
 lic=''
 src='https://github.com/libexpat/libexpat.git'
-#sty='git'
 cfg='ac'
 eta='77'
 config_dir="expat"

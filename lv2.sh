@@ -16,27 +16,26 @@ eta='19'
 
 . xbuilder.sh
 
-CFG="--prefix=${INSTALL_DIR} --no-plugins"
+CFG="--prefix=${dir_install} --no-plugins"
+
 source_config(){
-  pushdir $SRCDIR
-  doLog 'prepare' git submodule update --init --recursive
-  popdir
+  do_log 'prepare' git submodule update --init --recursive
 }
 
 build_clean(){
-  doLog 'clean' $SRCDIR/waf distclean
+  do_log 'clean' $dir_src/waf distclean
 }
 build_config(){
-  doLog 'config' $SRCDIR/waf configure $CFG
+  do_log 'config' $dir_src/waf configure $CFG
 }
 build_make(){
-  $SRCDIR/waf build $CFG
+  $dir_src/waf build $CFG
 }
 build_install(){
-  $SRCDIR/waf install --prefix=${INSTALL_DIR}
+  $dir_src/waf install --prefix=${dir_install}
 }
 build_make_package(){
-  $SRCDIR/waf install --destdir=${1}
+  $dir_src/waf install --destdir=${1}
 }
 
 start

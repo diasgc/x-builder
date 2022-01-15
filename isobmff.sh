@@ -24,8 +24,6 @@ CFLAGS="$CFLAGS $xinclude" CXXFLAGS="$CXXFLAGS $xinclude" CPPFLAGS="$CPPFLAGS $x
 #mkf="libisoiff isoiff_tool"
  
 source_patch(){
-    pushdir $SRCDIR
-    doLog 'submodule' git submodule update --init --recursive
-    popdir
+    git submodule update --init --recursive
 }
 start

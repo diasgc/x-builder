@@ -10,7 +10,6 @@ apt='liblz4-dev'
 dsc='Fast LZ compression algorithm library'
 lic='BSD-2c GPL2.0'
 src="https://github.com/lz4/lz4.git"
-sty='git'
 cfg='mk'
 eta='10'
 
@@ -20,10 +19,10 @@ CFG="CC=${CC} CXX=${CXX}"
 
 build_install(){
 	# INSTALL_DIR collides with internal Makefile variable, better unset
-	local id=$INSTALL_DIR
-	unset INSTALL_DIR
-	pushdir $SRCDIR
-	doLog 'install' ${MAKE_EXECUTABLE} prefix=${id} install
+	#local id=$dir_install
+	#unset INSTALL_DIR
+	pushdir $dir_src
+	do_log 'install' ${MAKE_EXECUTABLE} prefix=${dir_install} install
 	mkd="prefix=$(build_packages_getdistdir) install"
 	mkd_suffix="/"
 	popdir

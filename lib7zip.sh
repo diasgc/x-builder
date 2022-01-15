@@ -8,7 +8,6 @@ lib='lib7zip'
 dsc='c++ library wrapper of 7zip'
 lic='MLP-2.0'
 src='https://github.com/stonewell/lib7zip.git'
-sty='git'
 cfg='ccm'
 
 eta='1095'
@@ -16,8 +15,7 @@ eta='1095'
 . xbuilder.sh
 
 source_config(){
-    pushd ${lib}
-    doLog 'init' git submodule init && git submodule update
+    git submodule init && git submodule update
 }
 
 start
