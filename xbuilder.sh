@@ -441,7 +441,7 @@ start(){
   fi
 
 
-  [ -z ${mki} ] && mki="install"
+  [ -z "${mki}" ] && mki="install"
   if fn_defined 'build_install'; then
     do_log 'install' build_install
   else

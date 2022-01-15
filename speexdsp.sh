@@ -9,8 +9,7 @@ apt='libspeexdsp-dev'
 dsc='Speexdsp is a speech processing library that goes along with the Speex codec'
 lic='BSD'
 src='https://github.com/xiph/speexdsp.git'
-sty='git'
-cfg='ag'
+#cfg='ag'
 eta='91'
 
 . xbuilder.sh

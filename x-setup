@@ -15,6 +15,21 @@ clear
 
 #
 
+check_install(){
+    for p in $@; do
+        printf "${CH}%-20s: ${C0}%s\n" "  $p" "$(${cmd_apt_install} $p -y 2>/dev/null | grep $p | sed "s/^$p//" | head -n1)"
+    done
+}
+
+# first-time load common functions
+[ -z ${vsh+x} ] && . .common
+CH=${CC0}
+# load config
+[ -f ".config" ] && . .config
+
+force=false
+cmd_apt_install="sudo apt install"
+
 case $1 in
     --git-cleanup)
         echo -e "size before cleanup: $(du -s .git)\n"
@@ -26,14 +41,9 @@ case $1 in
         echo -e "size after cleanup: $(du -s .git)\n"
         exit 0
         ;;
+    --force) force=true;;
+    --install) shift; check_install $@; exit 0;;
 esac
-
-
-# first-time load common functions
-[ -z ${vsh+x} ] && . .common
-CH=${CC0}
-# load config
-[ -f ".config" ] && . .config
 
 echo -e "\n${CC1}This Machine:"
 [ -z "${build_arch}" ] && build_arch=$(gcc -dumpmachine)
@@ -82,71 +92,73 @@ if [ -n "$(which clang)" ]; then
     #done
 fi
 
-echo -e "\n${CC1}Android NDK:"
-if [ -z "${ANDROID_NDK_HOME}" ]; then
-    ndk_clang_bin_dir=$(find ~ -name "aarch64-linux-android30-clang")
-    if [ -z "${ndk_clang_bin_dir}" ]; then
-        echo -e "not found. Install?"; read -p "[Y|n]" pndk
-        case $pndk in y|Y)
-            # install android-ndk
-            [ -z "$(which unzip)" ] && sudo apt install unzip
-            local od=$(pwd)
-            cd ~
-            # get latest version
-            local url=$(wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip" | tail -n1)
-            # download latest version
-            wget $url -qO tmp 2>&1
-            local fname=$(basename $url)
-            unzip tmp
-            rm -f $fname
-            mv ${fname%.*} android-ndk
-            export ANDROID_NDK_HOME="$(pwd)/android-ndk"
-            cd $od
-            ;;
-        esac
-    fi
-fi
-if [ -n "${ANDROID_NDK_HOME}" ]; then
-    printf "${CH}%-20s: ${C0}%s\n" "  found at" ${ANDROID_NDK_HOME}
-    ndk_version=$(cat ${ANDROID_NDK_HOME}/source.properties | grep "^Pkg.Revision = " | sed 's/Pkg.Revision = //')
-    printf "${CH}%-20s: ${C0}%s " '  version' $ndk_version
-    
-    ndk_version_latest=$(wget -qO- https://developer.android.com/ndk/downloads | grep ndkVersion | tr ' ' '\n' | tail -n1 | sed 's/"//g')
-    if [ "${ndk_version}" == "${ndk_version_latest}" ]; then
-        echo -e "(updated)"
-    else
-        echo -e "${CY1} latest is ${ndk_version_latest}${C0}"
-    fi
-    
-    ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-$(uname -m)"
-    ndk_sysroot="${ndk_toolchain}/sysroot"
-    ndk_clang_version=$(${ndk_toolchain}/bin/clang --version | grep -o 'clang version [0-9]*.[0-9]*.[0-9]*')
-    printf "${CH}%-20s: ${C0}%s\n" '  clang' "$ndk_clang_version"
-
-    # check and create symlinks in toolchains dir if needed
-    for cl in aarch64 arm i686 x86_64; do
-        for e in ar nm addr2line objcopy objdump ranlib readelf size strings strip windres; do
-            v="${dir_toolchain}/${cl}-linux-android-${e}"
-            [ ! -f "${v}" ] && ln -s "${ndk_toolchain}/bin/llvm-${e}" "${v}" 2>/dev/null
-        done
-        if [ "${cl}" == "arm" ]; then
-            cpuv=v7a
-            eabi=eabi
-        else
-            cpuv=
-            eabi=
+if [ "${OSTYPE}" != "linux-android" ];then
+    echo -e "\n${CC1}Android NDK:"
+    if [ -z "${ANDROID_NDK_HOME}" ]; then
+        ndk_clang_bin_dir=$(find ~ -name "aarch64-linux-android30-clang")
+        if [ -z "${ndk_clang_bin_dir}" ]; then
+            echo -e "not found. Install?"; read -p "[Y|n]" pndk
+            case $pndk in y|Y)
+                # install android-ndk
+                [ -z "$(which unzip)" ] && sudo apt install unzip
+                local od=$(pwd)
+                cd ~
+                # get latest version
+                local url=$(wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip" | tail -n1)
+                # download latest version
+                wget $url -qO tmp 2>&1
+                local fname=$(basename $url)
+                unzip tmp
+                rm -f $fname
+                mv ${fname%.*} android-ndk
+                export ANDROID_NDK_HOME="$(pwd)/android-ndk"
+                cd $od
+                ;;
+            esac
         fi
-        [ ! -f "${dir_toolchain}/${cl}-linux-android-clang" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang"
-        [ ! -f "${dir_toolchain}/${cl}-linux-android-clang++" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang++ --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang++ \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang++"
-        [ ! -f "${dir_toolchain}/${cl}-linux-android-as" ] && ln -s "${ndk_toolchain}/bin/arm-linux-androideabi-as" "${dir_toolchain}/${cl}-linux-android-as" 2>/dev/null
-        [ ! -f "${dir_toolchain}/${cl}-linux-android-ld" ] && ln -s "${ndk_toolchain}/bin/lld" "${dir_toolchain}/${cl}-linux-android-ld"
-	    [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/libpthread.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/libpthread.a"
-        [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/librt.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/librt.a"
-    done
-    printf "${CH}%-20s: ${C0}%s\n" '  toolchain slinks' ok
-    [ ! -f "${ndk_sysroot}/usr/include/sys/soundcard.h" ] && printf "#include <linux/soundcard.h>" >"${ndk_sysroot}/usr/include/sys/soundcard.h"
-else
-    echo -e "  not installed"
+    fi
+    if [ -n "${ANDROID_NDK_HOME}" ]; then
+        printf "${CH}%-20s: ${C0}%s\n" "  found at" ${ANDROID_NDK_HOME}
+        ndk_version=$(cat ${ANDROID_NDK_HOME}/source.properties | grep "^Pkg.Revision = " | sed 's/Pkg.Revision = //')
+        printf "${CH}%-20s: ${C0}%s " '  version' $ndk_version
+        
+        ndk_version_latest=$(wget -qO- https://developer.android.com/ndk/downloads | grep ndkVersion | tr ' ' '\n' | tail -n1 | sed 's/"//g')
+        if [ "${ndk_version}" == "${ndk_version_latest}" ]; then
+            echo -e "(updated)"
+        else
+            echo -e "${CY1} latest is ${ndk_version_latest}${C0}"
+        fi
+        
+        ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-$(uname -m)"
+        ndk_sysroot="${ndk_toolchain}/sysroot"
+        ndk_clang_version=$(${ndk_toolchain}/bin/clang --version | grep -o 'clang version [0-9]*.[0-9]*.[0-9]*')
+        printf "${CH}%-20s: ${C0}%s\n" '  clang' "$ndk_clang_version"
+
+        # check and create symlinks in toolchains dir if needed
+        for cl in aarch64 arm i686 x86_64; do
+            for e in ar nm addr2line objcopy objdump ranlib readelf size strings strip windres; do
+                v="${dir_toolchain}/${cl}-linux-android-${e}"
+                [ ! -f "${v}" ] && ln -s "${ndk_toolchain}/bin/llvm-${e}" "${v}" 2>/dev/null
+            done
+            if [ "${cl}" == "arm" ]; then
+                cpuv=v7a
+                eabi=eabi
+            else
+                cpuv=
+                eabi=
+            fi
+            [ ! -f "${dir_toolchain}/${cl}-linux-android-clang" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang"
+            [ ! -f "${dir_toolchain}/${cl}-linux-android-clang++" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang++ --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang++ \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang++"
+            [ ! -f "${dir_toolchain}/${cl}-linux-android-as" ] && ln -s "${ndk_toolchain}/bin/arm-linux-androideabi-as" "${dir_toolchain}/${cl}-linux-android-as" 2>/dev/null
+            [ ! -f "${dir_toolchain}/${cl}-linux-android-ld" ] && ln -s "${ndk_toolchain}/bin/lld" "${dir_toolchain}/${cl}-linux-android-ld"
+            [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/libpthread.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/libpthread.a"
+            [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/librt.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/librt.a"
+        done
+        printf "${CH}%-20s: ${C0}%s\n" '  toolchain slinks' ok
+        [ ! -f "${ndk_sysroot}/usr/include/sys/soundcard.h" ] && printf "#include <linux/soundcard.h>" >"${ndk_sysroot}/usr/include/sys/soundcard.h"
+    else
+        echo -e "  not installed"
+    fi
 fi
 
 echo -e "\n${CC1}LLVM MINGW:"
@@ -201,3 +213,12 @@ if [ -n "${LLVM_MINGW_HOME}" ]; then
     done
     printf "${CH}%-20s: ${C0}%s\n" '  toolchain slinks' ok
 fi
+
+echo -e "\n${CC1}${b} Build tools${C0}"
+check_install make cmake cmake-curses-gui build-essential automake autoconf autogen autopoint libtool-bin m4 nasm yasm pkg-config
+
+echo -e "\n${CC1}${b} Repository tools${C0}"
+check_install git subversion lzip unzip
+
+echo -e "\n${CC1}${b} Other tools${C0}"
+check_install gperf bison texinfo patch jq

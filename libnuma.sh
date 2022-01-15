@@ -9,7 +9,8 @@ cfg='ac'
 eta='90'
 pkg='numa'
 eta='30'
-#API=26 # min api necessary for declaration of functions like 'shmget'
+mki=install
+API=26 # min api necessary for declaration of functions like 'shmget'
 
 . xbuilder.sh
 
