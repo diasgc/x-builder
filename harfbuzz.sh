@@ -18,7 +18,7 @@ eta='400'
 
 case $build_tool in
 	cmake)      $build_bin && CBN="-DHB_BUILD_UTILS=ON";;
-	automake)   CFG="--with-libstdc++=yes --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no"";;
+	automake)   CFG="--with-libstdc++=yes --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no";;
 esac
 
 start

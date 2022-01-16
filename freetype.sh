@@ -11,7 +11,7 @@ dsc='A free, high-quality, and portable font engine.'
 lic='BSD'
 src='https://git.savannah.nongnu.org/r/freetype/freetype2.git'
 cfg='ag'
-dep='libpng brotli bzip2 harfbuzz'
+dep='libpng brotli bzip2'
 eta='60'
 #cmake_path="lib/cmake/freetype"
 

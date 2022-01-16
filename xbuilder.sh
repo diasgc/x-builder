@@ -1579,7 +1579,7 @@ while [ $1 ];do
     --help|-h)  showBanner; usage; exit 0
       ;;
     
-    --full|--all) build_shared=true; build_static=true; build_bin=true; build_dist=true; dep_build="--both --bin";;
+    --full|--all) build_shared=true; build_static=true; build_bin=true; build_dist=true; dep_build="--full";;
     --shared)   build_shared=true; build_static=false;;
     --static)   build_static=true; build_shared=false;;
     --both)     build_static=true; build_shared=true;;
