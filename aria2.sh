@@ -10,7 +10,7 @@ lic='GLP-2.0'
 src='https://github.com/aria2/aria2.git'
 url='https://aria2.github.io/'
 cfg='ar'
-dep='gmp nettle expat gnutls libssh2 libsqlite3 libcares'
+dep='openssl expat libssh2 libsqlite3 libcares'
 eta='0'
 
 $host_ndk && CFG="--disable-nls --without-gnutls --with-openssl --without-sqlite3 --without-libxml2 --with-libexpat --with-libcares --with-libz --with-libssh2"
