@@ -16,8 +16,20 @@ clear
 #
 
 check_install(){
+    local v0
+    local v1
     for p in $@; do
-        printf "${CH}%-20s: ${C0}%s\n" "  $p" "$(${cmd_apt_install} $p -y 2>/dev/null | grep $p | sed "s/^$p//" | head -n1)"
+        v0=$(dpkg-query -W $p 2>/dev/null | cut -f 2)
+        v1=$(apt-cache madison $p | cut -d '|' -f 2 | xargs)
+        if [ -z "${v0}" ];then
+            printf "${CH}%-20s: ${C0}%s\n" "  $p" "installing..."
+            printf "$(${cmd_apt_install} $p -y 2>/dev/null | grep $p | sed "s/^$p//" | head -n1)\n"
+        elif [ "${v1}" == "${v0}" ]; then
+            printf "${CH}%-20s: ${C0}%s\n" "  $p" "${v0}"
+        else
+            printf "${CH}%-20s: ${C0}%s" "  $p" "${v0} upgrading to..."
+            printf "$(${cmd_apt_install} $p -y 2>/dev/null | grep $p | sed "s/^$p//" | head -n1)\n"
+        fi  
     done
 }
 
@@ -215,7 +227,7 @@ if [ -n "${LLVM_MINGW_HOME}" ]; then
 fi
 
 echo -e "\n${CC1}${b} Build tools${C0}"
-check_install make cmake cmake-curses-gui build-essential automake autoconf autogen autopoint libtool-bin m4 nasm yasm pkg-config
+check_install make cmake cmake-curses-gui meson build-essential automake autoconf autogen autopoint libtool-bin m4 nasm yasm pkg-config
 
 echo -e "\n${CC1}${b} Repository tools${C0}"
 check_install git subversion lzip unzip
