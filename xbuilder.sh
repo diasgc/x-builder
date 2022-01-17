@@ -709,35 +709,20 @@ cmake_create_toolchainfile(){
     set(CMAKE_SYSTEM_PROCESSOR "${target_trip[0]}${target_trip[1]}")
     set(CMAKE_C_COMPILER ${CC})
     set(CMAKE_CXX_COMPILER ${CXX})
-    set(CMAKE_FIND_ROOT_PATH ${SYSROOT}/usr
-        ${SYSROOT}/usr/lib/${arch}
-        ${SYSROOT}/usr/lib/${arch}/${API}
-        ${dir_install})
-    ${cmake_tcf_arch}
-
-        set(CMAKE_SYSTEM_NAME Linux)
-    set(CMAKE_SYSTEM_PROCESSOR ${XB_CPU})
-    if(XB_HOST MATCHES "^a")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
-            /usr/lib/gcc-cross/${XB_HOST}/${XB_ARMLINUX_TCVERSION}
-            ${XB_INSTALL}})
-    elseif(XB_HOST MATCHES "^i")
-        set(CMAKE_SYSTEM_PROCESSOR "x86")
-        set(CMAKE_C_COMPILER_ARG1 "-m32")
-        set(CMAKE_CXX_COMPILER_ARG1 "-m32")
-        set(CMAKE_FIND_ROOT_PATH /usr/${XB_HOST}
-            /usr/lib/gcc-cross/${XB_HOST}/${XB_X86LINUX_TCVERSION}
-            ${XB_INSTALL})
-    endif()
-    if(XB_HOST MATCHES "^x86_64")
-        set(CMAKE_C_COMPILER gcc)
-        set(CMAKE_CXX_COMPILER g++)
-    else()
-        set(CMAKE_C_COMPILER ${XB_HOST}-gcc)
-        set(CMAKE_CXX_COMPILER ${XB_HOST}-g++)
-        set(CMAKE_AR ${XB_HOST}-ar CACHE FILEPATH Archiver)
-        set(CMAKE_RANLIB ${XB_HOST}-ranlib CACHE FILEPATH Indexer)
-    endif()
+    ${cmake_findrootpath}
+EOF
+  $host_ndk && cat <<-EOF >>${cmake_toolchain_file}
+    set(ANDROID_ABI ${target_trip[5]}
+    set(ANDROID_PLATFORM ${API})
+    set(ANDROID_NDK ${ANDROID_NDK_HOME})
+    set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)
+    set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${arch})
+    set(ZLIB_VERSION_STRING 1.2.11)\n
+    include(\${CMAKE_TOOLCHAIN})"
+EOF
+  [ "${arch}" == "i686-linux-gnu" ] && cat <<-EOF >>${cmake_toolchain_file}
+    set(CMAKE_C_COMPILER_ARG1 "-m32")
+    set(CMAKE_CXX_COMPILER_ARG1 "-m32")
 EOF
 }
 
@@ -1258,13 +1243,17 @@ loadToolchain(){
       LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
       YASM=${TOOLCHAIN}/bin/yasm
+      cmake_findrootpath="${SYSROOT}/usr
+        ${SYSROOT}/usr/lib/${arch}
+        ${SYSROOT}/usr/lib/${arch}/${API}
+        ${dir_install}"
       cmake_tcf_arch="set(ANDROID_ABI ${target_trip[5]})\n
-    set(ANDROID_PLATFORM ${API})\n
-    set(ANDROID_NDK ${ANDROID_NDK_HOME})\n
-    set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)\n
-    set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${XB_HOST})\n
-    set(ZLIB_VERSION_STRING 1.2.11)\n
-    include(${CMAKE_TOOLCHAIN})"
+        set(ANDROID_PLATFORM ${API})\n
+        set(ANDROID_NDK ${ANDROID_NDK_HOME})\n
+        set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)\n
+        set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${XB_HOST})\n
+        set(ZLIB_VERSION_STRING 1.2.11)\n
+        include(${CMAKE_TOOLCHAIN})"
       ;;
     Linux)
       local cross
@@ -1292,6 +1281,14 @@ loadToolchain(){
       [ -n "$ltsdir" ] && LT_SYS_LIBRARY_PATH="/usr/lib/gcc${cross}/${arch}/${ltsdir}"
       LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       CPPFLAGS+=" -I/usr/include -I/usr/local/include"
+      cmake_findrootpath="${SYSROOT}/usr/${arch}
+        ${SYSROOT}/usr/lib/gcc${cross}/${arch}/${ltsdir}
+        ${dir_install}"
+      cmake_tcf_arch="if(\${CMAKE_SYSTEM_PROCESSOR} MATCHES \"^i\")\n \
+        set(CMAKE_C_COMPILER_ARG1 \"-m32\")\n\
+        set(CMAKE_CXX_COMPILER_ARG1 \"-m32\")\n
+      endif()"
+    endif()
       ;;
     Windows)
       local ltsdir
