@@ -33,6 +33,7 @@ sudo=$(command -v sudo)
 : "${dep_build:=--static}"
 : "${build_strip:=true}"
 : "${API:=24}"
+: "${def_build_sys:=meson}"
 
 $req_update_deps && update=true
 pkg_fmt="tgz"
@@ -62,8 +63,8 @@ logtime_start=0
 logtime_end=0
 
 export ROOTDIR=$(pwd)
-export target_trip=
 export CPPFLAGS=
+export target_trip=
 export dir_sources="${ROOTDIR}/sources"
 export dir_src="${dir_sources}/${lib}"
 export dir_pkgdist="${ROOTDIR}/packages"
@@ -97,6 +98,7 @@ export SRCDIR=${dir_src}
 # xv_x64_mingw (10)
 # 
 xv_x86_mingw="10"
+
 aptInstallBr(){
   while [ -n "$1" ];do
     echo -ne "${ind}${CT0}install $1${C0} "
@@ -709,8 +711,21 @@ cmake_create_toolchainfile(){
     set(CMAKE_SYSTEM_PROCESSOR "${target_trip[0]}${target_trip[1]}")
     set(CMAKE_C_COMPILER ${CC})
     set(CMAKE_CXX_COMPILER ${CXX})
+    set(CMAKE_AR ${AR} CACHE FILEPATH Archiver)
+    set(CMAKE_RANLIB ${RANLIV} CACHE FILEPATH Indexer)
+    set(CMAKE_C_COMPILER_AR "${CMAKE_AR}")
+    set(CMAKE_CXX_COMPILER_AR "${CMAKE_AR}")
+    set(CMAKE_C_COMPILER_RANLIB "${CMAKE_RANLIB}")
+    set(CMAKE_CXX_COMPILER_RANLIB "${CMAKE_RANLIB}")
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ALWAYS)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     ${cmake_findrootpath}
-EOF
+		EOF
+  $host_x86 && cat <<-EOF >>${cmake_toolchain_file}
+    set(CMAKE_C_COMPILER_ARG1 "-m32")
+    set(CMAKE_CXX_COMPILER_ARG1 "-m32")
+		EOF
   $host_ndk && cat <<-EOF >>${cmake_toolchain_file}
     set(ANDROID_ABI ${target_trip[5]}
     set(ANDROID_PLATFORM ${API})
@@ -719,11 +734,16 @@ EOF
     set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${arch})
     set(ZLIB_VERSION_STRING 1.2.11)\n
     include(\${CMAKE_TOOLCHAIN})"
-EOF
-  [ "${arch}" == "i686-linux-gnu" ] && cat <<-EOF >>${cmake_toolchain_file}
-    set(CMAKE_C_COMPILER_ARG1 "-m32")
-    set(CMAKE_CXX_COMPILER_ARG1 "-m32")
-EOF
+		EOF
+  $host_mingw && cat <<-EOF >>${cmake_toolchain_file}
+    set(CMAKE_COMPILER_IS_MINGW ON)
+    set(CMAKE_RC_COMPILER ${XB_CROSS_PREFIX}windres)
+    set(CMAKE_MC_COMPILER ${XB_CROSS_PREFIX}windmc)
+    set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
+    set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
+		EOF
 }
 
 cargo_create_toolchain(){
@@ -1247,13 +1267,7 @@ loadToolchain(){
         ${SYSROOT}/usr/lib/${arch}
         ${SYSROOT}/usr/lib/${arch}/${API}
         ${dir_install}"
-      cmake_tcf_arch="set(ANDROID_ABI ${target_trip[5]})\n
-        set(ANDROID_PLATFORM ${API})\n
-        set(ANDROID_NDK ${ANDROID_NDK_HOME})\n
-        set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)\n
-        set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${XB_HOST})\n
-        set(ZLIB_VERSION_STRING 1.2.11)\n
-        include(${CMAKE_TOOLCHAIN})"
+
       ;;
     Linux)
       local cross
@@ -1284,15 +1298,12 @@ loadToolchain(){
       cmake_findrootpath="${SYSROOT}/usr/${arch}
         ${SYSROOT}/usr/lib/gcc${cross}/${arch}/${ltsdir}
         ${dir_install}"
-      cmake_tcf_arch="if(\${CMAKE_SYSTEM_PROCESSOR} MATCHES \"^i\")\n \
-        set(CMAKE_C_COMPILER_ARG1 \"-m32\")\n\
-        set(CMAKE_CXX_COMPILER_ARG1 \"-m32\")\n
-      endif()"
-    endif()
       ;;
     Windows)
       local ltsdir
       PLATFORM='Windows'
+      AS="${CROSS_PREFIX}as"
+      LD="${CROSS_PREFIX}ld"
       if [ -n "${LLVM_MINGW_HOME}" ] && $use_llvm_mingw; then
         TOOLCHAIN="${LLVM_MINGW_HOME}/bin"
         SYSROOT="${LLVM_MINGW_HOME}/${arch}"
@@ -1302,6 +1313,7 @@ loadToolchain(){
         } || {
           CC="${CROSS_PREFIX}gcc" CXX="${CROSS_PREFIX}g++"
         }
+        LD+=".bfd"
         LT_SYS_LIBRARY_PATH="${LLVM_MINGW_HOME}/lib/clang/${xv_llvm_mingw}"
         CPPFLAGS+=" -I${LLVM_MINGW_HOME}/${arch}/include"
         LDFLAGS="-L${LT_SYS_LIBRARY_PATH}/lib -L${SYSROOT}/lib ${LDFLAGS}"
@@ -1315,7 +1327,7 @@ loadToolchain(){
         LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
         LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
       fi
-      LD="${CROSS_PREFIX}ld" AS="${CROSS_PREFIX}as"
+      cmake_findrootpath="${SYSROOT} ${LT_SYS_LIBRARY_PATH} ${dir_install}"
       export RC=${CROSS_PREFIX}windres
       ;;
   esac

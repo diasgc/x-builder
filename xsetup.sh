@@ -10,15 +10,28 @@ install=false
 install_all=false
 ndk_requestupdate=false
 
-#check config
+: "${sudo:=$(command -v sudo)}"
+# check command to install packages
+if [ -z "${cmd_apt_install}" ];then
+    if [ -f "$(command -v apt)" ];then
+        cmd_apt_install="${sudo} apt install"
+    elif [ -f "$(command -v pkg)" ]; then
+        cmd_apt_install="${sudo} pkg install"
+    elif [ -f "$(command -v brew)" ]; then
+        cmd_apt_install="${sudo} brew install"
+    else
+        doErr 'Unknown package installer command'
+    fi
+fi
+
+# check config
 if [ -z "${BUILD_ARCH}" ];then
     case "$(uname -s)" in
-        Linux)  build_arch=$(echo $(uname -m)-linux-gnu)
-                [ -n "$(grep -q BCM2708 /proc/cpuinfo)" ] && build_arch="${build_arch}eabihf"    
+        Linux)  build_arch=$(echo "$(uname -m)-${OSTYPE}")
                 build_osid=0
                 if [ -n "$(command -v getprop)" ];then
                     build_osid=0
-                    build_cpuid=$(get_cpuid $(uname -m))
+                    #build_cpuid=$(get_cpuid $(uname -m))
                     build_arch=$(echo $(uname -m)-linux-android)
                     export API=$(getprop ro.build.version.sdk)
                 fi
