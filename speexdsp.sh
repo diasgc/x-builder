@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='speexdsp'
 apt='libspeexdsp-dev'
@@ -16,9 +16,9 @@ eta='91'
 
 start
 
+
 # Filelist
 # --------
-
 # include/speex/speexdsp_config_types.h
 # include/speex/speex_echo.h
 # include/speex/speexdsp_types.h

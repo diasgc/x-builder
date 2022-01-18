@@ -7,10 +7,10 @@
 lib='liblzf'
 apt='liblzf1'
 dsc='General purpose data compression library'
-lic='?'
+lic='BSD-2c'
 vrs='3.6'
 src="http://dist.schmorp.de/liblzf/liblzf-${vrs}.tar.gz"
-cfg='ac'
+cfg='cmake'
 eta='10'
 
 pc_llib="-llzf"
@@ -22,10 +22,10 @@ lst_bin='lzf'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT}"
+#CFG="--with-sysroot=${SYSROOT}"
 
 
-build_patch_config(){
+_build_patch_config(){
   mkd="prefix=$(build_packages_getdistdir) install"
   mkd_suffix="/"
 }

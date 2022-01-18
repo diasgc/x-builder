@@ -701,49 +701,51 @@ cmake_include_directories(){
 
 # usage cmake_create_toolchain <dir>
 cmake_create_toolchain(){
-  export cmake_toolchain_file="${ROOTDIR}/xbuilder.cmake"
+  #export cmake_toolchain_file="${ROOTDIR}/xbuilder.cmake"
+  cmake_create_toolchainfile
 }
 
 cmake_create_toolchainfile(){
-  cmake_toolchain_file="${dir_build}/${arch}.cmake"
+  export cmake_toolchain_file="${dir_build}/${arch}.cmake"
   cat <<-EOF >${cmake_toolchain_file}
     set(CMAKE_SYSTEM_NAME "${PLATFORM}")
-    set(CMAKE_SYSTEM_PROCESSOR "${target_trip[0]}${target_trip[1]}")
+    set(CMAKE_SYSTEM_PROCESSOR "${cmake_system_processor}")
     set(CMAKE_C_COMPILER ${CC})
     set(CMAKE_CXX_COMPILER ${CXX})
     set(CMAKE_AR ${AR} CACHE FILEPATH Archiver)
-    set(CMAKE_RANLIB ${RANLIV} CACHE FILEPATH Indexer)
-    set(CMAKE_C_COMPILER_AR "${CMAKE_AR}")
-    set(CMAKE_CXX_COMPILER_AR "${CMAKE_AR}")
-    set(CMAKE_C_COMPILER_RANLIB "${CMAKE_RANLIB}")
-    set(CMAKE_CXX_COMPILER_RANLIB "${CMAKE_RANLIB}")
+    set(CMAKE_RANLIB ${RANLIB} CACHE FILEPATH Indexer)
+    set(CMAKE_C_COMPILER_AR "${AR}")
+    set(CMAKE_CXX_COMPILER_AR "${AR}")
+    set(CMAKE_C_COMPILER_RANLIB "${RANLIB}")
+    set(CMAKE_CXX_COMPILER_RANLIB "${RANLIB}")
     set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ALWAYS)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-    ${cmake_findrootpath}
+    set(CMAKE_FIND_ROOT_PATH ${cmake_findrootpath})
 		EOF
   $host_x86 && cat <<-EOF >>${cmake_toolchain_file}
     set(CMAKE_C_COMPILER_ARG1 "-m32")
     set(CMAKE_CXX_COMPILER_ARG1 "-m32")
 		EOF
   $host_ndk && cat <<-EOF >>${cmake_toolchain_file}
-    set(ANDROID_ABI ${target_trip[5]}
+    set(ANDROID_ABI ${ABI})
     set(ANDROID_PLATFORM ${API})
     set(ANDROID_NDK ${ANDROID_NDK_HOME})
     set(ZLIB_INCLUDE_DIRS ${SYSROOT}/usr/include)
     set(ZLIB_LIBRARIES ${SYSROOT}/usr/lib/${arch})
-    set(ZLIB_VERSION_STRING 1.2.11)\n
-    include(\${CMAKE_TOOLCHAIN})"
+    set(ZLIB_VERSION_STRING 1.2.11)
+    include(${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
 		EOF
   $host_mingw && cat <<-EOF >>${cmake_toolchain_file}
     set(CMAKE_COMPILER_IS_MINGW ON)
-    set(CMAKE_RC_COMPILER ${XB_CROSS_PREFIX}windres)
-    set(CMAKE_MC_COMPILER ${XB_CROSS_PREFIX}windmc)
-    set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
+    set(CMAKE_RC_COMPILER ${CROSS_PREFIX}windres)
+    set(CMAKE_MC_COMPILER ${CROSS_PREFIX}windmc)
+    set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 \${CMAKE_CXX_STANDARD_LIBRARIES}")
+    set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
     set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 		EOF
+  [ -n "${WFLAGS}" ] && echo "add_compile_options(\"${WFLAGS}\")" >>${cmake_toolchain_file}
 }
 
 cargo_create_toolchain(){
@@ -1225,6 +1227,14 @@ toolchain_android(){
   LT_SYS_LIBRARY_PATH="${SYSROOT}/usr/lib/$arch:${SYSROOT}/usr/lib/${arch}/${API}"
   CPPFLAGS+=" -I${SYSROOT}/usr/include -I${SYSROOT}/usr/include/${arch} -I${SYSROOT}/usr/local/include"
   LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+
+  cmake_system_processor="${target_trip[0]}${target_trip[1]}"
+  $host_arm32 && cmake_system_processor="armv7-a"
+  cmake_findrootpath="${SYSROOT}/usr
+        ${SYSROOT}/usr/lib/${arch}
+        ${SYSROOT}/usr/lib/${arch}/${API}
+        ${dir_install}"
+
 }
 
 loadToolchain(){
@@ -1239,7 +1249,7 @@ loadToolchain(){
   unset LIBS CFLAGS CXXFLAGS LDFLAGS WFLAGS
   CPPFLAGS+=" -I${dir_install_include}"
   LDFLAGS="-L${dir_install_lib}"
-
+  cmake_system_processor="${target_trip[0]}${target_trip[1]}"
 
 
   case $PLATFORM in
@@ -1251,7 +1261,10 @@ loadToolchain(){
       CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
       
       local ndk_cc_prefix=${arch}${API}
-      [ -n "$host_eabi" ] && ndk_cc_prefix="armv7a-linux-androideabi${API}"
+      if [ -n "$host_eabi" ]; then
+        ndk_cc_prefix="armv7a-linux-androideabi${API}"
+        cmake_system_processor="armv7-a"
+      fi
       CC="${TOOLCHAIN}/bin/${ndk_cc_prefix}-clang"
       CXX="${CC}++"
       AS="${CC}" #AS see https://developer.android.com/ndk/guides/other_build_systems

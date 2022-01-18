@@ -12,6 +12,7 @@ lic='copyleft'
 src='https://github.com/DanBloomberg/leptonica.git'
 cfg='am'
 dep='zlib libjpeg libpng libwebp libtiff giflib openjpeg'
+mki='install'
 eta='180'
 ac_nosysroot=true
 
