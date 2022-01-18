@@ -861,6 +861,13 @@ log_vars(){
   echo >>${log_file}
 }
 
+print_vars(){
+  while [ -n "$1" ]; do
+    printf "${CC0}%-20s: ${C0}%s\n" "  ${1}" ${!1}
+    shift
+  done
+}
+
 doErr(){
   echo -e "${CR1}  Error: ${CR0}${1}${C0}\n\n"
   if [ -f ${log_file} ];then
@@ -1398,6 +1405,15 @@ checkPkg(){
   return 0
 }
 
+list_tarball(){
+  local lf=$(ls -1 ${dir_pkgdist}/${lib}*${arch}.tar.gz 2>/dev/null | tail -n1)
+  if [ -z "${lf}" ] || [ ! -f "${lf}" ]; then
+    return 1
+  fi
+  tar -ztvf ${lf} | grep -e "[^/]$"
+  return 0
+}
+
 usage(){
   echo -e "$(
   cat <<-EOF
@@ -1534,6 +1550,18 @@ menu_get(){
   return 0
 }
 
+menu_list(){
+  local b=false
+  [ -n "${arch}" ] && [ -n "${lib}" ] && b=true
+  case $1 in
+    help)       printf "${CC0}%-20s: ${C0}%s\n" '  --list tar' 'list contents of tarball, if available'
+                printf "${CC0}%-20s: ${C0}%s\n" '  --list env' 'list environment variables';;
+    tar*)       $b && list_tarball;;
+    env)        $b && loadToolchain && print_vars CC CXX LD AS AR NM RANLIB STRIP ADDR2LINE OBJCOPY OBJDUMP READELF SIZE STRINGS WINDRES GCOV;;
+  esac
+  return 0
+}
+
 set_target(){
   cpu_id="${1}"
   target_trip=("${2}" "${3}" "${4}" "${5}" "${6}" "${7}" "${8}")
@@ -1631,6 +1659,8 @@ while [ $1 ];do
     --desc )    echo $dsc && exit 0;;
     
     --get)      shift; menu_get $@; exit 0;;
+
+    --list)     shift; menu_list $@; exit 0;;
       
     --clone)    only_repo=true;;   
     --cmake)    cfg='cmake';;
