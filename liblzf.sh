@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  -   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .  +++ clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='liblzf'
 apt='liblzf1'
@@ -26,6 +26,7 @@ lst_bin='lzf'
 start
 
 # Patch to generate config.h and CMakeLists.txt
+# Patch lzfP.h
 <<'XB64_PATCH'
 LS0tIENNYWtlTGlzdHMudHh0CTIwMjItMDEtMTggMTc6Mjk6MDEuNzc2Nzk5NTAwICswMDAwCisr
 KyBDTWFrZUxpc3RzLnR4dAkyMDIyLTAxLTE4IDE3OjI3OjQyLjMyNjc5OTUwMCArMDAwMApAQCAt
@@ -66,7 +67,14 @@ Ki8KKworLyogRGVmaW5lIGlmIHlvdSBoYXZlIHRoZSBBTlNJIEMgaGVhZGVyIGZpbGVzLiAgKi8K
 KyNkZWZpbmUgU1REQ19IRUFERVJTIDEKKworLyogVGhlIG51bWJlciBvZiBieXRlcyBpbiBhIGlu
 dC4gICovCisjZGVmaW5lIFNJWkVPRl9JTlQgNAorCisvKiBUaGUgbnVtYmVyIG9mIGJ5dGVzIGlu
 IGEgbG9uZy4gICovCisjZGVmaW5lIFNJWkVPRl9MT05HIDgKKworLyogVGhlIG51bWJlciBvZiBi
-eXRlcyBpbiBhIHNob3J0LiAgKi8KKyNkZWZpbmUgU0laRU9GX1NIT1JUIDI=
+eXRlcyBpbiBhIHNob3J0LiAgKi8KKyNkZWZpbmUgU0laRU9GX1NIT1JUIDIKLS0tIGx6ZlAuaAky
+MDIyLTAxLTE5IDAwOjI5OjE0LjgyNjAwMDAwMCArMDAwMAorKysgbHpmUC5oCTIwMjItMDEtMTkg
+MDA6MzA6MDYuMTk5MjQ3MzAwICswMDAwCkBAIC03OSw3ICs3OSwxMSBAQAogICogVW5jb25kaXRp
+b25hbGx5IGFsaWduaW5nIGRvZXMgbm90IGNvc3QgdmVyeSBtdWNoLCBzbyBkbyBpdCBpZiB1bnN1
+cmUKICAqLwogI2lmbmRlZiBTVFJJQ1RfQUxJR04KLSMgZGVmaW5lIFNUUklDVF9BTElHTiAhKGRl
+ZmluZWQoX19pMzg2KSB8fCBkZWZpbmVkIChfX2FtZDY0KSkKKyNpZiAhKGRlZmluZWQoX19pMzg2
+KSB8fCBkZWZpbmVkIChfX2FtZDY0KSkKKyMgZGVmaW5lIFNUUklDVF9BTElHTiAxCisjZWxzZQor
+IyBkZWZpbmUgU1RSSUNUX0FMSUdOIDAKKyNlbmRpZgogI2VuZGlmCiAKIC8qCg==
 XB64_PATCH
 
 # Filelist

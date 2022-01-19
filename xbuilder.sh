@@ -1268,7 +1268,7 @@ loadToolchain(){
       CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
       
       local ndk_cc_prefix=${arch}${API}
-      if [ -n "$host_eabi" ]; then
+      if $host_arm32; then
         ndk_cc_prefix="armv7a-linux-androideabi${API}"
         cmake_system_processor="armv7-a"
       fi
