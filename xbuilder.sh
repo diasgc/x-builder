@@ -1414,6 +1414,22 @@ list_tarball(){
   return 0
 }
 
+# USAGE: create_patch [b64] <rel_path_oldfile> [<rel_path_newfile>]
+create_patch(){  
+  local od=$(pwd); cd ${dir_sources}/${lib} || return 1
+  local arg
+  [ "${1}" == "b64" ] && arg="| base64 -w 72" && shift
+  case $# in
+    0) return 1;;
+    1) touch "${1}_"
+       diff -Naur "${1}_" "${1}" ${arg} >"${1}.patch"
+       ;;
+    *) diff -Naur "${1}" "${2}" ${arg} >"${2}.patch"
+       ;;
+  esac
+  cd $od
+}
+
 usage(){
   echo -e "$(
   cat <<-EOF
@@ -1661,6 +1677,8 @@ while [ $1 ];do
     --get)      shift; menu_get $@; exit 0;;
 
     --list)     shift; menu_list $@; exit 0;;
+
+    --patch)    shift; create_patch $@; exit 0;;
       
     --clone)    only_repo=true;;   
     --cmake)    cfg='cmake';;
