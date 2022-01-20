@@ -10,7 +10,7 @@ dsc='Reader for AES SOFA files to get better HRTFs'
 lic='BSD'
 src='https://github.com/hoene/libmysofa.git'
 cfg='cmake'
-dep='libcunit'
+dep='libcunit zlib'
 pkg='libmysofa'
 eta='60'
 
@@ -19,7 +19,7 @@ eta='60'
 # CMAKE OPTIONS (default): -DADDRESS_SANITIZE=OFF -DCODE_COVERAGE=OFF 
 
 CFG="-DBUILD_TESTS=OFF"
-[[ $arch = *mingw32 ]] && dep="$dep zlib"
+#$host_mingw && dep+=" zlib"
 
 start
 

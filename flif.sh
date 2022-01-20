@@ -27,7 +27,7 @@ config_dir='src'
 
 . xbuilder.sh
 
-CPPFLAGS="-Wno-sign-compare -Wno-type-limits $CPPFLAGS"
+CPPFLAGS+=" -Wno-sign-compare -Wno-type-limits"
 HOST_NPROC=16
 
 start

@@ -7,8 +7,9 @@
 lib='cpio'
 dsc='CPIO implementation from the GNU project'
 lic='GLP-2.0'
-src='https://ftp.gnu.org/gnu/cpio/cpio-latest.tar.gz'
-cfg='cmake'
+src='https://git.savannah.gnu.org/git/cpio.git'
+#src='https://ftp.gnu.org/gnu/cpio/cpio-latest.tar.gz'
+#cfg='bootstrap'
 eta='0'
 
 #options:
@@ -37,3 +38,12 @@ lst_bin=''
 . xbuilder.sh
 
 start
+
+# Filelist
+# --------
+# libexec/rmt
+# share/man/man1/cpio.1
+# share/man/man8/rmt.8
+# share/info/cpio.info
+# share/info/dir
+# bin/cpio
