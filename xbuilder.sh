@@ -1417,14 +1417,14 @@ list_tarball(){
 # USAGE: create_patch [b64] <rel_path_oldfile> [<rel_path_newfile>]
 create_patch(){  
   local od=$(pwd); cd ${dir_sources}/${lib} || return 1
-  local arg
-  [ "${1}" == "b64" ] && arg="| base64 -w 72" && shift
+  local b64=false
+  [ "${1}" == "b64" ] && b64=true && shift
   case $# in
     0) return 1;;
     1) touch "${1}_"
-       diff -Naur "${1}_" "${1}" ${arg} >"${1}.patch"
+       $b64 && diff -Naur "${1}_" "${1}" >"${1}.patch" || diff -Naur "${1}_" "${1}" | base64 -w 72 >"${1}.patch"
        ;;
-    *) diff -Naur "${1}" "${2}" ${arg} >"${2}.patch"
+    *) $b64 && diff -Naur "${1}" "${2}" >"${2}.patch" || diff -Naur "${1}" "${2}" | base64 -w 72 >"${2}.patch"
        ;;
   esac
   cd $od
