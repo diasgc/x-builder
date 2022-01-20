@@ -35,11 +35,9 @@ endif()
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-if(BUILD_SHARED_LIBS)
-  add_library(fastlz SHARED fastlz.c fastlz.h)
-endif()
+add_library(fastlz fastlz.c fastlz.h)
 
-if(BUILD_STATIC_LIBS)
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
     add_library(fastlz_static STATIC fastlz.c fastlz.h)
     set_target_properties(fastlz_static PROPERTIES OUTPUT_NAME fastlz)
 endif()
@@ -51,14 +49,12 @@ if(BUILD_EXAMPLES)
     target_link_libraries(6unpack fastlz)
 endif()
 
-if(BUILD_SHARED_LIBS)
-  install(TARGETS fastlz
+install(TARGETS fastlz
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib\${LIB_SUFFIX}
     LIBRARY DESTINATION lib\${LIB_SUFFIX})
-endif()
 
-if(BUILD_STATIC_LIBS)
+if(BUILD_STATIC_LIBS AND BUILD_SHARED_LIBS)
   install(TARGETS fastlz_static ARCHIVE DESTINATION lib\${LIB_SUFFIX})
 endif()
 
