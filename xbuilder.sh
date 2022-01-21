@@ -338,13 +338,13 @@ start(){
       esac
     fi
 
+    # check whether to auto patch source
+    check_xbautopatch
+
     # check whether to custom patch source
     if fn_defined 'source_patch'; then
       do_log 'patch' source_patch
     fi
-
-    # check whether to auto patch source
-    check_xbautopatch
   fi
 
   $only_repo && end_script
@@ -745,7 +745,7 @@ cmake_create_toolchainfile(){
     set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 		EOF
-  [ -n "${WFLAGS}" ] && echo "add_compile_options(\"${WFLAGS}\")" >>${cmake_toolchain_file}
+  [ -n "${WFLAGS}" ] && echo "add_definitions(\"${WFLAGS}\")" >>${cmake_toolchain_file}
 }
 
 cargo_create_toolchain(){
