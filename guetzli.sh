@@ -8,8 +8,8 @@ lib='guetzli'
 dsc='Perceptual JPEG encoder'
 lic='Apache-2.0'
 src='https://github.com/google/guetzli.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
+cstk='BUILD_STATIC_LIBS'
 dep='libpng libjpeg'
 eta='30'
 pc_llib='-lguetzli'
@@ -27,7 +27,7 @@ option(BUILD_TOOLS "Build tools" ON)
 option(INSTALL_MAN "Install man" OFF)
 option(INSTALL_DOCS "Install docs" OFF)
 
-add_compile_options("-Wno-format")
+add_definitions("-Wno-format")
 
 find_package(ZLIB)
 find_package(PNG)
@@ -40,12 +40,10 @@ list(APPEND src_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/
 file(GLOB_RECURSE hdr_guetzli guetzli/*.h)
 list(APPEND hdr_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.h)
 
-if(BUILD_SHARED_LIBS)
-  add_library(guetzli SHARED ${src_guetzli})
-  target_link_libraries(guetzli PUBLIC ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
-endif()
+add_library(guetzli ${src_guetzli})
+target_link_libraries(guetzli PUBLIC ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 
-if(BUILD_STATIC_LIBS)
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
     add_library(guetzli_static STATIC ${src_guetzli})
     set_target_properties(guetzli_static PROPERTIES OUTPUT_NAME guetzli)
     target_link_libraries(guetzli_static PRIVATE ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
@@ -58,14 +56,12 @@ if(BUILD_TOOLS)
     target_link_libraries(butteraugli guetzli)
 endif()
 
-if(BUILD_SHARED_LIBS)
-  install(TARGETS guetzli
+install(TARGETS guetzli
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib${LIB_SUFFIX}
     LIBRARY DESTINATION lib${LIB_SUFFIX})
-endif()
-
-if(BUILD_STATIC_LIBS)
+    
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
   install(TARGETS guetzli_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif()
 
