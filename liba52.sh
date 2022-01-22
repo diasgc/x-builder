@@ -12,6 +12,7 @@ dsc='liba52 is a free library for decoding ATSC A/52 streams'
 lic='GPL'
 src="https://liba52.sourceforge.io/files/a52dec-${vrs}.tar.gz"
 cfg='cmake'
+cstk='BUILD_STATIC_LIBS'
 eta='10'
 
 pc_llib='-la52'
@@ -36,7 +37,7 @@ option(BUILD_STATIC_LIBS "Build static libs" ON)
 #option(INSTALL_MAN "Install man" OFF)
 #option(INSTALL_DOCS "Install docs" OFF)
 
-add_compile_options("-Wno-shift-negative-value")
+add_definitions("-Wno-shift-negative-value")
 
 include_directories(${CMAKE_SOURCE_DIR} include liba52 src libao vc++)
 
@@ -48,11 +49,9 @@ file(GLOB hdr_liba52dec src/*.h)
 
 # add_library(libao STATIC ${src_libao})
 
-if(BUILD_SHARED_LIBS)
-  add_library(a52 SHARED ${src_liba52})
-endif()
+add_library(a52 SHARED ${src_liba52})
 
-if(BUILD_STATIC_LIBS)
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
   add_library(a52_static STATIC ${src_liba52})
   set_target_properties(a52_static PROPERTIES OUTPUT_NAME a52)
 endif()
@@ -62,14 +61,12 @@ endif()
 #    target_link_libraries(a52dec a52)
 #endif()
 
-if(BUILD_SHARED_LIBS)
-  install(TARGETS a52
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib${LIB_SUFFIX}
-    LIBRARY DESTINATION lib${LIB_SUFFIX})
-endif()
+install(TARGETS a52
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib${LIB_SUFFIX}
+  LIBRARY DESTINATION lib${LIB_SUFFIX})
 
-if(BUILD_STATIC_LIBS)
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
   install(TARGETS a52_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif()
 
