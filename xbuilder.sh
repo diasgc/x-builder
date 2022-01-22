@@ -44,6 +44,7 @@ update=false
 retry=false
 use_llvm_mingw=true
 use_clang=true
+ndk_testtc=false
 
 # default build static, no shared, no executables
 build_shared=false
@@ -510,6 +511,40 @@ make_findtarget(){
   }
 }
 
+check_install(){
+  # check includes
+  for h in $lst_inc; do 
+    [ -n "$(ls ${dir_install}/include/$h 2>/dev/null)" ] || {
+      echo "Missing header files"; return 1
+    }
+  done
+  echo "includes ok"
+  # check libs
+  for h in $lst_lib; do 
+    [ -n "$(ls ${dir_install}/lib/$h 2>/dev/null)" ] || {
+      echo "Missing lib files"; return 1
+    }
+  done
+  echo "libraries ok"
+  # check bin
+  for h in $lst_bin; do 
+    [ -n "$(ls ${dir_install}/bin/$h 2>/dev/null)" ] || {
+      echo "Missing bin files"; return 1
+    }
+  done
+  echo "binaries files ok"
+  # check pc
+  if [ -n "${lst_pc}"]; then
+    for h in ${lst_pc}; do 
+      [ -n "$(ls ${dir_install}/lib/pkgconfig/${h} 2>/dev/null)" ] || {
+        echo "Missing pkgconfig files"; return 1
+      }
+    done
+    echo "pkgconfig files ok"
+  fi
+  return 0
+}
+
 check_xbautopatch(){
   pushdir $ROOTDIR
   local match=$(grep -oP "(?<=^<<').*?(?=')" $0)
@@ -593,7 +628,15 @@ build_packages_bin(){
     fi
     [ -z "$mkd_suffix" ] && mkd_suffix=${dir_install}
     pushdir "${xb_distdir}${mkd_suffix}"
-    
+    # dont forget licence files
+    set -x
+    if [ -n "${lst_lic}" ]; then
+      [ -d "share/doc/${lib}" ] || mkdir -p "share/doc/${lib}"
+      for f in ${lst_lic}; do
+        [ -f "share/doc/${lib}/$f" ] || cp ${dir_src}/${f} "share/doc/${lib}/"
+      done
+    fi
+    set +x
     # also include .pc manually-built file
     if [ "$(type -t build_pkgconfig_file)" = 'function' ] || [ -n "$pc_llib" ];then
       local xb_pkgd=$(pwd)/lib/pkgconfig
@@ -606,6 +649,7 @@ build_packages_bin(){
         cp ${dir_install_pc}/${pkg}.pc ${xb_pkgd}/
       fi
     fi
+    
     build_packages_filelist
     case $pkg_fmt in
       tgz) tar -czvf "${xb_distdir}.tar.gz" *;;
@@ -953,8 +997,14 @@ isBottomRow(){
 do_git(){
   do_log 'git' git clone $1 $2
   cd $2
-  [ -n "${vrs}" ] && do_log ${vrs} git checkout tags/${vrs}
-  [ -n "${sub}" ] && do_log 'sub' git ${sub}
+  if [ -n "${bra}" ]; then
+    do_log ${bra} git checkout ${bra}
+  elif [ -n "${vrs}" ]; then
+    do_log ${vrs} git checkout tags/${vrs}
+  fi
+  if [ -n "${sub}" ];then
+    do_log 'sub' git ${sub}
+  fi
   cd ..
 }
 
@@ -1213,35 +1263,23 @@ toolchain_android(){
 
   TOOLCHAIN="${ndk_toolchain}"
   SYSROOT="${TOOLCHAIN}/sysroot"
-  CROSS_PREFIX="${TOOLCHAIN}/bin"
+  CROSS_PREFIX="/usr/${arch}/bin/"
   
-  CC="${TOOLCHAIN}/bin/${target_trip[0]}${target_trip[1]}-${target_trip[2]}-${target_trip[3]}${target_trip[4]}${API}-"
-  CXX="${CC}${ndk_cc[1]}"
-  CC="${CC}${ndk_cc[0]}"
-  LD="${TOOLCHAIN}/bin/ld.lld"
+  CC="${CROSS_PREFIX}clang"
+  CXX="${CROSS_PREFIX}clang++"
+  AS="${CC}"
+  LD="${CROSS_PREFIX}ld"
   YASM=${TOOLCHAIN}/bin/yasm
-  arch="${target_trip[0]}-${target_trip[2]}-${target_trip[3]}${target_trip[4]}"
-
-  if [ ${xv_ndk_major} -gt 22 ];then
-    AS=${CC}  
-    CROSS_PREFIX+="/llvm-"
-  else
-    CROSS_PREFIX+="/${arch}-"
-    AS="${CROSS_PREFIX}as"
-  fi
   
   CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
-  LT_SYS_LIBRARY_PATH="${SYSROOT}/usr/lib/$arch:${SYSROOT}/usr/lib/${arch}/${API}"
-  CPPFLAGS+=" -I${SYSROOT}/usr/include -I${SYSROOT}/usr/include/${arch} -I${SYSROOT}/usr/local/include"
+  LT_SYS_LIBRARY_PATH="/usr/${arch}/lib:/usr/${arch}/${API}"
+  CPPFLAGS+=" -I${SYSROOT}/usr/include -I/usr/${arch}/lib -I${SYSROOT}/usr/local/include"
   LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
 
   cmake_system_processor="${target_trip[0]}${target_trip[1]}"
   $host_arm32 && cmake_system_processor="armv7-a"
-  cmake_findrootpath="${SYSROOT}/usr
-        ${SYSROOT}/usr/lib/${arch}
-        ${SYSROOT}/usr/lib/${arch}/${API}
-        ${dir_install}"
-
+  cmake_findrootpath="/usr/${arch} /usr/${arch}/lib /usr/${arch}/lib/${API} ${dir_install}"
+  export NDK_API=${API}
 }
 
 loadToolchain(){
@@ -1261,33 +1299,36 @@ loadToolchain(){
 
   case $PLATFORM in
     Android)
-      [ -z "$API" ] && API=24
-      CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
-      TOOLCHAIN="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64"
-      SYSROOT="${TOOLCHAIN}/sysroot"
-      CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
-      
-      local ndk_cc_prefix=${arch}${API}
-      if $host_arm32; then
-        ndk_cc_prefix="armv7a-linux-androideabi${API}"
-        cmake_system_processor="armv7-a"
+      if $ndk_testtc; then
+        toolchain_android
+      else
+        [ -z "$API" ] && API=24
+        CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
+        TOOLCHAIN="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64"
+        SYSROOT="${TOOLCHAIN}/sysroot"
+        CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
+        
+        local ndk_cc_prefix=${arch}${API}
+        if $host_arm32; then
+          ndk_cc_prefix="armv7a-linux-androideabi${API}"
+          cmake_system_processor="armv7-a"
+        fi
+        CC="${TOOLCHAIN}/bin/${ndk_cc_prefix}-clang"
+        CXX="${CC}++"
+        AS="${CC}" #AS see https://developer.android.com/ndk/guides/other_build_systems
+        LD="${TOOLCHAIN}/bin/ld.lld" #Linker (also llvm-link?)
+        GCOV="${TOOLCHAIN}/bin/llvm-cov" # should we disable this?
+        # change cross_prefix for bin tools in ndk > r23
+        [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
+        LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
+        LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+        CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
+        YASM=${TOOLCHAIN}/bin/yasm
+        cmake_findrootpath="${SYSROOT}/usr
+          ${SYSROOT}/usr/lib/${arch}
+          ${SYSROOT}/usr/lib/${arch}/${API}
+          ${dir_install}"
       fi
-      CC="${TOOLCHAIN}/bin/${ndk_cc_prefix}-clang"
-      CXX="${CC}++"
-      AS="${CC}" #AS see https://developer.android.com/ndk/guides/other_build_systems
-      LD="${TOOLCHAIN}/bin/ld.lld" #Linker (also llvm-link?)
-      GCOV="${TOOLCHAIN}/bin/llvm-cov" # should we disable this?
-      # change cross_prefix for bin tools in ndk > r23
-      [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
-      LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
-      LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-      YASM=${TOOLCHAIN}/bin/yasm
-      cmake_findrootpath="${SYSROOT}/usr
-        ${SYSROOT}/usr/lib/${arch}
-        ${SYSROOT}/usr/lib/${arch}/${API}
-        ${dir_install}"
-
       ;;
     Linux)
       local cross
@@ -1581,7 +1622,7 @@ menu_list(){
 set_target(){
   cpu_id="${1}"
   target_trip=("${2}" "${3}" "${4}" "${5}" "${6}" "${7}" "${8}")
-  arch="${2}${3}-${4}-${5}${6}"
+  arch="${2}-${4}-${5}${6}"
   CT0="${9}"
   CT1="${10}"
   CPU=${2}
@@ -1598,12 +1639,18 @@ set_env(){
     x86_64)  host_arm=false; host_arm32=false; host_arm64=false; host_x86=false; host_x64=true;;
   esac
   case ${target_trip[3]} in
-    android) host_sys=linux;   host_mingw=false; host_os=android; host_ndk=true;  host_clang=true;  PLATFORM="Android";;
-    gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false; PLATFORM="Linux";;
-    mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;  PLATFORM="Windows";;
+    android) host_sys=linux;   host_mingw=false; host_os=android; host_ndk=true;  host_clang=true;  PLATFORM="Android"
+      dir_install="/usr/${arch}/local"
+      ;;
+    gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false; PLATFORM="Linux"
+      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}}"
+      ;;
+    mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;  PLATFORM="Windows"
+      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}}"
+      ;;
   esac
   #LIBSDIR="$(pwd)/builds/${PLATFORM,,}/${target_trip[5]}"
-  export dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}"
+  export dir_install
   export dir_install_bin="${dir_install}/bin"
   export dir_install_include="${dir_install}/include"
   export dir_install_lib="${dir_install}/lib"
@@ -1675,6 +1722,7 @@ while [ $1 ];do
     --desc )    echo $dsc && exit 0;;
     
     --get)      shift; menu_get $@; exit 0;;
+    --check)    shift; check_install; exit 0;;
 
     --list)     shift; menu_list $@; exit 0;;
 
@@ -1747,15 +1795,25 @@ if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   ${sudo} echo -ne "\r                                   "
 fi
 
+# usage: set_buildtype_key <input> <prefix> <on-val> <off-val>
+set_buildtype_key(){
+  local arr=(${1//|/ })
+  case ${#arr[@]} in
+    0) echo "${2}${3} ${2}${4}";;
+    1) ;;
+  esac
+  return 0
+}
 
 # check build type and set defaults if no cst0 cst1 csh0 or csh1 value provided
 case $cfg in
   cm|ccm|cmake|ccmake)
     build_tool=cmake
+
     [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
     [ -n "$cshk" ] && csh0="-D${cshk}=OFF" csh1="-D${cshk}=ON"
     
-    [ -z "$cst1" ] && cst1="-DBUILD_SHARED_LIBS=OFF"
+    ! $build_shared && [ -z "$cst1" ] && cst1="-DBUILD_SHARED_LIBS=OFF"
     [ -z "$csh1" ] && csh1="-DBUILD_SHARED_LIBS=ON"
     
     $build_static && ! $build_shared && CSH="${cst1} ${csh0}"

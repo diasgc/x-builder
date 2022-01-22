@@ -104,6 +104,14 @@ if [ -n "$(which clang)" ]; then
     #done
 fi
 
+bash_clang(){
+	cat <<-eof | sudo tee ${3} >/dev/null
+	#!/bin/bash
+	[ "\$1" != "-cc1" ] && ${1} --target=${2}\${NDK_API} "\$@" || ${1} "\$@"
+	eof
+    sudo chmod +x ${3}
+}
+
 if [ "${OSTYPE}" != "linux-android" ];then
     echo -e "\n${CC1}Android NDK:"
     if [ -z "${ANDROID_NDK_HOME}" ]; then
@@ -147,27 +155,37 @@ if [ "${OSTYPE}" != "linux-android" ];then
         printf "${CH}%-20s: ${C0}%s\n" '  clang' "$ndk_clang_version"
 
         # check and create symlinks in toolchains dir if needed
-        for cl in aarch64 arm i686 x86_64; do
-            for e in ar nm addr2line objcopy objdump ranlib readelf size strings strip windres; do
-                v="${dir_toolchain}/${cl}-linux-android-${e}"
-                [ ! -f "${v}" ] && ln -s "${ndk_toolchain}/bin/llvm-${e}" "${v}" 2>/dev/null
+        c_arch=('aarch64' 'arm' 'i686' 'x86_64')
+        c_abi=('arm64-v8a' 'armeabi-v7a' 'x86' 'x86_64')
+        c_clang=('aarch64-linux-android' 'armv7a-linux-androideabi' 'i686-linux-android' 'x86_64-linux-android')
+        c_lib=('aarch64-linux-android' 'arm-linux-androideabi' 'i686-linux-android' 'x86_64-linux-android')
+        for i in 0 1 2 3; do
+            #cl="${c_arch[${i}]}"
+
+            dir_toolchain="/usr/${c_lib[${i}]}"
+            #
+            [ -d "${dir_toolchain}/bin" ] || sudo mkdir -p "${dir_toolchain}/bin"
+            [ -f "${dir_toolchain}/bin/clang" ] || bash_clang "${ndk_toolchain}/bin/clang" "${c_lang[${i}]}" "${dir_toolchain}/bin/clang"
+            [ -f "${dir_toolchain}/bin/clang++" ] || bash_clang "${ndk_toolchain}/bin/clang++" "${c_lang[${i}]}" "${dir_toolchain}/bin/clang++"
+            #[ -f "${dir_toolchain}/bin/as" ] || sudo ln -s "${ndk_toolchain}/bin/${c_lib[${i}]}-as" "${dir_toolchain}/bin/as"
+            [ -f "${dir_toolchain}/bin/ld" ] || sudo ln -s "${ndk_toolchain}/bin/lld" "${dir_toolchain}/bin/ld"
+            
+            for j in as ar nm addr2line objcopy objdump ranlib readelf readobj size strings strip; do
+                [ -f "${dir_toolchain}/bin/${j}" ] || sudo ln -s "${ndk_toolchain}/bin/llvm-${j}" "${dir_toolchain}/bin/${j}"
             done
-            if [ "${cl}" == "arm" ]; then
-                cpuv=v7a
-                eabi=eabi
-            else
-                cpuv=
-                eabi=
-            fi
-            [ ! -f "${dir_toolchain}/${cl}-linux-android-clang" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang"
-            [ ! -f "${dir_toolchain}/${cl}-linux-android-clang++" ] && printf "#!/bin/bash\n[ \"\$1\" != \"-cc1\" ] && ${ndk_toolchain}/bin/clang++ --target=${cl}${cpuv}-linux-android${eabi}\${NDK_API} \"\$@\" || ${ndk_toolchain}/bin/clang++ \"\$@\"" >"${dir_toolchain}/${cl}-linux-android-clang++"
-            [ ! -f "${dir_toolchain}/${cl}-linux-android-as" ] && ln -s "${ndk_toolchain}/bin/arm-linux-androideabi-as" "${dir_toolchain}/${cl}-linux-android-as" 2>/dev/null
-            [ ! -f "${dir_toolchain}/${cl}-linux-android-ld" ] && ln -s "${ndk_toolchain}/bin/lld" "${dir_toolchain}/${cl}-linux-android-ld"
-            [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/libpthread.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/libpthread.a"
-            [ ! -f "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android${eabi}/librt.a" ] && ${dir_toolchain}/${cl}-linux-android-ar cr "${ndk_toolchain}/sysroot/usr/lib/${cl}-linux-android/librt.a"
+            
+            [ -d "${dir_toolchain}/lib" ] || sudo ln -s "${ndk_toolchain}/sysroot/usr/lib/${c_lib[${i}]}" "${dir_toolchain}/lib"
+            [ -f "${dir_toolchain}/lib/libpthread.a" ] || sudo ${dir_toolchain}/bin/ar cr "${dir_toolchain}/lib/libpthread.a"
+            [ -f "${dir_toolchain}/lib/librt.a" ] || sudo ${dir_toolchain}/bin/ar cr "${dir_toolchain}/lib/librt.a"
+            
+            [ -d "${dir_toolchain}/include" ] || sudo ln -s "${ndk_sysroot}/usr/include" "${dir_toolchain}/include"
+            
+            [ -d "${dir_root}/builds/android/${c_abi[${i}]}" ] || mkdir -p "${dir_root}/builds/android/${c_abi[${i}]}"
+            [ -d "${dir_toolchain}/local" ] || sudo ln -s "${dir_root}/builds/android/${c_abi[${i}]}" "${dir_toolchain}/local"
+            
         done
         printf "${CH}%-20s: ${C0}%s\n" '  toolchain slinks' ok
-        [ ! -f "${ndk_sysroot}/usr/include/sys/soundcard.h" ] && printf "#include <linux/soundcard.h>" >"${ndk_sysroot}/usr/include/sys/soundcard.h"
+        [ -f "${dir_toolchain}/include/sys/soundcard.h" ] || printf "#include <linux/soundcard.h>" >""
     else
         echo -e "  not installed"
     fi

@@ -8,19 +8,13 @@ src='https://github.com/google/brunsli.git'
 cfg='cmake'
 eta='30'
 
-lst_inc='brunsli/jpeg_data_writer.h
-	brunsli/status.h
-	brunsli/brunsli_encode.h
-	brunsli/types.h
-	brunsli/decode.h
-	brunsli/brunsli_decode.h
-	brunsli/jpeg_data.h
-	brunsli/jpeg_data_reader.h
-	brunsli/encode.h'
-lst_lib='libbrunslidec-c libbrunslienc-c'
+lst_inc='brunsli/*.h'
+lst_lib='libbrunslidec-c.* libbrunslienc-c.*'
 lst_bin='dbrunsli cbrunsli'
+lst_lic='LICENSE'
+lst_pc='brunslienc-c.pc brunslidec-c.pc'
 
-req_pcforlibs=$lst_lib
+req_pcforlibs='libbrunslidec-c libbrunslienc-c'
 
 CFG="-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF"
 
@@ -73,5 +67,6 @@ XB64_PATCH
 # lib/libbrunslienc-c.so
 # lib/libbrunslidec-c.a
 # lib/libbrunslienc-c.a
+# share/doc/brunsli/LICENSE
 # bin/dbrunsli
 # bin/cbrunsli

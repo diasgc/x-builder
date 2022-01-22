@@ -8,15 +8,13 @@ src='https://github.com/google/brotli.git'
 cfg='cmake'
 eta='60'
 
-lst_inc='brotli/shared_dictionary.h
-	brotli/port.h
-	brotli/types.h
-	brotli/decode.h
-	brotli/encode.h'
-lst_lib='libbrotlidec libbrotlienc libbrotlicommon
-    libbrotlicommon-static libbrotlicommon-static
-    libbrotlicommon-static'
+lst_inc='brotli/*.h'
+lst_lib='libbrotlidec.* libbrotlienc.* libbrotlicommon.*
+    libbrotlicommon-static.* libbrotlicommon-static.*
+    libbrotlicommon-static.*'
 lst_bin='brotli'
+lst_lic='LICENSE README'
+lst_pc='libbrotlidec.pc libbrotlicommon.pc libbrotlienc.pc'
 
 . xbuilder.sh
 
@@ -26,6 +24,7 @@ start
 # NDK +++ +++  .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------
@@ -43,4 +42,6 @@ start
 # lib/libbrotlicommon.so
 # lib/libbrotlicommon-static.a
 # lib/libbrotlidec-static.a
+# share/brotli/LICENSE
+# share/brotli/README
 # bin/brotli

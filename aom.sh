@@ -18,11 +18,10 @@ CFG='-DENABLE_TESTS=OFF
      -DENABLE_TESTDATA=OFF
      -DENABLE_DOCS=OFF'
 
-lst_inc='aom/aom_decoder.h aom/aom_integer.h aom/aom_external_partition.h
-         aom/aom_frame_buffer.h aom/aom_image.h aom/aom.h aom/aom_encoder.h
-         aom/aomcx.h aom/aom_codec.h aom/aomdx.h'
-lst_lib='libaom'
+lst_inc='aom/*.h'
+lst_lib='libaom.a libaom.so'
 lst_bin='aomdec aomenc'
+lst_lic='LICENSE PATENTS AUTHORS'
 
 . xbuilder.sh
 

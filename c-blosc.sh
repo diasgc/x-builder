@@ -12,12 +12,15 @@ cshk='BUILD_SHARED'
 eta='100'
 
 lst_inc='blosc-export.h blosc.h'
-lst_lib='libblosc'
+lst_lib='libblosc.*'
 lst_bin=''
+lst_lic='LICENSES/*'
+lst_pc='blosc.pc'
 
 . xbuilder.sh
 
 CFG='-DBUILD_TESTS=OFF'
+WFLAGS='-Wno-unused-variable -Wno-unused-but-set-variable'
 $host_arm && CFG="-DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON $CFG"
 
 start
@@ -34,3 +37,10 @@ start
 # lib/libblosc.so
 # lib/pkgconfig/blosc.pc
 # lib/libblosc.a
+# share/doc/c-blosc/BITSHUFFLE.txt
+# share/doc/c-blosc/BLOSC.txt
+# share/doc/c-blosc/SNAPPY.txt
+# share/doc/c-blosc/LZ4.txt
+# share/doc/c-blosc/FASTLZ.txt
+# share/doc/c-blosc/ZLIB.txt
+# share/doc/c-blosc/STDINT.txt

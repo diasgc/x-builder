@@ -9,7 +9,15 @@ eta='20'
 cstk="ENABLE_STATIC_LIB"
 cshk="ENABLE_SHARED_LIB"
 cbk="ENABLE_APP"
+
+lst_inc='bzlib.h'
+lst_lib='libbz2.* libbz2_static.a'
+lst_bin='bzgrep bzdiff bzip2recover bzmore bzip2'
+lst_lic='COPYING READM.md'
+lst_pc='libbrotlidec.pc libbrotlicommon.pc libbrotlienc.pc'
+
 CFG="-DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF"
+WFLAGS='-Wno-sign-conversion'
 
 . xbuilder.sh
 
@@ -19,6 +27,7 @@ start
 # ndk-clang   +++ +++ ... ...
 # linux-gnu   ... ... ... ...
 # mingw-llvm  ... ... ... ...
+
 
 # Filelist
 # --------
@@ -30,6 +39,8 @@ start
 # lib/pkgconfig/bzip2.pc
 # lib/libbz2.so
 # lib/libbz2_static.a
+# share/bzip2/README.md
+# share/bzip2/COPYING
 # bin/bzgrep
 # bin/bzdiff
 # bin/bzip2recover

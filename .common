@@ -28,6 +28,7 @@ CT0=$CM0 CT1=$CM1 CS0=$CR0 CS1=$CR1 SSB=$C0
 # Logger
 logtime_start=
 indent=0
+dir_root=$(pwd)
 
 hwinfoCountCoresReadable(){
   case $(nproc) in

@@ -1,6 +1,6 @@
 #!/bin/bash
 # cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
+# NDK ++  ++   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN ++   .   .   .  clang/gcc
 
@@ -8,21 +8,23 @@ lib='libsodium'
 dsc='A modern, portable, easy to use crypto library.'
 lic='ISC'
 src='https://github.com/jedisct1/libsodium.git'
-cfg='ac'
-eta='0'
+bra='stable'
 automake_cmd="./autogen.sh -s"
+eta='144'
 
 #cshk=''
 #cstk=''
 #cbk=''
 
-lst_inc=''
-lst_lib=''
+lst_inc='sodium.h sodium/*.h'
+lst_lib='libsodium.la libsodium.a libsodium.so'
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
 
 . xbuilder.sh
 
 start
+
 
 # Filelist
 # --------
@@ -37,12 +39,12 @@ start
 # include/sodium/crypto_shorthash_siphash24.h
 # include/sodium/utils.h
 # include/sodium/crypto_stream_salsa208.h
+# include/sodium/crypto_sign_edwards25519sha512batch.h
 # include/sodium/crypto_secretbox_xsalsa20poly1305.h
 # include/sodium/crypto_verify_64.h
 # include/sodium/crypto_hash.h
 # include/sodium/crypto_scalarmult_curve25519.h
 # include/sodium/crypto_secretbox_xchacha20poly1305.h
-# include/sodium/crypto_aead_aegis128l.h
 # include/sodium/crypto_box_curve25519xsalsa20poly1305.h
 # include/sodium/crypto_sign.h
 # include/sodium/crypto_auth_hmacsha512256.h
@@ -50,11 +52,9 @@ start
 # include/sodium/core.h
 # include/sodium/crypto_kdf_blake2b.h
 # include/sodium/crypto_core_hsalsa20.h
-# include/sodium/crypto_kdf_hkdf_sha512.h
 # include/sodium/crypto_pwhash_scryptsalsa208sha256.h
 # include/sodium/crypto_core_ristretto255.h
 # include/sodium/crypto_hash_sha512.h
-# include/sodium/crypto_aead_aegis256.h
 # include/sodium/crypto_aead_xchacha20poly1305.h
 # include/sodium/crypto_core_salsa2012.h
 # include/sodium/randombytes.h
@@ -75,7 +75,6 @@ start
 # include/sodium/version.h
 # include/sodium/crypto_stream_xchacha20.h
 # include/sodium/crypto_stream_chacha20.h
-# include/sodium/crypto_kdf_hkdf_sha256.h
 # include/sodium/crypto_generichash.h
 # include/sodium/crypto_pwhash.h
 # include/sodium/crypto_core_ed25519.h
@@ -96,3 +95,5 @@ start
 # lib/pkgconfig/libsodium.pc
 # lib/libsodium.a
 # lib/libsodium.so
+# share/libsodium/LICENSE
+# share/libsodium/AUTHORS

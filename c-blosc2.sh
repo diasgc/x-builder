@@ -7,18 +7,17 @@ dsc='A fast, compressed, persistent binary data store library for C.'
 lic='BSD-3c'
 src='https://github.com/Blosc/c-blosc2.git'
 cfg='cmake'
-eta='140'
+eta='399'
 
-lst_inc='blosc2/filters-registry.h
-	blosc2/blosc2-stdio.h
-	blosc2/blosc2-export.h
-	blosc2/blosc2-common.h
-	blosc2/codecs-registry.h
-	blosc2.h'
-lst_lib='libblosc2'
+lst_inc='blosc2.h blosc2/*.h'
+lst_lib='libblosc2.*'
 lst_bin=''
+lst_lic='LICENSE.txt LICENSES/*.txt'
+lst_pc='blosc2.pc'
 
 . xbuilder.sh
+
+WFLAGS='-Wno-pointer-sign -Wno-int-conversion'
 
 start
 
@@ -26,6 +25,7 @@ start
 # NDK ++. ++. ++. ++. clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------
@@ -38,3 +38,11 @@ start
 # lib/pkgconfig/blosc2.pc
 # lib/libblosc2.a
 # lib/libblosc2.so
+# share/doc/c-blosc2/BITSHUFFLE.txt
+# share/doc/c-blosc2/BLOSC.txt
+# share/doc/c-blosc2/SNAPPY.txt
+# share/doc/c-blosc2/LZ4.txt
+# share/doc/c-blosc2/FASTLZ.txt
+# share/doc/c-blosc2/ZLIB.txt
+# share/doc/c-blosc2/STDINT.txt
+# share/doc/c-blosc2/LICENSE.txt
