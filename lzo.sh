@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   .   .   +   .   .  static
-#  +   .   .   .   .   +   .   .   +   .   .  shared
-#  +   .   .   .   .   +   .   .   +   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='lzo'
 pkg='lzo2'
@@ -10,11 +10,16 @@ dsc='LZO is a portable lossless data compression library written in ANSI C'
 lic='GPL2+'
 vrs='2.10'
 src="http://www.oberhumer.com/opensource/lzo/download/lzo-${vrs}.tar.gz"
-sty='tgz'
-cfg='cm'
+cfg='cmake'
 eta='10'
 cstk="ENABLE_STATIC"
 cshk="ENABLE_SHARED"
+
+lst_inc='lzo/*.h'
+lst_lib='liblzo2.*'
+lst_bin='../libexec/lzo/examples/*'
+lst_lic='COPYING AUTHORS'
+lst_pc='lzo2.pc'
 
 . xbuilder.sh
 

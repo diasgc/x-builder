@@ -105,9 +105,10 @@ if [ -n "$(which clang)" ]; then
 fi
 
 bash_clang(){
+    # echo "${2}"
 	cat <<-eof | sudo tee ${3} >/dev/null
 	#!/bin/bash
-	[ "\$1" != "-cc1" ] && ${1} --target=${2}\${NDK_API} "\$@" || ${1} "\$@"
+	[ "\$1" != "-cc1" ] && ${1}/ --target=${2}\${NDK_API} "\$@" || ${1} "\$@"
 	eof
     sudo chmod +x ${3}
 }
@@ -149,7 +150,8 @@ if [ "${OSTYPE}" != "linux-android" ];then
             echo -e "${CY1} latest is ${ndk_version_latest}${C0}"
         fi
         
-        ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-$(uname -m)"
+        ndk_build="linux-$(uname -m)"
+        ndk_toolchain="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${ndk_build}"
         ndk_sysroot="${ndk_toolchain}/sysroot"
         ndk_clang_version=$(${ndk_toolchain}/bin/clang --version | grep -o 'clang version [0-9]*.[0-9]*.[0-9]*')
         printf "${CH}%-20s: ${C0}%s\n" '  clang' "$ndk_clang_version"
@@ -165,8 +167,8 @@ if [ "${OSTYPE}" != "linux-android" ];then
             dir_toolchain="/usr/${c_lib[${i}]}"
             #
             [ -d "${dir_toolchain}/bin" ] || sudo mkdir -p "${dir_toolchain}/bin"
-            [ -f "${dir_toolchain}/bin/clang" ] || bash_clang "${ndk_toolchain}/bin/clang" "${c_lang[${i}]}" "${dir_toolchain}/bin/clang"
-            [ -f "${dir_toolchain}/bin/clang++" ] || bash_clang "${ndk_toolchain}/bin/clang++" "${c_lang[${i}]}" "${dir_toolchain}/bin/clang++"
+            [ -f "${dir_toolchain}/bin/clang" ] || bash_clang "${ndk_toolchain}/bin/clang" "${c_clang[${i}]}" "${dir_toolchain}/bin/clang"
+            [ -f "${dir_toolchain}/bin/clang++" ] || bash_clang "${ndk_toolchain}/bin/clang++" "${c_clang[${i}]}" "${dir_toolchain}/bin/clang++"
             #[ -f "${dir_toolchain}/bin/as" ] || sudo ln -s "${ndk_toolchain}/bin/${c_lib[${i}]}-as" "${dir_toolchain}/bin/as"
             [ -f "${dir_toolchain}/bin/ld" ] || sudo ln -s "${ndk_toolchain}/bin/lld" "${dir_toolchain}/bin/ld"
             

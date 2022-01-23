@@ -11,7 +11,13 @@ dsc='Fast LZ compression algorithm library'
 lic='BSD-2c GPL2.0'
 src="https://github.com/lz4/lz4.git"
 cfg='mk'
-eta='10'
+eta='20'
+
+lst_inc='lz4.h lz4frame.h lz4frame_static.h lz4hc.h'
+lst_lib='liblz4.*'
+lst_bin='lz4'
+lst_lic='LICENSE'
+lst_pc='liblz4.pc'
 
 . xbuilder.sh
 
@@ -41,4 +47,5 @@ start
 # lib/liblz4.so.1.9.3
 # lib/liblz4.a
 # share/man/man1/lz4.1
+# share/doc/lz4/LICENSE
 # bin/lz4

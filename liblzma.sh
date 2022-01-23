@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   +   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='liblzma'
 apt="${lib}-dev"
@@ -10,20 +6,32 @@ dsc='General purpose data compression library'
 lic='GPL-3 LGPL-2.1'
 vrs='v5.2.5' #stable
 src='https://git.tukaani.org/xz.git'
-sty='git'
 cfg='ac'
 eta='110'
 mki='install'
+automake_cmd='./autogen.sh --no-po4a'
+
+lst_inc='lzma.h lzma/*.h'
+lst_lib='liblzma.*'
+lst_bin='xzmore xzdec xzgrep xz lzmainfo xzless lzmadec xzdiff'
+lst_lic='COPYING AUTHORS'
+lst_pc='liblzma.pc'
 
 . xbuilder.sh
 
 CFG="--disable-doc"
-
-source_patch(){
+WFLAGS="-Wno-macro-redefined"
+_source_patch(){
   doAutogen $SRCDIR --noerr
 }
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------
@@ -53,6 +61,8 @@ start
 # share/man/man1/xzdec.1
 # share/man/man1/xzmore.1
 # share/man/man1/xzdiff.1
+# share/doc/liblzma/AUTHORS
+# share/doc/liblzma/COPYING
 # bin/xzmore
 # bin/xzdec
 # bin/xzgrep

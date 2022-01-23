@@ -1,8 +1,8 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   +   .   .   +   .   .  static
-#  .   .   .   .   .   .   .   .   +   .   .  shared
-#  .   .   .   .   .   .   .   .   +   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='lcms2'
 apt='liblcms2-dev'
@@ -13,26 +13,12 @@ cfg='ac'
 dep='libjpeg libtiff'
 eta='90'
 
+lst_inc='lcms2_plugin.h lcms2.h'
+lst_lib='liblcms2.*'
+lst_bin='linkicc psicc tificc jpgicc transicc'
+lst_lic='COPYING AUTHORS'
+lst_pc='lcms2.pc'
+
 . xbuilder.sh
 
 start
-
-# Filelist
-# --------
-
-# include/lcms2_plugin.h
-# include/lcms2.h
-# lib/pkgconfig/lcms2.pc
-# lib/liblcms2.la
-# lib/liblcms2.a
-# lib/liblcms2.so
-# share/man/man1/jpgicc.1
-# share/man/man1/transicc.1
-# share/man/man1/psicc.1
-# share/man/man1/linkicc.1
-# share/man/man1/tificc.1
-# bin/linkicc
-# bin/psicc
-# bin/tificc
-# bin/jpgicc
-# bin/transicc

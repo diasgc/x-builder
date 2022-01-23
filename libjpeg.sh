@@ -6,13 +6,18 @@ dsc='JPEG image codec that uses SIMD instructions'
 lic='BSD'
 src='https://github.com/libjpeg-turbo/libjpeg-turbo.git'
 cfg='cmake'
-eta='52'
+eta='78'
 cstk="ENABLE_STATIC"
 cshk="ENABLE_SHARED"
-cmake_path='lib/cmake/libjpeg-turbo'
 mki='install/strip'
 
 CFG="-DWITH_JPEG8=ON -DWITH_JPEG7=ON -DWITH_DOCS=OFF -DWITH_MAN=OFF"
+
+lst_inc='jerror.h jconfig.h jpeglib.h jmorecfg.h turbojpeg.h'
+lst_lib='libjpeg.* libturbojpeg.*'
+lst_bin='rdjpgcom jpegtran wrjpgcom djpeg tjbench cjpeg'
+lst_lic='LICENSE.md'
+lst_pc='libjpeg.pc libturbojpeg.pc'
 
 extraOpts(){
   case $1 in
@@ -21,7 +26,6 @@ extraOpts(){
     --12bit) CFG="-DWITH_12BIT=ON $CFG";;
   esac
 }
-
 
 . xbuilder.sh
 
@@ -51,10 +55,11 @@ RElSfS9qcGVndHJhbi4xCiAgICAgJHtDTUFLRV9DVVJSRU5UX1NPVVJDRV9ESVJ9L3JkanBnY29t
 LjE=
 XB64_PATCH
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   +   .   .   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------
@@ -70,9 +75,10 @@ XB64_PATCH
 # lib/cmake/libjpeg-turbo/libjpeg-turboConfig.cmake
 # lib/cmake/libjpeg-turbo/libjpeg-turboConfigVersion.cmake
 # lib/cmake/libjpeg-turbo/libjpeg-turboTargets.cmake
-# lib/libjpeg.so.8.2.2
-# lib/libturbojpeg.so.0.2.0
+# lib/libjpeg.so
+# lib/libturbojpeg.so
 # lib/libjpeg.a
+# share/doc/libjpeg/LICENSE.md
 # bin/rdjpgcom
 # bin/jpegtran
 # bin/wrjpgcom

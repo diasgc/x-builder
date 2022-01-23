@@ -8,18 +8,24 @@ lib=''
 dsc=''
 lic='GLP-2.0'
 src='https://github.com/'
-sty='git'
 cfg='cmake'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
+mki=''
+cstk=''
+cshk=''
+cbk=''
 
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
+
+eta='20'
 
 . xbuilder.sh
+
+CFG=
 
 start

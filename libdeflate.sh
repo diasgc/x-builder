@@ -1,8 +1,4 @@
 #!/bin/bash
-#             a8  a7  x86 x64
-# ndk-clang   +++ +++ ... +++
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
 
 lib='libdeflate'
 apt='libdeflate-dev'
@@ -11,106 +7,70 @@ lic='MIT'
 src="https://github.com/ebiggers/libdeflate.git"
 sty='git'
 cfg='cmake'
+cstk='BUILD_STATIC_LIBS'
 eta='10'
+
 pc_llib='-ldeflate'
-lst_inc=''
-lst_lib='libdeflate'
-lst_bin=''
-lst_oth=''
 
-. xbuilder.sh
-CBN="-DBUILD_SHARED_LIBS=ON"
-start
+lst_inc='libdeflate.h'
+lst_lib='libdeflate.*'
+lst_bin='gzip'
+lst_lic='COPYING'
+lst_pc='libdeflate.pc'
 
-<<'XB_CREATE_CMAKELISTS'
-cmake_minimum_required(VERSION 3.10)
+. xbuilder.sh && start
 
-project(libdeflate C)
-option(BUILD_STATIC_LIBS "Build static libs" ON)
-option(BUILD_EXECUTABLES "Build executables" ON)
-option(BUILD_TESTS "Build tests" CMAKE_OBJCXX_EXTENSIONS)
-option(ENABLE_CRC "enable crc" ON)
-option(ENABLE_CRYPTO "enable crypto" ON)
+# Patch 01: create CMakeLists.txt with dual static and shared build support
+<<'XB64_PATCH'
+LS0tIENNYWtlTGlzdHMudHh0CTIwMjItMDEtMjMgMjI6MTI6NTcuNjE1MzkwNjAwICswMDAwCisrKyBDTWFrZUxpc3
+RzLnR4dAkyMDIyLTAxLTIzIDIyOjEyOjQzLjc3MTAwMDAwMCArMDAwMApAQCAtMCwwICsxLDgxIEBACitjbWFrZV9t
+aW5pbXVtX3JlcXVpcmVkKFZFUlNJT04gMy4xMCkKKworcHJvamVjdChsaWJkZWZsYXRlIEMpCitvcHRpb24oQlVJTE
+RfU1RBVElDX0xJQlMgIkJ1aWxkIHN0YXRpYyBsaWJzIiBPTikKK29wdGlvbihCVUlMRF9FWEVDVVRBQkxFUyAiQnVp
+bGQgZXhlY3V0YWJsZXMiIE9OKQorb3B0aW9uKEJVSUxEX1RFU1RTICJCdWlsZCB0ZXN0cyIgQ01BS0VfT0JKQ1hYX0
+VYVEVOU0lPTlMpCitvcHRpb24oRU5BQkxFX0NSQyAiZW5hYmxlIGNyYyIgT04pCitvcHRpb24oRU5BQkxFX0NSWVBU
+TyAiZW5hYmxlIGNyeXB0byIgT04pCisKKyNvcHRpb24oSU5TVEFMTF9NQU4gIkluc3RhbGwgbWFuIiBPRkYpCisjb3
+B0aW9uKElOU1RBTExfRE9DUyAiSW5zdGFsbCBkb2NzIiBPRkYpCisjYWRkX2NvbXBpbGVfb3B0aW9ucygiLVduby1z
+aGlmdC1uZWdhdGl2ZS12YWx1ZSIpCisKK2ZpbmRfcGFja2FnZShaTElCKQoraW5jbHVkZV9kaXJlY3Rvcmllcygke0
+NNQUtFX1NPVVJDRV9ESVJ9IGNvbW1vbiBsaWIgJHtaTElCX0lOQ0xVREVfRElSU30pCitmaWxlKEdMT0Igc3JjX2Rl
+ZmxhdGUgbGliLyouYykKK2ZpbGUoR0xPQiBoZHJfZGVmbGF0ZSBsaWJkZWZsYXRlLmggbGliLyouaCkKKworaWYoJH
+tDTUFLRV9TWVNURU1fUFJPQ0VTU09SfSBNQVRDSEVTICJeYXJtIikKKyAgZmlsZShHTE9CIHNyY19jcHUgbGliL2Fy
+bS8qLmMpCisgIGZpbGUoR0xPQiBoZHJfY3B1IGxpYi9hcm0vKi5oKQorICBpZihFTkFCTEVfQ1JDKQorICAgIHNldC
+hDTUFLRV9DX0ZMQUdTICIke0NNQUtFX0NfRkxBR1N9IC1tY3JjIikKKyAgZW5kaWYoKQorICAjaWYoRU5BQkxFX0NS
+WVBUTykKKyAgIyAgc2V0KENNQUtFX0NfRkxBR1MgIiR7Q01BS0VfQ19GTEFHU30gLW1mcHU9Y3J5cHRvLW5lb24tZn
+AtYXJtdjgiKQorICAjZW5kaWYoKQorZWxzZWlmKCR7Q01BS0VfU1lTVEVNX1BST0NFU1NPUn0gTUFUQ0hFUyAiXmEu
+KjY0JCIpCisgIGZpbGUoR0xPQiBzcmNfY3B1IGxpYi9hcm0vKi5jKQorICBmaWxlKEdMT0IgaGRyX2NwdSBsaWIvYX
+JtLyouaCkKKyAgaWYoRU5BQkxFX0NSQykKKyAgICBzZXQoQ01BS0VfQ19GTEFHUyAiJHtDTUFLRV9DX0ZMQUdTfSAt
+bWFyY2g9YXJtdjgtYStjcmMiKQorICBlbmRpZigpCisgIGlmKEVOQUJMRV9DUllQVE8pCisgICAgc2V0KENNQUtFX0
+NfRkxBR1MgIiR7Q01BS0VfQ19GTEFHU30gLW1hcmNoPWFybXY4LWErY3J5cHRvIikKKyAgZW5kaWYoKQorZWxzZSgp
+CisgIGZpbGUoR0xPQiBzcmNfY3B1IGxpYi94ODYvKi5jKQorICBmaWxlKEdMT0IgaGRyX2NwdSBsaWIveDg2LyouaC
+kKK2VuZGlmKCkKKworc2V0KGRlZmxhdGVfVGFyZ2V0cyBkZWZsYXRlKQorYWRkX2xpYnJhcnkoZGVmbGF0ZSAke3Ny
+Y19kZWZsYXRlfSAke2hkcl9kZWZsYXRlfSAke3NyY19jcHV9ICR7aGRyX2NwdX0pCisKK2lmKEJVSUxEX1NIQVJFRF
+9MSUJTIEFORCBCVUlMRF9TVEFUSUNfTElCUykKKyAgYWRkX2xpYnJhcnkoZGVmbGF0ZV9zdGF0aWMgU1RBVElDICR7
+c3JjX2RlZmxhdGV9ICR7aGRyX2RlZmxhdGV9ICR7c3JjX2NwdX0gJHtoZHJfY3B1fSkKKyAgc2V0X3RhcmdldF9wcm
+9wZXJ0aWVzKGRlZmxhdGVfc3RhdGljIFBST1BFUlRJRVMgT1VUUFVUX05BTUUgZGVmbGF0ZSkKKyAgc2V0KGRlZmxh
+dGVfVGFyZ2V0cyBkZWZsYXRlIGRlZmxhdGVfc3RhdGljKQorZW5kaWYoKQorCitpZihCVUlMRF9FWEVDVVRBQkxFUy
+kKKyAgYWRkX2V4ZWN1dGFibGUoZ3ppcCBwcm9ncmFtcy9nemlwLmMgcHJvZ3JhbXMvdGdldG9wdC5jIAorICAgIHBy
+b2dyYW1zL3Rlc3RfdXRpbC5jIHByb2dyYW1zL3Rlc3RfdXRpbC5oCisgICAgcHJvZ3JhbXMvcHJvZ191dGlsLmMgcH
+JvZ3JhbXMvcHJvZ191dGlsLmgKKyAgICApCisgIHRhcmdldF9saW5rX2xpYnJhcmllcyhnemlwIGRlZmxhdGUgJHta
+TElCX0xJQlJBUklFU30pCitlbmRpZigpCisKK2lmKEJVSUxEX1RFU1RTKQorICBhZGRfZXhlY3V0YWJsZShiZW5jaG
+1hcmsgcHJvZ3JhbXMvYmVuY2htYXJrLmMgcHJvZ3JhbXMvdGdldG9wdC5jCisgICAgcHJvZ3JhbXMvdGVzdF91dGls
+LmMgcHJvZ3JhbXMvdGVzdF91dGlsLmgKKyAgICBwcm9ncmFtcy9jaGVja3N1bS5jIHByb2dyYW1zL3Rlc3RfY2hlY2
+tzdW1zLmMgcHJvZ3JhbXMvdGVzdF9jdXN0b21fbWFsbG9jLmMgcHJvZ3JhbXMvdGVzdF9pbmNvbXBsZXRlX2NvZGVz
+LmMKKyAgICBwcm9ncmFtcy90ZXN0X2xpdHJ1bmxlbl9vdmVyZmxvdy5jIHByb2dyYW1zL3Rlc3Rfc2xvd19kZWNvbX
+ByZXNzaW9uLmMgcHJvZ3JhbXMvdGVzdF90cmFpbGluZ19ieXRlcy5jCisgICAgKQorICB0YXJnZXRfbGlua19saWJy
+YXJpZXMoYmVuY2htYXJrIGRlZmxhdGUgJHtaTElCX0xJQlJBUklFU30pCitlbmRpZigpCisKK2luc3RhbGwoVEFSR0
+VUUyAke2RlZmxhdGVfVGFyZ2V0c30KKyAgUlVOVElNRSBERVNUSU5BVElPTiBiaW4KKyAgQVJDSElWRSBERVNUSU5B
+VElPTiBsaWIke0xJQl9TVUZGSVh9CisgIExJQlJBUlkgREVTVElOQVRJT04gbGliJHtMSUJfU1VGRklYfSkKKworaW
+5zdGFsbChGSUxFUyBsaWJkZWZsYXRlLmggREVTVElOQVRJT04gaW5jbHVkZSkKKworaWYoQlVJTERfRVhFQ1VUQUJM
+RVMpCisgIGluc3RhbGwoVEFSR0VUUyBnemlwIFJVTlRJTUUgREVTVElOQVRJT04gYmluKQorZW5kaWYoKQorCitpZi
+hCVUlMRF9URVNUUykKKyAgaW5zdGFsbChUQVJHRVRTIGJlbmNobWFyayBSVU5USU1FIERFU1RJTkFUSU9OIGJpbikK
+K2VuZGlmKCkK
+XB64_PATCH
 
-#option(INSTALL_MAN "Install man" OFF)
-#option(INSTALL_DOCS "Install docs" OFF)
-#add_compile_options("-Wno-shift-negative-value")
-
-find_package(ZLIB)
-include_directories(${CMAKE_SOURCE_DIR} common lib ${ZLIB_INCLUDE_DIRS})
-file(GLOB src_deflate lib/*.c)
-file(GLOB hdr_deflate libdeflate.h lib/*.h)
-
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
-  file(GLOB src_cpu lib/arm/*.c)
-  file(GLOB hdr_cpu lib/arm/*.h)
-  if(ENABLE_CRC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcrc")
-  endif()
-  #if(ENABLE_CRYPTO)
-  #  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=crypto-neon-fp-armv8")
-  #endif()
-elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^a.*64$")
-  file(GLOB src_cpu lib/arm/*.c)
-  file(GLOB hdr_cpu lib/arm/*.h)
-  if(ENABLE_CRC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv8-a+crc")
-  endif()
-  if(ENABLE_CRYPTO)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv8-a+crypto")
-  endif()
-else()
-  file(GLOB src_cpu lib/x86/*.c)
-  file(GLOB hdr_cpu lib/x86/*.h)
-endif()
-
-if(BUILD_SHARED_LIBS)
-  add_library(deflate SHARED ${src_deflate} ${hdr_deflate} ${src_cpu} ${hdr_cpu})
-endif()
-
-if(BUILD_STATIC_LIBS)
-  add_library(deflate_static STATIC ${src_deflate} ${hdr_deflate} ${src_cpu} ${hdr_cpu})
-  set_target_properties(deflate_static PROPERTIES OUTPUT_NAME deflate)
-endif()
-
-if(BUILD_EXECUTABLES)
-  add_executable(gzip programs/gzip.c programs/tgetopt.c 
-    programs/test_util.c programs/test_util.h
-    programs/prog_util.c programs/prog_util.h
-    )
-  target_link_libraries(gzip deflate ${ZLIB_LIBRARIES})
-endif()
-
-if(BUILD_TESTS)
-  add_executable(benchmark programs/benchmark.c programs/tgetopt.c
-    programs/test_util.c programs/test_util.h
-    programs/checksum.c programs/test_checksums.c programs/test_custom_malloc.c programs/test_incomplete_codes.c
-    programs/test_litrunlen_overflow.c programs/test_slow_decompression.c programs/test_trailing_bytes.c
-    )
-  target_link_libraries(benchmark deflate ${ZLIB_LIBRARIES})
-endif()
-
-if(BUILD_SHARED_LIBS)
-  install(TARGETS deflate
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib${LIB_SUFFIX}
-    LIBRARY DESTINATION lib${LIB_SUFFIX})
-endif()
-
-if(BUILD_STATIC_LIBS)
-  install(TARGETS deflate_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
-endif()
-
-install(FILES libdeflate.h DESTINATION include)
-
-if(BUILD_EXECUTABLES)
-  install(TARGETS gzip RUNTIME DESTINATION bin)
-endif()
-
-if(BUILD_TESTS)
-  install(TARGETS benchmark RUNTIME DESTINATION bin)
-endif()
-XB_CREATE_CMAKELISTS
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 
 # Filelist
@@ -119,4 +79,5 @@ XB_CREATE_CMAKELISTS
 # lib/pkgconfig/libdeflate.pc
 # lib/libdeflate.so
 # lib/libdeflate.a
+# share/doc/libdeflate/COPYING
 # bin/gzip

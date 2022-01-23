@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU +..  .   .   .  gcc
-# WIN +..  .   .   .  clang/gcc
 
 lib='libzstd'
 apt='libzstd-dev'
@@ -10,19 +6,30 @@ dsc='Zstandard - Fast real-time compression algorithm'
 lic='BSD GPL-2.0'
 src='https://github.com/facebook/zstd.git'
 cfg='cmake'
-eta='134'
+eta='78'
 cstk="ZSTD_BUILD_STATIC"
 cshk="ZSTD_BUILD_SHARED"
 cbk="ZSTD_BUILD_PROGRAMS"
+
+nodev=false
 config_dir='build/cmake'
+
+lst_inc='zstd_errors.h zstd.h zdict.h'
+lst_lib='libzstd.*'
+lst_bin='zstdgrep zstd zstdless'
+lst_lic='LICENSE COPYING'
+lst_pc='libzstd.pc'
 
 . xbuilder.sh
 
-nodev=false
-
-#SRCDIR=$SRCDIR/build/cmake/
-
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU +..  .   .   .  gcc
+# WIN +..  .   .   .  clang/gcc
+
+
 
 # Filelist
 # --------
@@ -39,6 +46,8 @@ start
 # share/man/man1/zstd.1
 # share/man/man1/zstdless.1
 # share/man/man1/zstdgrep.1
+# share/doc/libzstd/LICENSE
+# share/doc/libzstd/COPYING
 # bin/zstdgrep
 # bin/zstd
 # bin/zstdless

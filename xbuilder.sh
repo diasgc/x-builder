@@ -180,9 +180,9 @@ pkgInfo(){
   if [ "$sty" == "git" ];then
     local vgit=$(git_remote_version $src)
     if [ -d ${dir_src} ];then
-      pushd ${dir_src}
+      pushdir ${dir_src}
       local vrep=$(git describe --abbrev=0 --tags 2>/dev/null)
-      popd
+      popdir
       vs="${CT0}vrs: ${C0}$vrep "
       if str_contains $vgit $vrs; then
         vs+=" updated"
