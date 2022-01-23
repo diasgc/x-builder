@@ -628,15 +628,15 @@ build_packages_bin(){
     fi
     [ -z "$mkd_suffix" ] && mkd_suffix=${dir_install}
     pushdir "${xb_distdir}${mkd_suffix}"
+
     # dont forget licence files
-    set -x
     if [ -n "${lst_lic}" ]; then
       [ -d "share/doc/${lib}" ] || mkdir -p "share/doc/${lib}"
       for f in ${lst_lic}; do
         [ -f "share/doc/${lib}/$f" ] || cp ${dir_src}/${f} "share/doc/${lib}/"
       done
     fi
-    set +x
+    
     # also include .pc manually-built file
     if [ "$(type -t build_pkgconfig_file)" = 'function' ] || [ -n "$pc_llib" ];then
       local xb_pkgd=$(pwd)/lib/pkgconfig

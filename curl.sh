@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   ... ... ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 lib='curl'
 pkg='libcurl'
@@ -14,18 +14,11 @@ cfg='ar'
 eta='130'
 dep='zlib libzstd brotli openssl'
 
-lst_inc='curl/typecheck-gcc.h
-	curl/multi.h
-	curl/curl.h
-	curl/urlapi.h
-	curl/mprintf.h
-	curl/stdcheaders.h
-	curl/options.h
-	curl/easy.h
-	curl/curlver.h
-	curl/system.h'
+lst_inc='curl/*.h'
 lst_lib='libcurl'
 lst_bin='curl curl-config'
+lst_lic='COPYING'
+lst_pc='libcurl.pc'
 
 . xbuilder.sh
 

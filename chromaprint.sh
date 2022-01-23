@@ -16,7 +16,7 @@ cstk="BUILD_STATIC_LIBS"
 lst_inc='chromaprint.h'
 lst_lib='libchromaprint.*'
 lst_bin=''
-lst_lic='LICENCE.md'
+lst_lic='LICENSE.md'
 lst_pc='libchromaprint.pc'
 # cb0="-DBUILD_TOOLS=OFF"
 # cb1="-DBUILD_TOOLS=OFF" # disable bin: cannot build bin (requires FFMPEG_LIBXXXXX_INCLUDE_DIRS)
@@ -85,8 +85,11 @@ XB64_PATCH
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 
+
 # Filelist
 # --------
 # include/chromaprint.h
 # lib/pkgconfig/libchromaprint.pc
+# lib/libchromaprint.a
 # lib/libchromaprint.so
+# share/doc/chromaprint/LICENSE.md

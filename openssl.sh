@@ -20,6 +20,12 @@ mki="install"
 csh0="-static no-shared pic"
 csh1="-static shared pic"
 
+lst_inc='openssl/*.h'
+lst_lib='libssl.* libcrypto.* ossl-modules/legacy.so engines-3/*.so '
+lst_bin='c_rehash openssl'
+lst_lic='LICENSE.txt AUTHORS.md'
+lst_pc='libssl.pc libcrypto.pc openssl.pc'
+
 . xbuilder.sh
 
 BUILD_DIR="${dir_src}/build_${arch}"

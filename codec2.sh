@@ -3,20 +3,17 @@
 lib='codec2'
 apt='libcodec2-0.9'
 dsc='A speech codec for 2400 bit/s and below'
-#vrs='1.0.0'
 lic='LGPL-2.1'
 src='https://github.com/drowe67/codec2.git'
 cfg='cmake'
 cstk="BUILD_STATIC_LIBS"
 eta='80'
 
-lst_inc='codec2/modem_stats.h codec2/codec2_cohpsk.h codec2/fsk.h \
-         codec2/codec2_fdmdv.h codec2/codec2_ofdm.h codec2/comp.h \
-         codec2/codec2_fifo.h codec2/version.h codec2/freedv_api.h \
-         codec2/codec2.h codec2/codec2_fm.h codec2/reliable_text.h'
+lst_inc='codec2/*.h'
 lst_lib='libcodec2'
 lst_bin=''
-lst_oth=''
+lst_lic='COPYING'
+lst_pc='codec2.pc'
 
 . xbuilder.sh
 

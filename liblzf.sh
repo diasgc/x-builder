@@ -18,8 +18,9 @@ pc_llib="-llzf"
 pc_url="http://oldhome.schmorp.de/marc/liblzf.html"
 
 lst_inc='lzf.h'
-lst_lib='liblzf'
+lst_lib='liblzf.*'
 lst_bin='lzf'
+lst_lic='LICENSE'
 
 . xbuilder.sh
 
@@ -80,7 +81,8 @@ XB64_PATCH
 # Filelist
 # --------
 # include/lzf.h
-# lib/liblfz.a
 # lib/pkgconfig/liblzf.pc
-# lib/libliblzf.so
+# lib/liblzf.so
+# lib/liblzf.a
+# share/doc/liblzf/LICENSE
 # bin/lzf

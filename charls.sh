@@ -10,16 +10,11 @@ eta='15'
 cbk="CHARLS_BUILD_SAMPLES"
 mki='install/strip'
 
-lst_inc='charls/charls_jpegls_decoder.h
-	charls/api_abi.h
-	charls/annotations.h
-	charls/jpegls_error.h
-	charls/public_types.h
-	charls/charls.h
-	charls/charls_jpegls_encoder.h
-	charls/version.h'
-lst_lib='libcharls'
+lst_inc='charls/*.h'
+lst_lib='libcharls.*'
 lst_bin=''
+lst_lic='LICENSE.md'
+lst_pc='charls.pc'
 
 . xbuilder.sh
 
