@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++ +++ .   .  clang
-# GNU +++ +++ .  +++ gcc
-# WIN +++ .   .  +++ clang/gcc
 
 lib='density'
 dsc='Small & portable byte-aligned LZ77 compression'
@@ -11,21 +7,27 @@ lic='BSD-3c'
 src='https://github.com/k0dai/density.git'
 cfg='cmake'
 eta='30'
+cstk='BUILD_STATIC_LIBS'
 pc_llib='-ldensity'
 pc_url='https://github.com/k0dai/density'
 
-. xbuilder.sh
+lst_inc='density/*.h'
+lst_lib='libdensity.*'
+lst_bin='benchmark'
+lst_lic='LICENSE.md'
+lst_pc='density.pc'
 
 CFG="-DBUILD_BENCHMARK=ON"
 
+. xbuilder.sh
+
 source_config(){
-  cd $SRCDIR
   git submodule update --init --recursive
-  cd ..
 }
 
 start
 
+# patch 01: create CMakeLists with dual static shared build support
 <<'XB64_PATCH'
 LS0tIENNYWtlTGlzdHMudHh0CTIwMjEtMTAtMzAgMTY6Mjg6MTMuODQ1MDQ2MzAwICswMTAwCisr
 KyBDTWFrZUxpc3RzLnR4dAkyMDIxLTEwLTMwIDE2OjI2OjIyLjA2NTA0NjMwMCArMDEwMApAQCAt
@@ -33,49 +35,28 @@ MCwwICsxLDQ2IEBACitjbWFrZV9taW5pbXVtX3JlcXVpcmVkKFZFUlNJT04gMy4xMCkKKworcHJv
 amVjdChkZW5zaXR5IEMpCisKK29wdGlvbihCVUlMRF9TVEFUSUNfTElCUyAiQnVpbGQgc3RhdGlj
 IGxpYnMiIE9OKQorb3B0aW9uKEJVSUxEX0JFTkNITUFSSyAiQnVpbGQgYmVuY2htYXJrIiBPRkYp
 CisKK2FkZF9jb21waWxlX29wdGlvbnMoIi1Xbm8tZm9ybWF0IikKKworZmlsZShHTE9CX1JFQ1VS
-U0UgU1JDIHNyYy8qLmMpCitmaWxlKEdMT0JfUkVDVVJTRSBIRFIgc3JjLyouaCkKKworaWYoQlVJ
-TERfU0hBUkVEX0xJQlMpCisgIGFkZF9saWJyYXJ5KGRlbnNpdHkgU0hBUkVEICR7U1JDfSkKK2Vu
-ZGlmKCkKKworaWYoQlVJTERfU1RBVElDX0xJQlMpCisgIGFkZF9saWJyYXJ5KGRlbnNpdHlfc3Rh
-dGljIFNUQVRJQyAke1NSQ30pCisgIHNldF90YXJnZXRfcHJvcGVydGllcyhkZW5zaXR5X3N0YXRp
-YyBQUk9QRVJUSUVTIE9VVFBVVF9OQU1FIGRlbnNpdHkpCitlbmRpZigpCisKK2lmKEJVSUxEX0JF
-TkNITUFSSykKKyAgZmlsZShHTE9CX1JFQ1VSU0Ugc3JjX2NwdXRpbWUgYmVuY2htYXJrL2xpYnMv
-Y3B1dGltZS9zcmMvKi5jKQorICBhZGRfbGlicmFyeShjcHV0aW1lIFNUQVRJQyAke3NyY19jcHV0
-aW1lfSkKKyAgZmlsZShHTE9CX1JFQ1VSU0Ugc3JjX3Nwb29reWhhc2ggYmVuY2htYXJrL2xpYnMv
-c3Bvb2t5aGFzaC9zcmMvKi5jKQorICBhZGRfbGlicmFyeShzcG9va3loYXNoIFNUQVRJQyAke3Ny
-Y19zcG9va3loYXNofSkKKyAgYWRkX2V4ZWN1dGFibGUoYmVuY2htYXJrIGJlbmNobWFyay9zcmMv
-YmVuY2htYXJrLmMpCisgIHRhcmdldF9saW5rX2xpYnJhcmllcyhiZW5jaG1hcmsgZGVuc2l0eSBj
-cHV0aW1lIHNwb29reWhhc2gpCitlbmRpZigpCisKK2lmKEJVSUxEX1NIQVJFRF9MSUJTKQorICBp
-bnN0YWxsKFRBUkdFVFMgZGVuc2l0eQorICAgIFJVTlRJTUUgREVTVElOQVRJT04gYmluCisgICAg
-QVJDSElWRSBERVNUSU5BVElPTiBsaWIke0xJQl9TVUZGSVh9CisgICAgTElCUkFSWSBERVNUSU5B
-VElPTiBsaWIke0xJQl9TVUZGSVh9KQorZW5kaWYoKQorCitpZihCVUlMRF9TVEFUSUNfTElCUykK
-KyAgaW5zdGFsbChUQVJHRVRTIGRlbnNpdHlfc3RhdGljIEFSQ0hJVkUgREVTVElOQVRJT04gbGli
-JHtMSUJfU1VGRklYfSkKK2VuZGlmKCkKKworaW5zdGFsbChGSUxFUyAke0hEUn0gREVTVElOQVRJ
-T04gaW5jbHVkZSkKKworaWYoQlVJTERfQkVOQ0hNQVJLKQorICBpbnN0YWxsKFRBUkdFVFMgYmVu
-Y2htYXJrIFJVTlRJTUUgREVTVElOQVRJT04gYmluKQorZW5kaWYoKQ==
+U0UgU1JDIHNyYy8qLmMpCitmaWxlKEdMT0JfUkVDVVJTRSBIRFIgc3JjLyouaCkKKworc2V0KGRl
+bnNpdHlfdGFyZ2V0cyBkZW5zaXR5KQorYWRkX2xpYnJhcnkoZGVuc2l0eSAke1NSQ30pCisKK2lm
+KEJVSUxEX1NIQVJFRF9MSUJTIEFORCBCVUlMRF9TVEFUSUNfTElCUykKKyAgYWRkX2xpYnJhcnko
+ZGVuc2l0eV9zdGF0aWMgU1RBVElDICR7U1JDfSkKKyAgc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGRl
+bnNpdHlfc3RhdGljIFBST1BFUlRJRVMgT1VUUFVUX05BTUUgZGVuc2l0eSkKKyAgbGlzdChBUFBF
+TkQgZGVuc2l0eV90YXJnZXRzIGRlbnNpdHlfc3RhdGljKQorZW5kaWYoKQorCitpZihCVUlMRF9C
+RU5DSE1BUkspCisgIGZpbGUoR0xPQl9SRUNVUlNFIHNyY19jcHV0aW1lIGJlbmNobWFyay9saWJz
+L2NwdXRpbWUvc3JjLyouYykKKyAgYWRkX2xpYnJhcnkoY3B1dGltZSBTVEFUSUMgJHtzcmNfY3B1
+dGltZX0pCisgIGZpbGUoR0xPQl9SRUNVUlNFIHNyY19zcG9va3loYXNoIGJlbmNobWFyay9saWJz
+L3Nwb29reWhhc2gvc3JjLyouYykKKyAgYWRkX2xpYnJhcnkoc3Bvb2t5aGFzaCBTVEFUSUMgJHtz
+cmNfc3Bvb2t5aGFzaH0pCisgIGFkZF9leGVjdXRhYmxlKGJlbmNobWFyayBiZW5jaG1hcmsvc3Jj
+L2JlbmNobWFyay5jKQorICB0YXJnZXRfbGlua19saWJyYXJpZXMoYmVuY2htYXJrIGRlbnNpdHkg
+Y3B1dGltZSBzcG9va3loYXNoKQorZW5kaWYoKQorCitpbnN0YWxsKFRBUkdFVFMgJHtkZW5zaXR5
+X3RhcmdldHN9CisgIFJVTlRJTUUgREVTVElOQVRJT04gYmluCisgIEFSQ0hJVkUgREVTVElOQVRJ
+T04gbGliJHtMSUJfU1VGRklYfQorICBMSUJSQVJZIERFU1RJTkFUSU9OIGxpYiR7TElCX1NVRkZJ
+WH0pCitlbmRpZigpCisKK2luc3RhbGwoRklMRVMgJHtIRFJ9IERFU1RJTkFUSU9OIGluY2x1ZGUv
+ZGVuc2l0eSkKKworaWYoQlVJTERfQkVOQ0hNQVJLKQorICBpbnN0YWxsKFRBUkdFVFMgYmVuY2ht
+YXJrIFJVTlRJTUUgREVTVElOQVRJT04gYmluKQorZW5kaWYoKQ==
 XB64_PATCH
 
-# Filelist
-# --------
-# include/lion_encode.h
-# include/globals.h
-# include/algorithms.h
-# include/buffer.h
-# include/dictionaries.h
-# include/lion_decode.h
-# include/cheetah_encode.h
-# include/lion.h
-# include/lion_form_model.h
-# include/chameleon_dictionary.h
-# include/chameleon_encode.h
-# include/cheetah.h
-# include/cheetah_decode.h
-# include/cheetah_dictionary.h
-# include/lion_dictionary.h
-# include/header.h
-# include/chameleon_decode.h
-# include/chameleon.h
-# include/density_api.h
-# lib/pkgconfig/density.pc
-# lib/libdensity.a
-# lib/libdensity.so
-# bin/benchmark
+# cpu av8 av7 x86 x64
+# NDK +++ +++ .   .  clang
+# GNU +++ +++ .  +++ gcc
+# WIN +++ .   .  +++ clang/gcc
+

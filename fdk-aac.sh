@@ -9,14 +9,11 @@ cfg='ag'
 eta='180'
 cb1="--enable-example"
 
-lst_inc=' fdk-aac/FDK_audio.h
-	fdk-aac/genericStds.h
-	fdk-aac/aacdecoder_lib.h
-	fdk-aac/aacenc_lib.h
-	fdk-aac/syslib_channelMapDescr.h
-	fdk-aac/machine_type.h'
+lst_inc=' fdk-aac/*.h'
 lst_lib='libfdk-aac'
 lst_bin='aac-enc'
+lst_lic='MODULE_LICENSE_FRAUNHOFER OWNERS NOTICE'
+lst_pc='fdk-aac.pc'
 
 . xbuilder.sh
   
@@ -38,17 +35,3 @@ start
 # NDK +++ +++ +++ +++ clang
 # GNU  .  +++  .   .  gcc
 # WIN  .   .   .   .  clang/gcc
-
-# Filelist
-# --------
-# include/fdk-aac/FDK_audio.h
-# include/fdk-aac/genericStds.h
-# include/fdk-aac/aacdecoder_lib.h
-# include/fdk-aac/aacenc_lib.h
-# include/fdk-aac/syslib_channelMapDescr.h
-# include/fdk-aac/machine_type.h
-# lib/pkgconfig/fdk-aac.pc
-# lib/libfdk-aac.la
-# lib/libfdk-aac.a
-# lib/libfdk-aac.so
-# bin/aac-enc
