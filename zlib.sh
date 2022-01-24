@@ -21,13 +21,13 @@ lst_pc='zlib.pc'
 . xbuilder.sh
 
 on_end(){
-    [ "$host_os" == "mingw32" ] && {
+    $host_mingw && {
         ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a 2>/dev/null
         ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a 2>/dev/null
     }
 }
 
-if [ "$host_os" == "android" ];then
+if $host_ndk;then
     pc_libdir="/lib/${arch}"
     create_pkgconfig_file zlib '-lz' "${SYSROOT}/usr"
 else

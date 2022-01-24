@@ -14,6 +14,12 @@ dep='libpng libjpeg'
 eta='30'
 pc_llib='-lguetzli'
 
+lst_inc=''
+lst_lib='libguetzli.*'
+lst_bin='butteraugli'
+lst_lic='LICENSE'
+lst_pc=''
+
 . xbuilder.sh
 
 start
@@ -24,8 +30,6 @@ cmake_minimum_required(VERSION 2.8.12)
 project(guetzli CXX)
 option(BUILD_STATIC_LIBS "Build static libs" ON)
 option(BUILD_TOOLS "Build tools" ON)
-option(INSTALL_MAN "Install man" OFF)
-option(INSTALL_DOCS "Install docs" OFF)
 
 add_definitions("-Wno-format")
 
@@ -40,13 +44,15 @@ list(APPEND src_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/
 file(GLOB_RECURSE hdr_guetzli guetzli/*.h)
 list(APPEND hdr_guetzli ${CMAKE_SOURCE_DIR}/third_party/butteraugli/butteraugli/butteraugli.h)
 
+set(guetzli_targets guetzli)
 add_library(guetzli ${src_guetzli})
 target_link_libraries(guetzli PUBLIC ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
 
 if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
     add_library(guetzli_static STATIC ${src_guetzli})
-    set_target_properties(guetzli_static PROPERTIES OUTPUT_NAME guetzli)
     target_link_libraries(guetzli_static PRIVATE ${ZLIB_LIBRARIES} ${PNG_LIBRARIES} ${JPEG_LIBRARIES})
+    set_target_properties(guetzli_static PROPERTIES OUTPUT_NAME guetzli)
+    list(APPEND guetzli_targets guetzli_static)
 endif()
 
 if(BUILD_TOOLS)
@@ -56,20 +62,17 @@ if(BUILD_TOOLS)
     target_link_libraries(butteraugli guetzli)
 endif()
 
-install(TARGETS guetzli
+install(TARGETS ${guetzli_targets}
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib${LIB_SUFFIX}
     LIBRARY DESTINATION lib${LIB_SUFFIX})
-    
-if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
-  install(TARGETS guetzli_static ARCHIVE DESTINATION lib${LIB_SUFFIX})
-endif()
 
-install(FILES ${hdr_guetzli} DESTINATION include)
+install(FILES ${hdr_guetzli} DESTINATION include/guetzli)
 
 if(BUILD_TOOLS)
   install(TARGETS butteraugli RUNTIME DESTINATION bin)
 endif()
+
 XB_CREATE_CMAKELISTS
 
 # Filelist
