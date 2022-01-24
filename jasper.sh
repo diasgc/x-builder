@@ -1,8 +1,6 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK PP+ PP+ ... ... CLANG
-# GNU ... PP+ ... ... GCC
-# WIN ... ... ... PP+ CLANG/GCC
+
+# TODO patch src/libjasper/CMakeLists.txt to support dual static-shared build
 
 lib='jasper'
 apt='jasper'
@@ -16,20 +14,11 @@ cshk="JAS_ENABLE_SHARED"
 cbk="JAS_ENABLE_PROGRAMS"
 CFG="-DBUILD_TESTING=OFF -DJAS_ENABLE_DOC=OFF"
 
-lst_inc='jasper/jas_malloc.h jasper/jas_version.h
-	jasper/jas_dll.h jasper/jas_tmr.h
-	jasper/jas_export_cmake.h jasper/jas_init.h
-	jasper/jas_fix.h jasper/jas_compiler.h
-	jasper/jasper.h jasper/jas_getopt.h
-	jasper/jas_image.h jasper/jas_stream.h
-	jasper/jas_types.h jasper/jas_string.h
-	jasper/jas_icc.h jasper/jas_config.h
-	jasper/jas_thread.h jasper/jas_cm.h
-	jasper/jas_math.h jasper/jas_log.h
-	jasper/jas_tvp.h jasper/jas_seq.h
-	jasper/jas_debug.h'
+lst_inc='jasper/*.h'
 lst_lib='libjasper'
 lst_bin='jasper multithread imgcmp imginfo'
+lst_lic='COPYRIGHT.txt LICENSE.txt'
+lst_pc='jasper.pc'
 
 . xbuilder.sh
 
@@ -37,6 +26,10 @@ $host_mingw && CFG="-DWITH_STACK_PROTECTOR=OFF"
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK PP+ PP+ ... ... CLANG
+# GNU ... PP+ ... ... GCC
+# WIN ... ... ... PP+ CLANG/GCC
 
 # CMAKE config options             def.val
 # ALLOW_IN_SOURCE_BUILD             OFF

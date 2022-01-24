@@ -1,8 +1,5 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK ++  ++   .   .  clang
-# GNU ++   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
+
 
 lib='gmp'
 apt='libgmp-dev'
@@ -14,9 +11,16 @@ tls='mercurial'
 cfg='ac'
 eta='272'
 mkc='distclean'
-lst_inc='gmp.h'
-lst_lib='libgmp'
+
+
 lst_bin=''
+
+lst_inc='gmp.h'
+lst_lib='libgmp.*'
+lst_bin=''
+lst_lic='COPYING.LESSERv3 COPYINGv2 COPYINGv3 AUTHORS'
+lst_pc='gmp.pc'
+
 . xbuilder.sh
 
 CFG="CC_FOR_BUILD=cc"
@@ -25,7 +29,6 @@ $host_mingw && CFG+=" --enable-fat"
 
 source_config(){
   # from bootstrap:
-  cd $SRCDIR
   rm -rf autom4te.cache
   autoreconf -i -s >/dev/null 2>&1
   cat >doc/version.texi <<-EOF
@@ -38,14 +41,7 @@ source_config(){
 
 start
 
-# Filelist
-# --------
-# include/gmp.h
-# lib/pkgconfig/gmp.pc
-# lib/libgmp.la
-# lib/libgmp.so
-# lib/libgmp.a
-# share/info/gmp.info
-# share/info/gmp.info-2
-# share/info/gmp.info-1
-# share/info/dir
+# cpu av8 av7 x86 x64
+# NDK ++  ++   .   .  clang
+# GNU ++   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc

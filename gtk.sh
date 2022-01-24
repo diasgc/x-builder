@@ -15,13 +15,11 @@ CFG='-Ddemos=false -Dbuild-examples=false
      -Dbuild-tests=false -Dwin32-backend=false'
 API=28
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 

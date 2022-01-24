@@ -11,10 +11,9 @@ sty='git'
 cfg='ac'
 dep='libjpeg'
 eta='60'
+
 . xbuilder.sh
 
-
-CFG="--with-pic=1 --with-sysroot=${SYSROOT}"
 
 start
 

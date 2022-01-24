@@ -13,8 +13,10 @@ pc_url=$url
 pc_llib='-lxvidcore'
 
 lst_inc='xvid.h'
-lst_lib='libxvidcore'
+lst_lib='libxvidcore.*'
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc='xvidcore.pc'
 
 . xbuilder.sh
 
