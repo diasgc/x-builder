@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# cpu av8 av7 x86 x64
-# NDK +++ +++ +++ +++ clang
-# GNU +++ +++ +++ +++ gcc
-# WIN +++ +++ +++ +++ clang/gcc
-
 lib='fastlz'
 dsc='Small & portable byte-aligned LZ77 compression'
 lic='MIT'
@@ -12,6 +7,12 @@ src='https://github.com/ariya/FastLZ.git'
 cfg='cmake'
 eta='30'
 pc_llib="-lfastlz"
+
+lst_inc='fastlz.h'
+lst_lib='libfastlz.*'
+lst_bin='6pack 6unpack'
+lst_lic='LICENSE.MIT README.md'
+lst_pc='fastlz.pc'
 
 . xbuilder.sh
 
@@ -48,6 +49,11 @@ bikKK2VuZGlmKCkKKworaWYoSU5TVEFMTF9ET0NTKQorICBpbnN0YWxsKEZJTEVTIExJQ0VO
 U0UuTUlUIFJFQURNRS5tZCBERVNUSU5BVElPTiBzaGFyZS9kb2NzL2Zhc3RseikKK2VuZGlm
 KCkKXCBObyBuZXdsaW5lIGF0IGVuZCBvZiBmaWxlCg==
 XB64_PATCH
+
+# cpu av8 av7 x86 x64
+# NDK +++ +++ +++ +++ clang
+# GNU +++ +++ +++ +++ gcc
+# WIN +++ +++ +++ +++ clang/gcc
 
 # Filelist
 # --------

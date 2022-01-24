@@ -15,13 +15,17 @@ tls='gobject-introspection'
 dep='libiconv libpng libjpeg'
 CFG="-Dinstalled_tests=false -Dgtk_doc=false"
 
-#cshk=''
-#cstk=''
-#cbk=''
-
-lst_inc=''
+lst_inc='libintl.h
+ glib-2.0/*.h 
+ glib-2.0/glib/*.h
+ glib-2.0/gobject/*.h
+ glib-2.0/gio/*.h
+ gdk-pixbuf-2.0/gdk-pixbuf/*.h
+ gio-unix-2.0/gio/*.h'
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 

@@ -1,11 +1,5 @@
 #!/bin/bash
-#             a8  a7  x86 x64
-# ndk-clang   ++  ++  FF  ++ 
-# linux-gnu   ++  ++  ++. ++ 
-# mingw-llvm  ... ... ... ...
 
-# note: vorbis --shared build requires ogg --shared
-# otherwise relocation errors may occur
 lib='vorbis'
 apt='libvorbis0a'
 dsc='Ogg Vorbis audio format'
@@ -14,7 +8,13 @@ src='https://github.com/xiph/vorbis.git'
 cfg='ag'
 dep='ogg'
 eta='42'
-# LOADER --------------------------------------
+
+lst_inc='vorbis/*.h'
+lst_lib='libvorbisfile.* libvorbisenc.* libvorbis.*'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='vorbisfile.pc vorbisenc.pc vorbis.pc'
+
 . xbuilder.sh
 
 case $cfg in
@@ -37,22 +37,10 @@ build_patch_config(){
 
 start
 
-# Filelist
-# --------
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
-# include/vorbis/vorbisfile.h
-# include/vorbis/vorbisenc.h
-# include/vorbis/codec.h
-# lib/pkgconfig/vorbisfile.pc
-# lib/pkgconfig/vorbisenc.pc
-# lib/pkgconfig/vorbis.pc
-# lib/libvorbisfile.so.3.3.8
-# lib/libvorbisenc.a
-# lib/libvorbisenc.la
-# lib/libvorbis.so.0.4.9
-# lib/libvorbisfile.a
-# lib/libvorbisenc.so.2.0.12
-# lib/libvorbis.a
-# lib/libvorbisfile.la
-# lib/libvorbis.la
-# share/aclocal/vorbis.m4
+# note: vorbis --shared build requires ogg --shared
+# otherwise relocation errors may occur
