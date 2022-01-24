@@ -8,7 +8,7 @@ vrs="1.3.7"
 src="https://downloads.xvid.com/downloads/xvidcore-${vrs}.tar.gz"
 cfg='ac'
 eta='20'
-
+config_dir='build/generic'
 pc_url=$url
 pc_llib='-lxvidcore'
 
@@ -21,12 +21,8 @@ lst_pc='xvidcore.pc'
 . xbuilder.sh
 
 unset CSH # unsupported static/shared tags
-SRCDIR=$SRCDIR/build/generic
 
-
-case $arch in
-	i686-linux-android) CFG="$CFG --disable-assembly";;
-esac
+$host_ndk && $host_x86 && CFG+=" --disable-assembly";;
 
 start
 

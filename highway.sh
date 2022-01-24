@@ -15,38 +15,56 @@ lcv='0.14.2'
 
 CFG="-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DHWY_EXAMPLES_TESTS_INSTALL=ON"
 
-lst_inc='hwy/nanobenchmark.h
-	hwy/detect_targets.h
-	hwy/detect_compiler_arch.h
-	hwy/tests/test_util-inl.h
-	hwy/tests/hwy_gtest.h
-	hwy/tests/test_util.h
-	hwy/contrib/sort/sort-inl.h
-	hwy/contrib/image/image.h
-	hwy/contrib/math/math-inl.h
-	hwy/contrib/dot/dot-inl.h
-	hwy/highway.h
-	hwy/targets.h
-	hwy/base.h
-	hwy/aligned_allocator.h
-	hwy/ops/x86_512-inl.h
-	hwy/ops/arm_sve-inl.h
-	hwy/ops/generic_ops-inl.h
-	hwy/ops/arm_neon-inl.h
-	hwy/ops/shared-inl.h
-	hwy/ops/x86_128-inl.h
-	hwy/ops/wasm_128-inl.h
-	hwy/ops/x86_256-inl.h
-	hwy/ops/set_macros-inl.h
-	hwy/ops/scalar-inl.h
-	hwy/cache_control.h
-	hwy/foreach_target.h'
-lst_lib='libhwy_test libhwy libhwy_contrib'
+lst_inc='hwy/*.h hwy/tests/*.h hwy/contrib/*.h hwy/*.h hwy/ops/*.h'
+lst_lib='libhwy.* libhwy_test.* libhwy_contrib.*'
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc='libhwy.pc libhwy-test.pc libhwy-contrib.pc'
 
 . xbuilder.sh
 
 start
+
+<<'TODO_PATCH_CMAKE'
+set(hwy_targets hwy hwy_contrib hwy_test)
+if(BUILD_STATIC_LIBS AND BUILD_SHARED_LIBS)
+  add_library(hwy_static STATIC ${HWY_SOURCES})
+  target_compile_definitions(hwy_static PUBLIC "${DLLEXPORT_TO_DEFINE}")
+  target_compile_options(hwy_static PRIVATE ${HWY_FLAGS})
+  set_property(TARGET (hwy_static PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(hwy_static PROPERTIES VERSION ${LIBRARY_VERSION} SOVERSION ${LIBRARY_SOVERSION})
+  set_target_properties(hwy_static PROPERTIES OUTPUT_NAME hwy)
+  target_include_directories(hwy_static PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+  target_compile_features(hwy_static PUBLIC cxx_std_11)
+  set_target_properties(hwy_static PROPERTIES
+  LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/hwy/hwy.version)
+  if(UNIX)
+    set_property(TARGET (hwy_static APPEND_STRING PROPERTY
+      LINK_FLAGS " -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/hwy/hwy.version")
+  endif()
+  add_library(hwy_contrib_static STATIC ${HWY_CONTRIB_SOURCES})
+  target_link_libraries(hwy_contrib_static hwy_static)
+  target_compile_options(hwy_contrib_static PRIVATE ${HWY_FLAGS})
+  set_target_properties(hwy_static PROPERTIES OUTPUT_NAME hwy_contrib)
+  set_property(TARGET (hwy_contrib_static PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(hwy_contrib_static PROPERTIES VERSION ${LIBRARY_VERSION} SOVERSION ${LIBRARY_SOVERSION})
+  target_include_directories(hwy_contrib_static PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+  target_compile_features(hwy_contrib_static PUBLIC cxx_std_11)
+
+  add_library(hwy_test_static STATIC ${HWY_TEST_SOURCES})
+  set_target_properties(hwy_test_static PROPERTIES OUTPUT_NAME hwy_test)
+  target_link_librariesh(wy_test_static hwy_static)
+  target_compile_options(hwy_test_static PRIVATE ${HWY_FLAGS})
+  set_property(TARGET hwy_test_static PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(hwy_test_static PROPERTIES VERSION ${LIBRARY_VERSION} SOVERSION ${LIBRARY_SOVERSION})
+  target_include_directories(hwy_test_static PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+  target_compile_features(hwy_test_static PUBLIC cxx_std_11)
+  list(APPEND hwy_targets hwy_static hwy_contrib_static hwy_test_static)
+endif()
+
+install(TARGETS ${hwy_targets}
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+TODO_PATCH_CMAKE
 
 # Filelist
 # --------
