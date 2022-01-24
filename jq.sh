@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN +++  .   .   .  clang/gcc
 
 lib='jq'
 dsc='Lightweight and flexible command-line JSON processor'
@@ -13,17 +9,24 @@ cfg='ar'
 dep='oniguruma'
 eta='575'
 pc_llib='-ljq'
+
 lst_inc='jv.h jq.h'
-lst_lib='libjq'
+lst_lib='libjq.*'
 lst_bin='jq'
-lst_lic='share/doc/jq/COPYING'
+lst_lic='COPYING AUTHORS'
+lst_pc='jq.pc'
 
 . xbuilder.sh
 
-CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=$LIBSDIR"
+CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=${dir_install}"
 unset CSH
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 # Filelist
 # --------

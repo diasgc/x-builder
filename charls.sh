@@ -18,6 +18,8 @@ lst_pc='charls.pc'
 
 . xbuilder.sh
 
+# unsupported dual static shared build
+# todo patch src/CMakeLists.txt
 start
 
 # cpu av8 av7 x86 x64

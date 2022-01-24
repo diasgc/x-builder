@@ -12,10 +12,28 @@ lic='Boost'
 src='https://github.com/chriskohlhoff/asio.git'
 cfg='ag'
 eta='10'
-lst_inc=''
+dir_config='asio'
+
+lst_inc='asio.hpp
+asio/*.hpp
+asio/experimental/*.hpp
+asio/traits/*.hpp
+asio/generic/*.hpp
+asio/impl/*.hpp
+asio/ip/*.hpp
+asio/execution/*.hpp
+asio/ssl/*.hpp
+asio/posix/*.hpp
+asio/detail/*.hpp
+asio/detail/impl/*.hpp
+asio/ts/*.hpp
+asio/local/*.hpp
+asio/windows/*.hpp'
 lst_lib=''
 lst_bin=''
-dir_config='asio'
+lst_lic='asio/LICENSE_1_0.txt asio/COPYING'
+lst_pc=''
+
 
 . xbuilder.sh
 

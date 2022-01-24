@@ -17,19 +17,16 @@ eta='100'
 #--enable-native=yes --enable-fat=no --disable-openmp
 
 lst_inc='blake2.h'
-lst_lib=$lib
+lst_lib='libb2.*'
 lst_bin=''
-lst_oth=''
+lst_lic='COPYING'
+lst_pc='libb2.pc'
 
 . xbuilder.sh
 
 start
 
-
-# Filelist
-# --------
-# include/blake2.h
-# lib/pkgconfig/libb2.pc
-# lib/libb2.so
-# lib/libb2.a
-# lib/libb2.la
+# cpu av8 av7 x86 x64
+# NDK ++  ++   .   .  clang
+# GNU ++   .   .   .  gcc
+# WIN ++   .   .   .  clang/gcc

@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libaec'
 apt='libaec-dev'
@@ -13,23 +9,20 @@ cfg='cmake'
 eta='30'
 pc_llib='-lsz -laec'
 
+lst_inc='libaec.h szlib.h'
+lst_lib='libsz.* libaec.*'
+lst_bin='aec'
+lst_lic='LICENSE.txt AUTHORS'
+lst_pc='libaec.pc libsz.pc'
+
 . xbuilder.sh
 
 CFG="-DBUILD_TESTING=OFF"
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
-# Filelist
-# --------
-
-# include/libaec.h
-# include/szlib.h
-# cmake/libaec-config-version.cmake
-# cmake/libaec-config.cmake
-# lib/libsz.a
-# lib/libaec.so
-# lib/libsz.so
-# lib/libaec.a
-# share/man/man1/aec.1
-# bin/aec

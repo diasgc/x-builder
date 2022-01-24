@@ -13,15 +13,18 @@ cfg='ag'
 pkg='ao'
 eta='60'
 
-lst_inc='ao/ao.h ao/plugin.h'
-lst_lib='libao'
+lst_inc='ao/*.h'
+lst_lib='libao.*'
 lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='ao.pc'
+
 
 . xbuilder.sh
 
 build_patch_config(){
 	#no docs
-	sed -i '/^SUBDIRS/ {s/ doc//}' $SRCDIR/Makefile
+	sed -i '/^SUBDIRS/ {s/ doc//}' ${dir_src}/Makefile
 }
 
 start

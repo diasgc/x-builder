@@ -11,7 +11,6 @@ dsc='Linux Audio Developers Simple Plugin API'
 lic='LGPL'
 vrs='1.16'
 src="http://www.ladspa.org/download/ladspa_sdk_${vrs}.tgz"
-sty='tgz'
 cfg='mk'
 dep='sndfile'
 eta='60'
@@ -24,12 +23,12 @@ dbld=$SRCDIR
 
 build_patch_config(){
 	CFG=("CC=$CC" "CPP=$CXX" \
-	"INSTALL_PLUGINS_DIR=${INSTALL_DIR}/lib" \
-	"INSTALL_INCLUDE_DIR=${INSTALL_DIR}/include" \
-	"INSTALL_BINARY_DIR=${INSTALL_DIR}/bin")
+	"INSTALL_PLUGINS_DIR=${dir_install_lib}" \
+	"INSTALL_INCLUDE_DIR=${dir_install_inc}" \
+	"INSTALL_BINARY_DIR=${dir_install_bin}")
 
-	sed -i "s|-I.$|-I. -I$LIBSDIR/include|g" Makefile
-	sed -i "s|-ldl -lm -lsndfile|-ldl -lm -L$LIBSDIR/lib -lsndfile|g" Makefile
+	sed -i "s|-I.$|-I. -I${dir_install_inc}|g" Makefile
+	sed -i "s|-ldl -lm -lsndfile|-ldl -lm -L${dir_install_lib} -lsndfile|g" Makefile
 	sed -i "s|-Werror|-Wno-error|g" Makefile
 }
 

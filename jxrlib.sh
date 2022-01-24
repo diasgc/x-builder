@@ -11,24 +11,19 @@ lic='BSD-2c'
 src='https://github.com/4creators/jxrlib.git'
 cfg='cmake'
 cbk='BUILD_EXECUTABLES'
+cstk='BUILD_STATIC_LIBS'
 
 pc_llib='-ljpegxr -jxrglue'
 
-lst_inc='libjxr/glue/JXRMeta.h libjxr/glue/JXRGlue.h \
-		 libjxr/image/perfTimer.h libjxr/image/strcodec.h \
-		 libjxr/image/ansi.h libjxr/image/xplatform_image.h \
-		 libjxr/image/x86/x86.h libjxr/image/decode.h \
-		 libjxr/image/common.h libjxr/image/strTransform.h \
-		 libjxr/image/windowsmediaphoto.h libjxr/image/encode.h \
-		 libjxr/common/wmspecstrings_undef.h libjxr/common/wmspecstring.h \
-		 libjxr/common/wmspecstrings_strict.h libjxr/common/guiddef.h \
-		 libjxr/common/wmspecstrings_adt.h libjxr/common/wmsal.h libjxr/test/JXRTest.h'
-lst_lib='libjpegxr libjxrglue'
+lst_inc='libjxr/glue/*.h libjxr/image/*.h libjxr/common/*.h libjxr/test/*.h'
+lst_lib='libjpegxr.* libjxrglue.*'
 lst_bin='JxrEncApp JxrDecApp'
+lst_lic='LICENSE AUTHORS'
+lst_pc='jpegxr.pc xrglue.pc'
 
 . xbuilder.sh
 
-CPPFLAGS="-Wno-implicit-int -Wno-endif-labels $CPPFLAGS"
+WFLAGS="-Wno-implicit-int -Wno-endif-labels"
 
 start
 
@@ -63,46 +58,42 @@ file(GLOB jpegxr_HDR image/sys/*.h image/decode/*.h image/encode/*.h)
 
 add_library(jpegxr_obj OBJECT ${jpegxr_SRC} ${jpegxr_HDR})
 
-add_library(jpegxr SHARED $<TARGET_OBJECTS:jpegxr_obj>)
+add_library(jpegxr $<TARGET_OBJECTS:jpegxr_obj>)
 set_target_properties(jpegxr PROPERTIES VERSION ${JXRLIB_LIB_VERSION} SOVERSION ${JXRLIB_SO_VERSION})
-
-add_library(jpegxr_static STATIC $<TARGET_OBJECTS:jpegxr_obj>)
-set_target_properties(jpegxr_static PROPERTIES VERSION ${JXRLIB_LIB_VERSION} SOVERSION ${JXRLIB_SO_VERSION} OUTPUT_NAME jpegxr RUNTIME_OUTPUT_NAME jpegxr ARCHIVE_OUTPUT_NAME jpegxr)
-
-install(TARGETS jpegxr
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib${LIB_SUFFIX}
-  ARCHIVE DESTINATION lib${LIB_SUFFIX}
-)
-
-install(TARGETS jpegxr_static
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib${LIB_SUFFIX}
-  ARCHIVE DESTINATION lib${LIB_SUFFIX}
-)
-
 
 # JXR-GLUE Library
 file(GLOB jxrglue_SRC jxrgluelib/*.c jxrtestlib/*.c)
 file(GLOB jxrglue_HDR jxrgluelib/*.h jxrtestlib/*.h)
 
 add_library(jxr_obj OBJECT ${jxrglue_SRC} ${jxrglue_HDR})
-
-add_library(jxrglue SHARED $<TARGET_OBJECTS:jxr_obj>)
-set_target_properties(jxrglue PROPERTIES VERSION ${JXRLIB_LIB_VERSION} SOVERSION ${JXRLIB_SO_VERSION})
+add_library(jxrglue $<TARGET_OBJECTS:jxr_obj>)
+set_target_properties(jxrglue PROPERTIES
+  VERSION ${JXRLIB_LIB_VERSION}
+  SOVERSION ${JXRLIB_SO_VERSION})
 target_link_libraries(jxrglue PRIVATE jpegxr m)
+set(jpegxr_targets jpegxr jxrglue)
 
-add_library(jxrglue_static STATIC $<TARGET_OBJECTS:jxr_obj>)
-set_target_properties(jxrglue_static PROPERTIES VERSION ${JXRLIB_LIB_VERSION} SOVERSION ${JXRLIB_SO_VERSION} OUTPUT_NAME jxrglue RUNTIME_OUTPUT_NAME jxrglue ARCHIVE_OUTPUT_NAME jxrglue)
-target_link_libraries(jxrglue_static jpegxr_static m)
+if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
+  add_library(jpegxr_static STATIC $<TARGET_OBJECTS:jpegxr_obj>)
+  set_target_properties(jpegxr_static PROPERTIES
+    VERSION ${JXRLIB_LIB_VERSION}
+    SOVERSION ${JXRLIB_SO_VERSION}
+    OUTPUT_NAME jpegxr
+    RUNTIME_OUTPUT_NAME jpegxr
+    ARCHIVE_OUTPUT_NAME jpegxr)
 
-install(TARGETS jxrglue
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib${LIB_SUFFIX}
-  ARCHIVE DESTINATION lib${LIB_SUFFIX}
-)
+  add_library(jxrglue_static STATIC $<TARGET_OBJECTS:jxr_obj>)
+  set_target_properties(jxrglue_static PROPERTIES
+    VERSION ${JXRLIB_LIB_VERSION}
+    SOVERSION ${JXRLIB_SO_VERSION}
+    OUTPUT_NAME jxrglue
+    RUNTIME_OUTPUT_NAME jxrglue
+    ARCHIVE_OUTPUT_NAME jxrglue)
+  target_link_libraries(jxrglue_static jpegxr_static m)
+  list(APPEND jpegxr_targets jpegxr_static jxrglue_static)
+endif()
 
-install(TARGETS jxrglue_static
+install(TARGETS ${jpegxr_targets}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib${LIB_SUFFIX}
   ARCHIVE DESTINATION lib${LIB_SUFFIX}
