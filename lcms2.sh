@@ -22,3 +22,24 @@ lst_pc='lcms2.pc'
 . xbuilder.sh
 
 start
+
+# Filelist
+# --------
+# include/lcms2_plugin.h
+# include/lcms2.h
+# lib/pkgconfig/lcms2.pc
+# lib/liblcms2.la
+# lib/liblcms2.a
+# lib/liblcms2.so
+# share/man/man1/jpgicc.1
+# share/man/man1/transicc.1
+# share/man/man1/psicc.1
+# share/man/man1/linkicc.1
+# share/man/man1/tificc.1
+# share/doc/lcms2/AUTHORS
+# share/doc/lcms2/COPYING
+# bin/linkicc
+# bin/psicc
+# bin/tificc
+# bin/jpgicc
+# bin/transicc

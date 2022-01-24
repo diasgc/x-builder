@@ -12,11 +12,15 @@ eta='30'
 mki=install
 API=26 # min api necessary for declaration of functions like 'shmget'
 
+lst_inc='numa.h numaif.h numacompat1.h'
+lst_lib='libnuma.*'
+lst_bin='numademo memhog migspeed numastat numactl migratepages'
+lst_lic='LICENSE.GPL2 LICENSE.LGPL2.1'
+lst_pc='numa.pc'
+
 . xbuilder.sh
 
 $host_mingw && doErr "Non-posix OS cannot use LUMA. Exiting...\n"
-
-#CFG="--with-sysroot=${SYSROOT}"
 
 source_config(){
   #pushdir $SRCDIR
@@ -27,11 +31,10 @@ source_config(){
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   +   X   +   +   X   X   .  static
-#  +   +   +   +   .   X   +   +   .   X   .  shared
-#  +   +   +   +   .   X   +   +   .   X   .  bin
-# NUMA is not available for windows
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN -not available- clang/gcc
 
 # Filelist
 # --------
@@ -49,6 +52,8 @@ start
 # share/man/man8/numactl.8
 # share/man/man8/memhog.8
 # share/man/man2/move_pages.2
+# share/doc/libnuma/LICENSE.LGPL2.1
+# share/doc/libnuma/LICENSE.GPL2
 # bin/numademo
 # bin/memhog
 # bin/migspeed
