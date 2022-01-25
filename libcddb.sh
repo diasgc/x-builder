@@ -13,35 +13,28 @@ cfg='ac'
 dep='libiconv libcdio' # optional
 eta='10'
 
-. xbuilder.sh
+lst_inc='cddb/*.h'
+lst_lib='libcddb.*'
+lst_bin='cddb_query'
+lst_lic='COPYING AUTHORS'
+lst_pc='libcddb.pc'
 
 CFG="--without-cdio"
+WFLAGS='-Wno-header-guard'
+
+. xbuilder.sh
 
 source_patch(){
     # ix clang undefined symbol rpl_malloc error by disabling AC_FUNC_MALLOC
-    sed -i 's|AC_FUNC_MALLOC|#AC_FUNC_MALLOC|' $SRCDIR/configure.ac
+    sed -i 's|AC_FUNC_MALLOC|#AC_FUNC_MALLOC|' configure.ac
     # regenerate
-    doAutoreconf $SRCDIR
+    doAutoreconf ${dir_src}
 }
-WFLAGS='-Wno-header-guard'
+
 
 start
 
-# Filelist
-# --------
-
-# include/cddb/cddb_error.h
-# include/cddb/cddb_track.h
-# include/cddb/cddb_disc.h
-# include/cddb/cddb_cmd.h
-# include/cddb/cddb.h
-# include/cddb/cddb_config.h
-# include/cddb/cddb_conn.h
-# include/cddb/cddb_site.h
-# include/cddb/version.h
-# include/cddb/cddb_log.h
-# lib/libcddb.a
-# lib/pkgconfig/libcddb.pc
-# lib/libcddb.so
-# lib/libcddb.la
-# bin/cddb_query
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc

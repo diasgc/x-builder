@@ -380,7 +380,6 @@ start(){
     [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
     [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   fi
-
   if fn_defined 'build_config'; then
     build_config
   else case $build_tool in
@@ -388,7 +387,7 @@ start(){
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
       [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
       [ -f "${cmake_toolchain_file}" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
-      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
+      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       #MAKE_EXECUTABLE=cmake
@@ -486,6 +485,60 @@ start(){
   end_script
 }
 
+config_buildtype_args_cmake(){
+  local arr
+  if [ -n "${cfg_static}" ]; then
+      arr=(${cfg_static//|/ })
+      case ${#arr[@]} in
+        1) $build_static && CSH="-D${arr[0]}=ON" || CSH="-D${arr[0]}=OFF";;
+        2) $build_static && CSH="-D${arr[0]}" || CSH="-D${arr[1]}";;
+      esac
+      [ -z "${cfg_shared}" ] && cfg_shared="BUILD_SHARED_LIBS"
+  fi
+  if [ -n "${cfg_shared}" ]; then
+    arr=(${cfg_shared//|/ })
+    case ${#arr[@]} in
+      1) $build_shared && CSH+=" -D${arr[0]}=ON" || CSH+=" -D${arr[0]}=OFF";;
+      2) $build_shared && CSH+=" -D${arr[1]}" || CSH+=" -D${arr[0]}";;
+    esac
+  fi
+  if [ -n "${cfg_bin}" ]; then
+    arr=(${cfg_bin//|/ })
+    case ${#arr[@]} in
+      1) $build_bin && CBN="-D${arr[0]}=ON" || CBN="-D${arr[0]}=OFF";;
+      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+    esac
+  fi
+}
+
+config_buildtype_args_autotools(){
+  local arr
+  if [ -n "${cfg_static}" ]; then
+      arr=(${cfg_static//|/ })
+      case ${#arr[@]} in
+        1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
+        2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
+      esac
+  fi
+  if [ -n "${cfg_shared}" ]; then
+    arr=(${cfg_shared//|/ })
+    case ${#arr[@]} in
+      1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
+      2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
+    esac
+  fi
+  if [ -n "${cfg_bin}" ]; then
+    arr=(${cfg_bin//|/ })
+    case ${#arr[@]} in
+      1) $build_bin && CBN="-D${arr[0]}=1" || CBN="-D${arr[0]}=0";;
+      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+    esac
+  fi
+}
+
+config_buildtype_args_meson(){
+
+}
 doStrip(){
   local libdir
   for dd in $(find ${dir_src} \( -name "*.a" -o -name "*.so" \));do
@@ -1198,11 +1251,14 @@ doAutogen(){
 }
 
 doAutoreconf(){
+  local d=${1}
   local var="autoreconf"
+  local od=$(pwd)
+  [ -z "${d}" ] && d=${dir_config}
   echo -ne "${CD}${var}${C0}"
-  pushdir $1
+  cd $d
   log_this autoreconf -fi
-  popdir
+  cd $od
   logok $var
 }
 
@@ -1814,8 +1870,7 @@ set_buildtype_key(){
 
 # check build type and set defaults if no cst0 cst1 csh0 or csh1 value provided
 case $cfg in
-  cm|ccm|cmake|ccmake)
-    build_tool=cmake
+  cm|ccm|cmake|ccmake) build_tool=cmake
 
     [ -n "$cstk" ] && cst0="-D${cstk}=OFF" cst1="-D${cstk}=ON"
     [ -n "$cshk" ] && csh0="-D${cshk}=OFF" csh1="-D${cshk}=ON"
@@ -1830,8 +1885,7 @@ case $cfg in
     [ -n "$cbk" ] && cb0="-D${cbk}=OFF" cb1="-D${cbk}=ON"
 
     ;;
-  ab|am|ac|ar|ag|auto*)
-    build_tool=automake
+  ab|am|ac|ar|ag|auto*) build_tool=automake
     [ -z "$cst0" ] && cst0="--disable-static"
     [ -z "$cst1" ] && cst1="--enable-static"
     [ -z "$csh0" ] && csh0="--disable-shared"
@@ -1848,8 +1902,7 @@ case $cfg in
       esac
     }
     ;;
-  meson)
-    build_tool=meson
+  meson) build_tool=meson
     $build_static && ! $build_shared && CSH="-Ddefault_library=static"
     $build_shared && ! $build_static && CSH="-Ddefault_library=shared"
     $build_static && $build_shared && CSH="-Ddefault_library=both"

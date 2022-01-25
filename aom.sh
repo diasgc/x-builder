@@ -8,6 +8,8 @@ src='https://aomedia.googlesource.com/aom.git'
 cfg='cmake'
 tls='perl'
 eta='200'
+cfg_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
+cfg_shared='CONFIG_SHARED=0|CONFIG_SHARED=1'
 cst0="-DCONFIG_STATIC=0"
 cst1="-DCONFIG_STATIC=1"
 csh0="-DCONFIG_SHARED=0"
