@@ -1,43 +1,44 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='nettle'
 dsc='Nettle - a low-level cryptographic library'
 lic='LGPL-3.0'
 src='https://git.lysator.liu.se/nettle/nettle.git'
 cfg='ac'
+automake_cmd='./.bootstrap'
 dep='gmp'
 prp='lib64/pkgconfig/nettle.pc'
-eta='40'
+eta='90'
 mkc='distclean'
+
+lst_inc='nettle/*.h'
+lst_lib='libhogweed.* libnettle.*'
+lst_bin='pkcs1-conv nettle-lfib-stream nettle-hash nettle-pbkdf2 sexp-conv'
+lst_lic='COPYINGv2 COPYINGv3 COPYING.LESSERv3'
+lst_pc='hogweed.pc nettle.pc'
 
 . xbuilder.sh
 
 CFG="--disable-documentation --disable-mini-gmp --enable-pic CC_FOR_BUILD=gcc"
 
 $host_arm && CFG+=" --enable-arm-neon" || CFG+=" --enable-x86-sha-ni --enable-x86-aesni"
-case $host_os in android|mingw32) pushvar_l CFG "--disable-assembler";; esac
-[ "$arch" == "$BUILD_TRIP" ] && PKGDIR=$INSTALL_DIR/lib64/pkgconfig
-
-source_patch(){
-  pushdir $SRCDIR
-  ./.bootstrap
-  popdir
-}
+($host_ndk || $host_mingw) && CFG+=' --disable-assembler'
+$host_cross || dir_install_pc=${dir_install}/lib64/pkgconfig
 
 build_pkgconfig_file(){
-  [ -d ${INSTALL_DIR}/lib64 ] && [ ! -d ${INSTALL_DIR}/lib ] && ln -s ${INSTALL_DIR}/lib64 ${INSTALL_DIR}/lib
+  [ -d "${dir_install}/lib64" ] && [ ! -d "${dir_install}/lib" ] && ln -s "${dir_install}/lib64" "${dir_install}/lib"
   return 0
 }
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
-
 # include/nettle/nettle-types.h
 # include/nettle/sha.h
 # include/nettle/ripemd160.h
@@ -94,6 +95,7 @@ start
 # include/nettle/ccm.h
 # include/nettle/gcm.h
 # include/nettle/dsa-compat.h
+# include/nettle/sm3.h
 # include/nettle/des.h
 # include/nettle/chacha-poly1305.h
 # include/nettle/hkdf.h
@@ -111,6 +113,9 @@ start
 # lib/libnettle.a
 # lib/libhogweed.a
 # lib/libnettle.so.8.2
+# share/doc/nettle/COPYINGv2
+# share/doc/nettle/COPYING.LESSERv3
+# share/doc/nettle/COPYINGv3
 # bin/pkcs1-conv
 # bin/nettle-lfib-stream
 # bin/nettle-hash

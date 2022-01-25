@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 lib='gmp'
 apt='libgmp-dev'
 dsc='GNU Multiple Precision Arithmetic Library'
@@ -11,9 +10,6 @@ tls='mercurial'
 cfg='ac'
 eta='272'
 mkc='distclean'
-
-
-lst_bin=''
 
 lst_inc='gmp.h'
 lst_lib='libgmp.*'
@@ -45,3 +41,20 @@ start
 # NDK ++  ++   .   .  clang
 # GNU ++   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+
+# Filelist
+# --------
+# include/gmp.h
+# lib/pkgconfig/gmp.pc
+# lib/libgmp.la
+# lib/libgmp.so
+# lib/libgmp.a
+# share/doc/gmp/COPYINGv2
+# share/doc/gmp/AUTHORS
+# share/doc/gmp/COPYING.LESSERv3
+# share/doc/gmp/COPYINGv3
+# share/info/gmp.info
+# share/info/gmp.info-2
+# share/info/gmp.info-1
+# share/info/dir

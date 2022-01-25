@@ -10,27 +10,14 @@ apt='libuv1-dev'
 dsc='Cross-platform asynchronous I/O'
 lic='Other'
 src='https://github.com/libuv/libuv.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='40'
 
-lst_inc='uv/stdint-msvc2008.h
-	uv/android-ifaddrs.h
-	uv/tree.h
-	uv/sunos.h
-	uv/aix.h
-	uv/os390.h
-	uv/win.h
-	uv/errno.h
-	uv/bsd.h
-	uv/version.h
-	uv/threadpool.h
-	uv/posix.h
-	uv/linux.h
-	uv/unix.h
-	uv/darw'
+lst_inc='uv.h uv/*.h'
 lst_lib='libuv'
 lst_bin=''
+lst_lic='LICENSE LICENSE-docs'
+lst_pc='libuv.pc libuv-static.pc'
 
 . xbuilder.sh
 

@@ -459,11 +459,16 @@ start(){
       pcf=$(echo $l | sed 's|^lib||')
       create_pkgconfig_file $pcf "-l$pcf"
     done
-  else
-    fn_defined 'build_pkgconfig_file' && \
-    do_log 'pkgcfg' build_pkgconfig_file || \
-    [ -n "$pc_llib" ] && \
-    do_log 'write_pc' create_pkgconfig_file $pkg $pc_llib
+  elif fn_defined 'build_pkgconfig_file'; then
+    do_log 'pkgconfig' build_pkgconfig_file
+  elif [ -n "$pc_llib" ]; then
+    do_log 'pkgconfig' create_pkgconfig_file $pkg $pc_llib
+  elif [ -n "${pc_llibs}" ]; then
+    local p
+    for f in ${pc_llibs}; do
+      [ "${f::2}" == "-l" ] && p="${f:2}" || p="$f"
+      create_pkgconfig_file $p $f
+    done
   fi
 
   # create package
