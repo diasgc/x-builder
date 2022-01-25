@@ -380,7 +380,6 @@ start(){
     [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
     [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   fi
-
   if fn_defined 'build_config'; then
     build_config
   else case $build_tool in
@@ -484,6 +483,60 @@ start(){
   end_script
 }
 
+config_buildtype_args_cmake(){
+  local arr
+  if [ -n "${cfg_static}" ]; then
+      arr=(${cfg_static//|/ })
+      case ${#arr[@]} in
+        1) $build_static && CSH="-D${arr[0]}=ON" || CSH="-D${arr[0]}=OFF";;
+        2) $build_static && CSH="-D${arr[0]}" || CSH="-D${arr[1]}";;
+      esac
+      [ -z "${cfg_shared}" ] && cfg_shared="BUILD_SHARED_LIBS"
+  fi
+  if [ -n "${cfg_shared}" ]; then
+    arr=(${cfg_shared//|/ })
+    case ${#arr[@]} in
+      1) $build_shared && CSH+=" -D${arr[0]}=ON" || CSH+=" -D${arr[0]}=OFF";;
+      2) $build_shared && CSH+=" -D${arr[1]}" || CSH+=" -D${arr[0]}";;
+    esac
+  fi
+  if [ -n "${cfg_bin}" ]; then
+    arr=(${cfg_bin//|/ })
+    case ${#arr[@]} in
+      1) $build_bin && CBN="-D${arr[0]}=ON" || CBN="-D${arr[0]}=OFF";;
+      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+    esac
+  fi
+}
+
+config_buildtype_args_autotools(){
+  local arr
+  if [ -n "${cfg_static}" ]; then
+      arr=(${cfg_static//|/ })
+      case ${#arr[@]} in
+        1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
+        2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
+      esac
+  fi
+  if [ -n "${cfg_shared}" ]; then
+    arr=(${cfg_shared//|/ })
+    case ${#arr[@]} in
+      1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
+      2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
+    esac
+  fi
+  if [ -n "${cfg_bin}" ]; then
+    arr=(${cfg_bin//|/ })
+    case ${#arr[@]} in
+      1) $build_bin && CBN="-D${arr[0]}=1" || CBN="-D${arr[0]}=0";;
+      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+    esac
+  fi
+}
+
+config_buildtype_args_meson(){
+
+}
 doStrip(){
   local libdir
   for dd in $(find ${dir_src} \( -name "*.a" -o -name "*.so" \));do
