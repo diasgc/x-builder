@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   ++o ++o ... ...
-# linux-gnu   ++o ... ... ...
-# mingw-llvm  ++o ... ... ...
-
 lib='libb2'
 apt='libb2-dev'
 dsc='BLAKE2 family of hash functions'
