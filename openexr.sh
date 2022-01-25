@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   +.+ ... ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
-
 lib='openexr'
 pkg='OpenEXR'
 apt="${lib}-dev"
@@ -15,16 +10,60 @@ cfg='cmake'
 eta='10'
 cbk='OPENEXR_BUILD_TOOLS'
 CFG="-DBUILD_TESTING=OFF -DOPENEXR_INSTALL_EXAMPLES=OFF"
-lst_inc=''
-lst_lib=''
-lst_bin=''
+
+lst_inc='OpenEXR/*.h'
+lst_lib='libOpenEXRCore-3_1.* libIex-3_1.* libOpenEXRUtil-3_1.* libOpenEXR-3_1.* libIlmThread-3_1.*'
+lst_bin='exrmultipart exrmakepreview exrenvmap exrmaketiled exrmultiview exrheader exrinfo exrstdattr exr2aces'
+lst_lic='LICENSE.md PATENTES CODEOWNERS'
+lst_pc='OpenEXR.pc'
 
 . xbuilder.sh
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
+
 # Filelist
 # --------
+# include/Imath/ImathTypeTraits.h
+# include/Imath/ImathFrustum.h
+# include/Imath/ImathInt64.h
+# include/Imath/ImathMatrixAlgo.h
+# include/Imath/ImathLine.h
+# include/Imath/ImathSphere.h
+# include/Imath/ImathEuler.h
+# include/Imath/ImathRandom.h
+# include/Imath/ImathLineAlgo.h
+# include/Imath/ImathInterval.h
+# include/Imath/halfLimits.h
+# include/Imath/ImathRoots.h
+# include/Imath/ImathColorAlgo.h
+# include/Imath/ImathConfig.h
+# include/Imath/ImathForward.h
+# include/Imath/ImathBoxAlgo.h
+# include/Imath/ImathNamespace.h
+# include/Imath/ImathFun.h
+# include/Imath/ImathGLU.h
+# include/Imath/ImathExport.h
+# include/Imath/ImathVecAlgo.h
+# include/Imath/ImathFrame.h
+# include/Imath/half.h
+# include/Imath/ImathBox.h
+# include/Imath/ImathGL.h
+# include/Imath/ImathVec.h
+# include/Imath/ImathMatrix.h
+# include/Imath/ImathPlane.h
+# include/Imath/ImathMath.h
+# include/Imath/ImathShear.h
+# include/Imath/ImathQuat.h
+# include/Imath/ImathPlatform.h
+# include/Imath/halfFunction.h
+# include/Imath/ImathColor.h
+# include/Imath/ImathFrustumTest.h
 # include/OpenEXR/ImfFlatImageLevel.h
 # include/OpenEXR/ImfHuf.h
 # include/OpenEXR/ImfChromaticitiesAttribute.h
@@ -164,16 +203,22 @@ start
 # include/OpenEXR/ImfAcesFile.h
 # include/OpenEXR/ImfDeepImageStateAttribute.h
 # include/OpenEXR/openexr_coding.h
+# lib/libImath-3_2.so
+# lib/libOpenEXRCore-3_1.so
+# lib/libIex-3_1.so
+# lib/libIlmThread-3_1.so
+# lib/libOpenEXR-3_1.so
+# lib/libOpenEXRUtil-3_1.so
+# lib/pkgconfig/Imath.pc
 # lib/pkgconfig/OpenEXR.pc
+# lib/cmake/Imath/ImathConfigVersion.cmake
+# lib/cmake/Imath/ImathTargets-release.cmake
+# lib/cmake/Imath/ImathTargets.cmake
+# lib/cmake/Imath/ImathConfig.cmake
 # lib/cmake/OpenEXR/OpenEXRConfigVersion.cmake
 # lib/cmake/OpenEXR/OpenEXRTargets.cmake
 # lib/cmake/OpenEXR/OpenEXRTargets-release.cmake
 # lib/cmake/OpenEXR/OpenEXRConfig.cmake
-# lib/libOpenEXRCore-3_1.a
-# lib/libIex-3_1.a
-# lib/libOpenEXRUtil-3_1.a
-# lib/libOpenEXR-3_1.a
-# lib/libIlmThread-3_1.a
 # bin/exrmultipart
 # bin/exrmakepreview
 # bin/exrenvmap

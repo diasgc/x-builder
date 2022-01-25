@@ -17,10 +17,6 @@ lst_pc='openh264.pc'
 
 . xbuilder.sh
 
-_build_make_package(){
-    DESTDIR=${1} ninja -C ${BUILD_DIR} install
-}
-
 start
 
 # cpu av8 av7 x86 x64

@@ -1,10 +1,6 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   ++o ++o ... ...
-# linux-gnu   ++o ... ... ...
-# mingw-llvm  ++o ... ... ...
-
+#vrs='0.98.1'
 lib='libb2'
 apt='libb2-dev'
 dsc='BLAKE2 family of hash functions'
@@ -30,3 +26,12 @@ start
 # NDK ++  ++   .   .  clang
 # GNU ++   .   .   .  gcc
 # WIN ++   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/blake2.h
+# lib/pkgconfig/libb2.pc
+# lib/libb2.so
+# lib/libb2.a
+# lib/libb2.la
+# share/doc/libb2/COPYING

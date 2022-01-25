@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   ++  ... ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
-
 lib='libuv'
 apt='libuv1-dev'
 dsc='Cross-platform asynchronous I/O'
@@ -22,6 +17,11 @@ lst_pc='libuv.pc libuv-static.pc'
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

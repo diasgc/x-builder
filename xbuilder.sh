@@ -391,6 +391,8 @@ start(){
       do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=$cmake_build_type ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
+      #MAKE_EXECUTABLE=cmake
+      #mkf='--build . --target install --config Release'
       ;;
     automake)
       [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
