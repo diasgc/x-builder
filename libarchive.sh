@@ -1,29 +1,41 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   F.. ... ... ...
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ...
-
 lib='libarchive'
 apt='libarchive-dev'
 dsc='Multi-format archive and compression library'
 lic='Other'
 src='https://github.com/libarchive/libarchive.git'
-cfg='cmake'
-dep='pcre expat libxml2 pcreposix libgcc openssl bzip2 liblzma libb2 lz4 zstd zlib'
-#cstk='BUILD_STATIC'
-#cshk='BUILD_SHARED'
-#cbk='BUILD_BENCHMARKS'
+cfg='ar'
+dep='libiconv bzip2 libb2 liblzma libzstd lz4 lzo zlib'
+mki='install'
 eta='100'
 
-#CFG="-DBUILD_TESTS=OFF -DBUILD_FUZZERS=OFF"
-
-lst_inc=''
-lst_lib=$lib
-lst_bin=''
-lst_oth=''
+lst_inc='archive.h archive_entry.h'
+lst_lib='libarchive.*'
+lst_bin='bsdcat bsdtar bsdcpio'
+lst_lic='COPYING'
+lst_pc='libarchive.pc'
 
 . xbuilder.sh
 
+$host_ndk && CPPFLAGS+=" -I./contrib/android/include"
+
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/archive.h
+# include/archive_entry.h
+# lib/pkgconfig/libarchive.pc
+# lib/libarchive.a
+# lib/libarchive.la
+# lib/libarchive.so
+# share/doc/libarchive/COPYING
+# bin/bsdcat
+# bin/bsdtar
+# bin/bsdcpio

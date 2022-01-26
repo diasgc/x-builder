@@ -1,14 +1,11 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
 
+#vrs='0.5.0'
 lib='zfp'
 dsc='Compressed numerical arrays that support high-speed random access'
 lic='BSD-3c'
 src='https://github.com/LLNL/zfp.git'
-cfg='cm'
+cfg='cmake'
 eta='190'
 
 CFG="-DBUILD_TESTING=OFF \
@@ -17,49 +14,17 @@ CFG="-DBUILD_TESTING=OFF \
 pc_url='http://oldhome.schmorp.de/marc/liblzf.html'
 pc_llib='-llzf'
 
-lst_inc='zfpcarray3.h zfparray.h zfpcarray2.h zfparray2.h \
-         zfpcarray1.h bitstream.h zfparray1.h \
-         zfp/exception.h zfp/pointer2.h zfp/view2.h zfp/handle2.h \
-         zfp/view3.h zfp/cache.h zfp/store3.h zfp/iterator1.h \
-         zfp/cache4.h zfp/iterator2.h zfp/memory.h zfp/cache2.h \
-         zfp/view4.h zfp/zfpheader.h zfp/types.h zfp/store2.h \
-         zfp/traits.h zfp/handle4.h zfp/reference1.h zfp/store1.h \
-         zfp/store.h zfp/pointer4.h zfp/iterator4.h zfp/handle3.h \
-         zfp/reference4.h zfp/cache1.h zfp/version.h zfp/pointer1.h \
-         zfp/cache3.h zfp/pointer3.h zfp/reference2.h zfp/view1.h \
-         zfp/reference3.h zfp/store4.h zfp/header.h zfp/macros.h \
-         zfp/iterator3.h zfp/handle1.h zfp/system.h zfpcpp.h \
-         zfpcarray4.h zfpindex.h zfparray3.h zfpcodec.h \
-         zfparray4.h zfpfactory.h zfp.h ieeecodec.h'
+lst_inc='zfp*.h zfp/*.h zfpcpp.h ieeecodec.h'
 lst_lib='libzfp'
-lst_bin=''         
+lst_bin='zfp'
+lst_lic='LICENSE'
+lst_pc='zfp.pc'
+
+dualbuild_support=false
 
 . xbuilder.sh
 
 start
-
-# CMAKE OPTIONS
-# -DBUILD_ALL                        OFF
-# -DBUILD_CFP                        OFF
-# -DBUILD_EXAMPLES                   OFF
-# -DBUILD_GMOCK                      ON
-# -DBUILD_SHARED_LIBS                OFF
-# -DBUILD_TESTING                    ON
-# -DBUILD_UTILITIES                  ON
-# -DBUILD_ZFORP                      OFF
-# -DBUILD_ZFPY                       OFF
-# -DINSTALL_GMOCK                    OFF
-# -DINSTALL_GTEST                    OFF
-# -DPPM_CHROMA                       2
-# -DZFP_BIT_STREAM_WORD_SIZE         64
-# -DZFP_BUILD_TESTING_LARGE          OFF
-# -DZFP_BUILD_TESTING_SMALL          ON
-# -DZFP_ENABLE_PIC                   ON
-# -DZFP_ROUNDING_MODE                ZFP_ROUND_NEVER
-# -DZFP_WITH_CUDA                    OFF
-# -DZFP_WITH_DAZ                     OFF
-# -DZFP_WITH_OPENMP                  ON
-# -DZFP_WITH_TIGHT_ERROR             OFF
 
 # Filelist
 # --------
@@ -71,6 +36,7 @@ start
 # include/bitstream.h
 # include/zfparray1.h
 # include/zfp/exception.h
+# include/zfp/genheader.h
 # include/zfp/pointer2.h
 # include/zfp/view2.h
 # include/zfp/handle2.h
@@ -117,9 +83,12 @@ start
 # include/zfparray4.h
 # include/zfpfactory.h
 # include/zfp.h
-# include/ieeecodec.h
+# include/gencodec.h
+# lib/pkgconfig/zfp.pc
 # lib/cmake/zfp/zfp-targets-release.cmake
 # lib/cmake/zfp/zfp-targets.cmake
 # lib/cmake/zfp/zfp-config-version.cmake
 # lib/cmake/zfp/zfp-config.cmake
 # lib/libzfp.so
+# share/doc/zfp/LICENSE
+# bin/zfp

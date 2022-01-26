@@ -287,6 +287,8 @@ start(){
 
   # get source
   if [ ! -d ${dir_src} ];then
+    wget -q --spider http://google.com
+    [ ! $? -eq 0 ] && doErr 'No Internet Connection. Aborting...'
     # check whether to custom get source
     if fn_defined 'source_get'; then
       source_get
@@ -537,8 +539,9 @@ config_buildtype_args_autotools(){
 }
 
 config_buildtype_args_meson(){
-
+  return 1
 }
+
 doStrip(){
   local libdir
   for dd in $(find ${dir_src} \( -name "*.a" -o -name "*.so" \));do
@@ -938,6 +941,7 @@ log_start(){
   echo -ne "${C0}${ind}$(date '+%H:%M')"
   [ $eta ] && echo -ne "-${CW}$(date '+%H:%M' --date="$eta seconds")"
   printf " ${CT1}%-10s ${CT1}%-21s${CD} " ${lib} ${arch}
+  echo $(date) > ${log_file}
 }
 
 log_end(){

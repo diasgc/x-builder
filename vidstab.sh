@@ -1,9 +1,6 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK ++  ++   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN ++   .   .  ++  clang/gcc
 
+#vrs='1.20'
 lib='vidstab'
 apt='libvidstab-dev'
 dsc='Vidstab is a video stabilization library which can be plugged-in with Ffmpeg and Transcode'
@@ -11,24 +8,13 @@ lic='GPL-2+'
 src='https://github.com/georgmartius/vid.stab.git'
 cfg='cmake'
 eta='80'
-lst_inc='vid.stab/vidstabdefines.h
-	vid.stab/motiondetect_opt.h
-	vid.stab/transformtype.h
-	vid.stab/libvidstab.h
-	vid.stab/vsvector.h
-	vid.stab/motiondetect.h
-	vid.stab/transform_internal.h
-	vid.stab/transform.h
-	vid.stab/transformtype_operations.h
-	vid.stab/frameinfo.h
-	vid.stab/motiondetect_internal.h
-	vid.stab/serialize.h
-	vid.stab/transformfixedpoint.h
-	vid.stab/transformfloat.h
-	vid.stab/localmotion2transform.h
-	vid.stab/boxblur.h'
+
+lst_inc='vid.stab/*.h'
 lst_lib='libvidstab'
 lst_bin=''
+lst_lic='LICENSE'
+lst_pc='vidstab.pc'
+
 CFG="-DUSE_OMP=OFF"
 
 . xbuilder.sh
@@ -63,6 +49,11 @@ VElPTiAke0NNQUtFX0lOU1RBTExfTElCRElSfQogICBBUkNISVZFIERFU1RJTkFUSU9OICR7Q01B
 S0VfSU5TVEFMTF9MSUJESVJ9Cg==
 XB64_PATCH
 
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
 # include/vid.stab/vidstabdefines.h
@@ -84,3 +75,4 @@ XB64_PATCH
 # lib/pkgconfig/vidstab.pc
 # lib/libvidstab.a
 # lib/libvidstab.so
+# share/doc/vidstab/LICENSE

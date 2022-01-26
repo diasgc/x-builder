@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#vrs='0.15.99'
 lib='json-c'
 dsc='Description: A JSON implementation in C'
 lic='MIT'
@@ -27,6 +28,32 @@ lst_pc='json-c.pc'
 start
 
 # cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
+# NDK ++   .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/json-c/json_object.h
+# include/json-c/json_tokener.h
+# include/json-c/printbuf.h
+# include/json-c/linkhash.h
+# include/json-c/json_visit.h
+# include/json-c/json_inttypes.h
+# include/json-c/json_object_iterator.h
+# include/json-c/json_c_version.h
+# include/json-c/json_pointer.h
+# include/json-c/json.h
+# include/json-c/json_types.h
+# include/json-c/arraylist.h
+# include/json-c/json_util.h
+# include/json-c/debug.h
+# include/json-c/json_config.h
+# lib/pkgconfig/json-c.pc
+# lib/libjson-c.so
+# lib/cmake/json-c/json-c-targets-release.cmake
+# lib/cmake/json-c/json-c-config.cmake
+# lib/cmake/json-c/json-c-targets.cmake
+# lib/libjson-c.a
+# share/doc/json-c/AUTHORS
+# share/doc/json-c/COPYING

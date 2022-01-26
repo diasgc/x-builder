@@ -12,6 +12,12 @@ case $cfg in
     c*) cshk="EXPAT_SHARED_LIBS" cbk="EXPAT_BUILD_TOOLS" CFG="-DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF";;
 esac
 
+lst_inc=''
+lst_lib=''
+lst_bin=''
+lst_lic='expat/COPYING expat/AUTHORS'
+lst_pc=''
+
 . xbuilder.sh
 
 source_config(){

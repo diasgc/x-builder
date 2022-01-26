@@ -1,9 +1,6 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  F   .   .   .   .   .   .   .   .   .   .  bin
 
+#vrs='2.1.0'
 lib='libcdio'
 apt='libcdio-dev'
 dsc='Portable CD-ROM I/O library'
@@ -14,31 +11,40 @@ cfg='ac'
 dep='libiconv'
 eta='10'
 eta='80'
-#tls='help2man'
 #cbk="example-progs"
+
 mkc='distclean'
-# -----------------------------------------
+CFG="MAKE=make --enable-maintainer-mode"
+
+lst_inc='cdio++/*.hpp cdio/*.h'
+lst_lib='libiso9660++.* libiso9660.* libcdio++.* libcdio.* libudf.*'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='libiso9660.pc libiso9660++.pc libcdio.pc libcdio++.pc libudf.pc'
 
 . xbuilder.sh
 
-CFG="MAKE=make --with-sysroot=${SYSROOT} --enable-maintainer-mode --with-pic=1"
-CPPFLAGS="$CPPFLAGS -Wno-header-guard"
+WFLAGS="-Wno-header-guard"
 
 source_patch(){
-  sed -i 's|$(LIBCDIOPP_LIBS) $(LTLIBICONV)|$(LIBCDIOPP_LIBS) $(LIBCDIO_LIBS) $(LTLIBICONV)|g' $SRCDIR/example/C++/OO/Makefile.in
-  doAutoreconf $SRCDIR
+  sed -i 's|$(LIBCDIOPP_LIBS) $(LTLIBICONV)|$(LIBCDIOPP_LIBS) $(LIBCDIO_LIBS) $(LTLIBICONV)|g' ./example/C++/OO/Makefile.in
+  doAutoreconf .
 }
 
 build_patch_config(){
   #no docs, no bins, no help2man
-  sed -i 's/^SUBDIRS = doc include lib src test example/SUBDIRS = include lib/' $SRCDIR/Makefile
+  sed -i 's/^SUBDIRS = doc include lib src test example/SUBDIRS = include lib/' Makefile
 }
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
-
 # include/cdio++/read.hpp
 # include/cdio++/devices.hpp
 # include/cdio++/device.hpp
@@ -102,3 +108,5 @@ start
 # lib/libiso9660++.a
 # lib/libcdio++.la
 # lib/libudf.la
+# share/doc/libcdio/AUTHORS
+# share/doc/libcdio/COPYING

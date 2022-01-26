@@ -1,9 +1,6 @@
 #!/bin/bash
-# cpu  av8 av7 x86 x64  cc
-# NDK  P+. P+.  .   .   clang
-# GNU  P+.  .   .   .   gcc
-# WIN  P+.  .   .  P++  clang
 
+#vrs='1.3.2'
 lib='libcddb'
 apt='libcddb2-dev'
 dsc='CDDB server access library'
@@ -31,10 +28,29 @@ source_patch(){
     doAutoreconf ${dir_src}
 }
 
-
 start
 
 # cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
+# NDK +++  .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/cddb/cddb_error.h
+# include/cddb/cddb_track.h
+# include/cddb/cddb_disc.h
+# include/cddb/cddb_cmd.h
+# include/cddb/cddb.h
+# include/cddb/cddb_config.h
+# include/cddb/cddb_conn.h
+# include/cddb/cddb_site.h
+# include/cddb/version.h
+# include/cddb/cddb_log.h
+# lib/libcddb.a
+# lib/pkgconfig/libcddb.pc
+# lib/libcddb.so
+# lib/libcddb.la
+# share/doc/libcddb/AUTHORS
+# share/doc/libcddb/COPYING
+# bin/cddb_query
