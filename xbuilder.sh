@@ -389,6 +389,7 @@ start(){
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
       [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
       [ -f "${cmake_toolchain_file}" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
+      [ -n "${cfg_cmake}" ] && CFG="${cfg_cmake} ${CFG}"
       do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
@@ -401,16 +402,18 @@ start(){
       ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
       ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
       ! $ac_nopic && CFG+=" --with-pic=1"
+      [ -n "${cfg_automake}" ] && CFG="${cfg_automake} ${CFG}"
       do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} $CSH $CBN "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
     meson)
-      local MESON_CFG="${dir_config}/${arch}.meson"
-      [ -f "${MESON_CFG}" ] && rm ${MESON_CFG}
+      local cfg_file="${dir_config}/${arch}.meson"
+      [ -f "${cfg_file}" ] && rm ${MESON_CFG}
       $host_clang || LD="bfd"
-      meson_create_toolchain $MESON_CFG
+      meson_create_toolchain ${cfg_file}
       MAKE_EXECUTABLE=ninja
-      do_log 'meson' meson setup --buildtype=release --cross-file=${MESON_CFG} --prefix=${dir_install} $CFG $CSH $CBN
+      [ -n "${cfg_meson}" ] && CFG="${cfg_meson} ${CFG}"
+      do_log 'meson' meson setup --buildtype=release --cross-file=${cfg_file} --prefix=${dir_install} ${CFG} ${CSH} ${CBN}
       ;;
     make)
       mkf=$CFG

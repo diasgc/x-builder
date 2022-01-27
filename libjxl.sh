@@ -4,17 +4,26 @@
 # GNU  F  ... ... ... GCC
 # WIN  F  ... ... ... CLANG/GCC
 
+lvr='0.7.0'
 lib='libjxl'
 dsc='A fast, compressed, persistent binary data store library for C.'
 lic='BSD-3c'
 src='https://github.com/libjxl/libjxl.git'
-sub='submodule update --init --recursive'
+sub='submodule update --init --recursive --depth 1 --recommend-shallow'
 cfg='cmake'
 eta='164'
+dep='highway openexr gflags lcms2'
 cstl='JPEGXL_STATIC'
 API=28
 
+lst_inc=''
+lst_lib=''
+lst_bin=''
+lst_lic='LICENSE PATENTS AUTHORS'
+lst_pc=''
+
 . xbuilder.sh
+
 
 CFG="-DBUILD_TESTING=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_MANPAGES=OFF"
 
@@ -51,13 +60,13 @@ start
 # -DSJPEG_ENABLE_SIMD                ON
 
 
-
 # Filelist
 # --------
-# include/contrib/image/image.h
-# include/contrib/math/math-inl.h
+# include/jxl/resizable_parallel_runner_cxx.h
+# include/jxl/resizable_parallel_runner.h
 # include/jxl/parallel_runner.h
 # include/jxl/color_encoding.h
+# include/jxl/cms_interface.h
 # include/jxl/butteraugli_cxx.h
 # include/jxl/jxl_threads_export.h
 # include/jxl/butteraugli.h
@@ -72,12 +81,22 @@ start
 # include/jxl/encode.h
 # include/jxl/thread_parallel_runner.h
 # include/hwy/nanobenchmark.h
+# include/hwy/detect_targets.h
+# include/hwy/detect_compiler_arch.h
 # include/hwy/tests/test_util-inl.h
+# include/hwy/tests/hwy_gtest.h
+# include/hwy/tests/test_util.h
+# include/hwy/contrib/sort/sort-inl.h
+# include/hwy/contrib/image/image.h
+# include/hwy/contrib/math/math-inl.h
+# include/hwy/contrib/dot/dot-inl.h
 # include/hwy/highway.h
 # include/hwy/targets.h
 # include/hwy/base.h
 # include/hwy/aligned_allocator.h
 # include/hwy/ops/x86_512-inl.h
+# include/hwy/ops/arm_sve-inl.h
+# include/hwy/ops/generic_ops-inl.h
 # include/hwy/ops/arm_neon-inl.h
 # include/hwy/ops/shared-inl.h
 # include/hwy/ops/x86_128-inl.h
@@ -91,11 +110,20 @@ start
 # lib/pkgconfig/libjxl_threads.pc
 # lib/pkgconfig/libhwy.pc
 # lib/pkgconfig/libjxl.pc
+# lib/pkgconfig/libhwy-contrib.pc
+# lib/libhwy_test.a
 # lib/libjxl.a
 # lib/libhwy.a
 # lib/libjxl_threads.a
 # lib/libjxl_dec.a
+# lib/libhwy_contrib.a
 # lib/libjxl.so
 # lib/libjxl_threads.so
+# share/doc/libjxl/PATENTS
+# share/doc/libjxl/LICENSE
+# share/doc/libjxl/AUTHORS
+# bin/djxl_ng
+# bin/cjpeg_hdr
+# bin/cjxl_ng
 # bin/cjxl
 # bin/djxl

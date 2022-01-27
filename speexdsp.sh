@@ -1,21 +1,28 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
+lvr='1.2.0'
 lib='speexdsp'
 apt='libspeexdsp-dev'
 dsc='Speexdsp is a speech processing library that goes along with the Speex codec'
 lic='BSD'
 src='https://github.com/xiph/speexdsp.git'
 #cfg='ag'
-eta='91'
+eta='62'
+
+lst_inc='speex/*.h'
+lst_lib='libspeexdsp.*'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='speexdsp.pc'
 
 . xbuilder.sh
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
@@ -30,3 +37,5 @@ start
 # lib/libspeexdsp.so
 # lib/libspeexdsp.la
 # share/doc/speexdsp/manual.pdf
+# share/doc/speexdsp/AUTHORS
+# share/doc/speexdsp/COPYING

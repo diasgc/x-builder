@@ -1,5 +1,6 @@
 #!/bin/bash
 
+lvr='1.3.7'
 lib='vorbis'
 apt='libvorbis0a'
 dsc='Ogg Vorbis audio format'
@@ -7,7 +8,7 @@ lic='BSD'
 src='https://github.com/xiph/vorbis.git'
 cfg='ag'
 dep='ogg'
-eta='42'
+eta='77'
 
 lst_inc='vorbis/*.h'
 lst_lib='libvorbisfile.* libvorbisenc.* libvorbis.*'
@@ -44,3 +45,25 @@ start
 
 # note: vorbis --shared build requires ogg --shared
 # otherwise relocation errors may occur
+
+
+# Filelist
+# --------
+# include/vorbis/vorbisfile.h
+# include/vorbis/vorbisenc.h
+# include/vorbis/codec.h
+# lib/pkgconfig/vorbisfile.pc
+# lib/pkgconfig/vorbisenc.pc
+# lib/pkgconfig/vorbis.pc
+# lib/libvorbisenc.a
+# lib/libvorbisfile.so
+# lib/libvorbisenc.la
+# lib/libvorbisfile.a
+# lib/libvorbisenc.so
+# lib/libvorbis.a
+# lib/libvorbis.so
+# lib/libvorbisfile.la
+# lib/libvorbis.la
+# share/doc/vorbis/AUTHORS
+# share/doc/vorbis/COPYING
+# share/aclocal/vorbis.m4

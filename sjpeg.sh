@@ -12,9 +12,12 @@ cfg='cmake'
 eta='20'
 dep='libjpeg libpng'
 pc_llib='-lsjpeg'
+
 lst_inc='sjpeg.h'
 lst_lib='libsjpeg'
 lst_bin='vjpeg sjpeg'
+lst_lic='COPYING AUTHORS'
+lst_pc='sjpeg.pc'
 
 . xbuilder.sh
 

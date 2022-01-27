@@ -1,32 +1,34 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK ++  ++  ++  ++  clang
-# GNU ++   .   .   .  gcc
-# WIN  F   .   .   .  clang/gcc
 
+lvr='1.3.1-101-*'
 lib='opus'
 dsc='Opus is a codec for interactive speech and audio transmission over the Internet'
 lic='BSD'
 src='https://github.com/xiph/opus.git'
-cfg='ag'
+cfg='meson'
 dep='ogg'
 eta='60'
-cbk="able-extra-programs"
 ac_nopic=true
 
-lst_inc='opus/opus_projection.h
-	opus/opus.h
-	opus/opus_multistream.h
-	opus/opus_types.h
-	opus/opus_defines.h'
-lst_lib='libopus'
+lst_inc='opus/*.h'
+lst_lib='libopus.*'
 lst_bin=''
-CFG="--disable-doc"
+lst_lic='LICENSE_PLEASE_READ.txt COPYING AUTHORS'
+lst_pc='opus.pc'
+
+cfg_automake="--disable-doc"
+cfg_meson='-Dtests=disabled -Ddocs=disabled'
 
 . xbuilder.sh
 
+$build_bin && cfg_automake+=' --enable-extra-programs' && cfg_meson+=' -Dextra-programs=enabled'
+
 start
 
+# cpu av8 av7 x86 x64
+# NDK ++  ++  ++  ++  clang
+# GNU ++   .   .   .  gcc
+# WIN  F   .   .   .  clang/gcc
 
 # Filelist
 # --------
@@ -36,7 +38,8 @@ start
 # include/opus/opus_types.h
 # include/opus/opus_defines.h
 # lib/pkgconfig/opus.pc
-# lib/libopus.la
 # lib/libopus.a
 # lib/libopus.so
-# share/aclocal/opus.m4
+# share/doc/opus/LICENSE_PLEASE_READ.txt
+# share/doc/opus/AUTHORS
+# share/doc/opus/COPYING

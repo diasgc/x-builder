@@ -1,5 +1,6 @@
 #!/bin/bash
 
+lvr='1.3.3'
 lib='flac'
 dsc='Free Lossless Audio Codec'
 lic='BSD'
@@ -31,7 +32,7 @@ esac
 
 build_patch_config(){
   # Patch to remove docs (automake)
-  [ "$build_tool" == "automake" ] && sed -i "s|SUBDIRS = doc include|SUBDIRS = include|g" $SRCDIR/Makefile
+  [ "$build_tool" == "automake" ] && sed -i "s|SUBDIRS = doc include|SUBDIRS = include|g" Makefile
 }
 
 start
@@ -40,3 +41,39 @@ start
 # NDK +++ +++ +++ +++ clang
 # GNU +++ +++  .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/FLAC++/decoder.h
+# include/FLAC++/metadata.h
+# include/FLAC++/export.h
+# include/FLAC++/encoder.h
+# include/FLAC++/all.h
+# include/FLAC/metadata.h
+# include/FLAC/format.h
+# include/FLAC/stream_decoder.h
+# include/FLAC/stream_encoder.h
+# include/FLAC/export.h
+# include/FLAC/callback.h
+# include/FLAC/ordinals.h
+# include/FLAC/all.h
+# include/FLAC/assert.h
+# lib/pkgconfig/flac.pc
+# lib/pkgconfig/flac++.pc
+# lib/libFLAC.so
+# lib/libFLAC.a
+# lib/libFLAC++.so
+# lib/libFLAC.la
+# lib/libFLAC++.a
+# lib/libFLAC++.la
+# share/man/man1/flac.1
+# share/man/man1/metaflac.1
+# share/doc/flac/AUTHORS
+# share/doc/flac/COPYING.GPL
+# share/doc/flac/COPYING.LGPL
+# share/doc/flac/COPYING.FDL
+# share/doc/flac/COPYING.Xiph
+# share/aclocal/libFLAC++.m4
+# share/aclocal/libFLAC.m4
+# bin/flac
+# bin/metaflac
