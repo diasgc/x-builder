@@ -7,23 +7,27 @@ lic='BSD-2c'
 src='https://aomedia.googlesource.com/aom.git'
 cfg='cmake'
 tls='perl'
-eta='200'
+eta='240'
 cfg_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
-cfg_shared='CONFIG_SHARED=0|CONFIG_SHARED=1'
-cst0="-DCONFIG_STATIC=0"
-cst1="-DCONFIG_STATIC=1"
-csh0="-DCONFIG_SHARED=0"
-csh1="-DCONFIG_SHARED=1"
-cbk='ENABLE_EXAMPLES'
+cfg_bin='ENABLE_EXAMPLES'
+#cst0="-DCONFIG_STATIC=0"
+#cst1="-DCONFIG_STATIC=1"
+#cbk='ENABLE_EXAMPLES'
 CFG='-DENABLE_TESTS=OFF
      -DENABLE_TOOLS=OFF
      -DENABLE_TESTDATA=OFF
      -DENABLE_DOCS=OFF'
 
+dev_bra='main'
+dev_vrs='3.2.0'
+stb_bra='tags/v3.2.0'
+stb_vrs='v3.2.0'
+
 lst_inc='aom/*.h'
 lst_lib='libaom.a libaom.so'
 lst_bin='aomdec aomenc'
 lst_lic='LICENSE PATENTS AUTHORS'
+lst_pc='aom.pc'
 
 . xbuilder.sh
 
@@ -40,6 +44,7 @@ start
 # linux-gnu   +++ +++ ... +.+
 # mingw-llvm  +.+ ... ... +.++
 
+
 # Filelist
 # --------
 # include/aom/aom_decoder.h
@@ -55,5 +60,8 @@ start
 # lib/libaom.a
 # lib/pkgconfig/aom.pc
 # lib/libaom.so
+# share/doc/aom/PATENTS
+# share/doc/aom/LICENSE
+# share/doc/aom/AUTHORS
 # bin/aomdec
 # bin/aomenc

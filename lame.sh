@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++ +++  .   .  clang
-# GNU +++ +++  .   .  gcc
-# WIN +++ +++  .   .  clang/gcc
 
 lib='lame'
 dsc='LAME is a high quality MPEG Audio Layer III (MP3) encoder'
@@ -18,6 +14,19 @@ cbk="able-frontend"
 pc_llib="-lmp3lame"
 API=26 # required for frontends build
 
+cfg_bin='--disable-frontend|--enable-frontend'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='lame/lame.h'
+lst_lib='libmp3lame.*'
+lst_bin='lame'
+lst_lic='LICENSE COPYING'
+lst_pc='lame.pc'
+
 . xbuilder.sh
 
 # update latest version
@@ -27,14 +36,19 @@ CFG="--disable-gtktest --disable-decoder --disable-debug"
 $host_mingw && CFG+=" --enable-expopt=full"
 # make shared executable so
 ! $build_static && $build_bin && CBN="--enable-dynamic-frontends"
-[ "$host_os" == "android" ] && [ $API -lt 26 ] && unset CBN
+$host_ndk && [ ${API} -lt 26 ] && unset CBN
 
-build_patch_config(){
+before_make(){
 	#no docs
-	sed -i '/^SUBDIRS/ {s/ doc//}' $SRCDIR/Makefile
+	sed -i '/^SUBDIRS/ {s/ doc//}' Makefile
 }
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU +++ +++  .   .  gcc
+# WIN +++ +++  .   .  clang/gcc
 
 
 # Filelist
@@ -44,3 +58,6 @@ start
 # lib/libmp3lame.so
 # lib/libmp3lame.a
 # lib/libmp3lame.la
+# share/doc/lame/LICENSE
+# share/doc/lame/COPYING
+# bin/lame

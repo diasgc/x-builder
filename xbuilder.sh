@@ -34,6 +34,7 @@ sudo=$(command -v sudo)
 : "${build_strip:=true}"
 : "${API:=24}"
 : "${def_build_sys:=meson}"
+: "${inline:=false}"
 
 $req_update_deps && update=true
 pkg_fmt="tgz"
@@ -142,7 +143,7 @@ main(){
     : "${dsc:=$(echo "$gitjson" | jq .description)}"
   fi
   # show package info
-  [ -f "${dir_install_pc}/${pkg}.pc" ] || pkgInfo
+  [ ! -f "${dir_install_pc}/${pkg}.pc" ] || [ $inline ] || pkgInfo
 
   log_file="${dir_install}/${lib}.log"
 }
@@ -284,35 +285,38 @@ start(){
   [ -n "${config_dir+x}" ] && dir_config="${dir_sources}/${lib}/${config_dir}"
 
   local req_src_config=false
+  local req_src_patch=false
 
   # get source
   if [ ! -d ${dir_src} ];then
+    # test internet connection...
     wget -q --spider http://google.com
     [ ! $? -eq 0 ] && doErr 'No Internet Connection. Aborting...'
     # check whether to custom get source
     if fn_defined 'source_get'; then
       source_get
-    else
+    elif [ -n "${sty}" ]; then
       case $sty in
         git) git_clone $src $lib;;
         tgz|txz|tlz) wget_tarxx $src $lib;;
         svn) do_svn $src $lib;;
         hg) do_hg $src $lib;;
-        *) case $src in
-            *.tar.*) wget_tarxx $src $lib;;
-            *.git)   do_git $src $lib;;
-            *svn.*)  do_svn $src $lib;;
-            *) doErr "unknown sty=$sty for $src";;
-          esac
-          ;;
+        *) doErr "unknown sty=$sty for $src";;
+      esac
+    else
+      case $src in
+        *.tar.*) wget_tarxx $src $lib;;
+        *.git|*git.*)   do_git $src $lib;;
+        *svn.*)  do_svn $src $lib;;
+        *) doErr "Unknown source type for $src";;
       esac
     fi
     req_src_config=true
   fi
 
-  pushdir ${dir_config}
+  cd ${dir_config}
   
-  if [ -z ${cfg} ]; then
+  if [ -z "${cfg}" ]; then
     guess_cfg
   fi
 
@@ -340,10 +344,12 @@ start(){
         ;;
       esac
     fi
+    req_src_patch=true
+  fi
 
+  if $req_src_patch; then
     # check whether to auto patch source
     check_xbautopatch
-
     # check whether to custom patch source
     if fn_defined 'source_patch'; then
       do_log 'patch' source_patch
@@ -382,15 +388,17 @@ start(){
     [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
     [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   fi
+
   if fn_defined 'build_config'; then
     build_config
   else case $build_tool in
     cmake)
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
       [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
-      [ -f "${cmake_toolchain_file}" ] && CFG="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG"
+      [ -f "${cmake_toolchain_file}" ] && CTC="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file}"
       [ -n "${cfg_cmake}" ] && CFG="${cfg_cmake} ${CFG}"
-      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CFG} ${CSH} ${CBN}
+      [ -n "${cfg_static}" ] && config_buildtype_args_cmake
+      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CTC} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       #MAKE_EXECUTABLE=cmake
@@ -409,6 +417,7 @@ start(){
     meson)
       local cfg_file="${dir_config}/${arch}.meson"
       [ -f "${cfg_file}" ] && rm ${MESON_CFG}
+      [ -n "${cfg_bin}" ] && config_buildtype_args_meson
       $host_clang || LD="bfd"
       meson_create_toolchain ${cfg_file}
       MAKE_EXECUTABLE=ninja
@@ -425,7 +434,10 @@ start(){
     esac
   fi
 
-  if fn_defined 'build_patch_config'; then
+  if fn_defined 'before_make'; then
+    do_log 'preparing' before_make
+  # decapreted, legacy support, to remove
+  elif fn_defined 'build_patch_config'; then
     do_log 'patch' build_patch_config
   fi
 
@@ -439,32 +451,53 @@ start(){
 
   log_vars CFLAGS CXXFLAGS WFLAGS CPPFLAGS LDFLAGS LIBS
 
-  if fn_defined 'build_make'; then
+  [ -z "${mki}" ] && mki="install"
+  : "${skip_make:=false}"
+
+  if fn_defined 'on_make'; then
     do_log 'make' build_make
-  else
+  # decapreted, legacy support, to remove
+  elif fn_defined 'build_make'; then
+    do_log 'make' build_make
+  elif ! $skip_make; then
     do_progress 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+    unset skip_make
   fi
   
-  if fn_defined 'patch_install';then
+  if fn_defined 'before_install'; then
+    do_log 'preparing' before_install
+  # decapreted, legacy support, to remove
+  elif fn_defined 'patch_install';then
     patch_install
   fi
 
+  # strip libs
+  if fn_defined 'on_strip'; then
+    do_log 'strip' on_strip
+  elif $build_strip; then
+    do_log 'strip' doStrip
+  fi
 
-  [ -z "${mki}" ] && mki="install"
-  if fn_defined 'build_install'; then
+  if fn_defined 'on_install'; then
+    do_log 'install' on_install
+  # decapreted, legacy support, to remove
+  elif fn_defined 'build_install'; then
     do_log 'install' build_install
   else
-    $build_strip && do_log 'strip' doStrip
     do_log 'install' ${MAKE_EXECUTABLE} ${mki}
   fi
 
   # check whether to create pkg-config .pc file
-  if [ -n "${req_pcforlibs+x}" ];then
+  if fn_defined 'on_create_pc'; then
+    do_log 'pkgconfig' on_create_pc
+  # decapreted, legacy support, to remove
+  elif [ -n "${req_pcforlibs+x}" ];then
     local pcf
     for l in $req_pcforlibs; do
       pcf=$(echo $l | sed 's|^lib||')
       create_pkgconfig_file $pcf "-l$pcf"
     done
+  # decapreted, legacy support, to remove
   elif fn_defined 'build_pkgconfig_file'; then
     do_log 'pkgconfig' build_pkgconfig_file
   elif [ -n "$pc_llib" ]; then
@@ -477,10 +510,13 @@ start(){
     done
   fi
 
-  # create package
-  $build_package && do_log 'tar' build_packages_bin
+  if fn_defined 'on_pack'; then
+    do_log 'pack' on_pack
+  elif $build_package; then 
+    do_log 'pack' build_packages_bin
+  fi
 
-  popdir
+  cd ${dir_src}
 
   logver "${dir_install_pc}/${pkg}.pc"
 
@@ -498,9 +534,10 @@ config_buildtype_args_cmake(){
         1) $build_static && CSH="-D${arr[0]}=ON" || CSH="-D${arr[0]}=OFF";;
         2) $build_static && CSH="-D${arr[0]}" || CSH="-D${arr[1]}";;
       esac
-      [ -z "${cfg_shared}" ] && cfg_shared="BUILD_SHARED_LIBS"
   fi
-  if [ -n "${cfg_shared}" ]; then
+  if [ -z "${cfg_shared}" ]; then
+    $build_shared && CSH+=' -DBUILD_SHARED_LIBS=ON' || CSH+=' -DBUILD_SHARED_LIBS=OFF'
+  else
     arr=(${cfg_shared//|/ })
     case ${#arr[@]} in
       1) $build_shared && CSH+=" -D${arr[0]}=ON" || CSH+=" -D${arr[0]}=OFF";;
@@ -542,12 +579,16 @@ config_buildtype_args_autotools(){
 }
 
 config_buildtype_args_meson(){
-  return 1
+  arr=(${cfg_bin//|/ })
+  case ${#arr[@]} in
+    1) $build_bin && CBN="-D${arr[0]}=true" || CBN="-D${arr[0]}=false";;
+    2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+  esac
 }
 
 doStrip(){
   local libdir
-  for dd in $(find ${dir_src} \( -name "*.a" -o -name "*.so" \));do
+  for dd in $(find ${dir_build} \( -name "*.a" -o -name "*.so" \));do
     ${STRIP} --strip-unneeded $dd
   done
 }
@@ -616,15 +657,19 @@ check_xbautopatch(){
   local match=$(grep -oP "(?<=^<<').*?(?=')" $0)
   if [ -n "$match" ]; then
     local block=$(awk '/^<<.'"$match"'./{flag=1; next} /^'"$match"'/{flag=0} flag' $0)
-    echo -e "\npatch this: \n$block" >>${log_file}
     case $match in
-      XB_CREATE_CMAKELISTS) echo "${block}" >${dir_src}/CMakeLists.txt;;
+      XB_CREATE_CMAKELISTS)
+        echo "${block}" >${dir_src}/CMakeLists.txt
+        echo -e "\ncreate CMakeLists.txt: \n$block" >>${log_file}
+        ;;
       XB_APPLY_PATCH) pushdir ${dir_src}
         patch -p0 <<<$(echo "${block}") 2>&1 >${log_file}
+        echo -e "\npatch found: \n$block" >>${log_file}
         popdir;;
       XB64_PATCH) pushdir ${dir_src}
         patch -p0 <<<$(echo "${block}" | base64 -d) 2>&1 >${log_file}
         popdir;;
+      *) echo -e "\nUnknown block name ${match} with this contents (ignoring):\n$block" >>${log_file}
     esac
   fi
   popdir
@@ -681,10 +726,10 @@ build_packages_filelist(){
 
 build_packages_bin(){
   local xb_distdir=$(build_packages_getdistdir)
-  if [ "$(type -t create_package)" = 'function' ]; then
+  if fn_defined 'create_package'; then
     create_package $xb_distdir
   else
-    if [ "$(type -t build_make_package)" = 'function' ]; then
+    if fn_defined 'build_make_package'; then
       build_make_package $xb_distdir
     elif [ "$MAKE_EXECUTABLE" = "ninja" ];then
       DESTDIR=${xb_distdir} ninja -C ${dir_build} install
@@ -941,14 +986,16 @@ secs2time(){
 log_start(){
   logtime_start=$(date +%s)
   #echo -ne "$CC1  $@: "
-  echo -ne "${C0}${ind}$(date '+%H:%M')"
-  [ $eta ] && echo -ne "-${CW}$(date '+%H:%M' --date="$eta seconds")"
-  printf " ${CT1}%-10s ${CT1}%-21s${CD} " ${lib} ${arch}
+  if ! $inline; then
+    echo -ne "${C0}${ind}$(date '+%H:%M')"
+    [ $eta ] && echo -ne "-${CW}$(date '+%H:%M' --date="$eta seconds")"
+    printf " ${CT1}%-10s ${CT1}%-21s${CD} " ${lib} ${arch}
+  fi
   echo $(date) > ${log_file}
 }
 
 log_end(){
-  if [ -n "${logtime_start}" ]; then
+  if ! $inline && [ -n "${logtime_start}" ]; then
     logtime_end=$(date +%s)
     #local pkgsize=$(du -sk ${dir_install} | cut -f1)
     #local libsize=$(du -sk ${dir_install}/lib | cut -f1)
@@ -1354,8 +1401,6 @@ toolchain_android(){
 
 loadToolchain(){
 
-  ${host_cross} || return 0
-
   CMAKE_EXECUTABLE=cmake
   YASM=yasm
   PKG_CONFIG=pkg-config
@@ -1366,102 +1411,109 @@ loadToolchain(){
   LDFLAGS="-L${dir_install_lib}"
   cmake_system_processor="${target_trip[0]}${target_trip[1]}"
 
-
-  case $PLATFORM in
-    Android)
-      if $ndk_testtc; then
-        toolchain_android
-      else
-        [ -z "$API" ] && API=24
-        CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
-        TOOLCHAIN="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64"
-        SYSROOT="${TOOLCHAIN}/sysroot"
-        CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
-        
-        local ndk_cc_prefix=${arch}${API}
-        if $host_arm32; then
-          ndk_cc_prefix="armv7a-linux-androideabi${API}"
-          cmake_system_processor="armv7-a"
+  if $host_cross; then
+    case $PLATFORM in
+      Android)
+        if $ndk_testtc; then
+          toolchain_android
+        else
+          [ -z "$API" ] && API=24
+          CMAKE_TOOLCHAIN="${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
+          TOOLCHAIN="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64"
+          SYSROOT="${TOOLCHAIN}/sysroot"
+          CROSS_PREFIX="${TOOLCHAIN}/bin/${arch}-"
+          
+          local ndk_cc_prefix=${arch}${API}
+          if $host_arm32; then
+            ndk_cc_prefix="armv7a-linux-androideabi${API}"
+            cmake_system_processor="armv7-a"
+          fi
+          CC="${TOOLCHAIN}/bin/${ndk_cc_prefix}-clang"
+          CXX="${CC}++"
+          AS="${CC}" #AS see https://developer.android.com/ndk/guides/other_build_systems
+          LD="${TOOLCHAIN}/bin/ld.lld" #Linker (also llvm-link?)
+          GCOV="${TOOLCHAIN}/bin/llvm-cov" # should we disable this?
+          # change cross_prefix for bin tools in ndk > r23
+          [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
+          LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
+          LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+          CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
+          YASM=${TOOLCHAIN}/bin/yasm
+          cmake_findrootpath="${SYSROOT}/usr
+            ${SYSROOT}/usr/lib/${arch}
+            ${SYSROOT}/usr/lib/${arch}/${API}
+            ${dir_install}"
         fi
-        CC="${TOOLCHAIN}/bin/${ndk_cc_prefix}-clang"
-        CXX="${CC}++"
-        AS="${CC}" #AS see https://developer.android.com/ndk/guides/other_build_systems
-        LD="${TOOLCHAIN}/bin/ld.lld" #Linker (also llvm-link?)
-        GCOV="${TOOLCHAIN}/bin/llvm-cov" # should we disable this?
-        # change cross_prefix for bin tools in ndk > r23
-        [ ! -f "${CROSS_PREFIX}ar" ] && CROSS_PREFIX="${TOOLCHAIN}/bin/llvm-"
-        LT_SYS_LIBRARY_PATH="$SYSROOT/usr/lib/$arch:$SYSROOT/usr/lib/${arch}/${API}"
+        ;;
+      Linux)
+        local cross
+        local ltsdir
+        case $arch in
+          aarch64-*) cross="-cross" ltsdir=$xv_aarch64_gnu;;
+          arm-*)     cross="-cross" ltsdir=$xv_armeabi_gnu;;
+          i686-*)    cross="-cross" ltsdir=$xv_x86_gnu;;
+          x86_64-*)  cross= ltsdir=$xv_x64_gnu;;
+        esac
+        if [ -n "$cross" ];then
+          SYSROOT="/usr/${arch}"
+          TOOLCHAIN="/usr/${arch}/bin"
+          CROSS_PREFIX="${arch}-"
+        else
+          TOOLCHAIN="/usr"
+          unset CROSS_PREFIX
+          unset SYSROOT
+        fi
+        CC=${CROSS_PREFIX}gcc
+        CXX=${CROSS_PREFIX}g++
+        AS=${CROSS_PREFIX}as
+        LD=${CROSS_PREFIX}ld
+        # local ltsdir=$(ls -t /usr/lib/gcc${cross}/${arch} 2>/dev/null | head -n1)
+        [ -n "$ltsdir" ] && LT_SYS_LIBRARY_PATH="/usr/lib/gcc${cross}/${arch}/${ltsdir}"
         LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-        CPPFLAGS+=" -I${SYSROOT}/usr/include/${arch} -I$SYSROOT/usr/include -I$SYSROOT/usr/local/include"
-        YASM=${TOOLCHAIN}/bin/yasm
-        cmake_findrootpath="${SYSROOT}/usr
-          ${SYSROOT}/usr/lib/${arch}
-          ${SYSROOT}/usr/lib/${arch}/${API}
+        CPPFLAGS+=" -I/usr/include -I/usr/local/include"
+        cmake_findrootpath="${SYSROOT}/usr/${arch}
+          ${SYSROOT}/usr/lib/gcc${cross}/${arch}/${ltsdir}
           ${dir_install}"
-      fi
-      ;;
-    Linux)
-      local cross
-      local ltsdir
-      case $arch in
-        aarch64-*) cross="-cross" ltsdir=$xv_aarch64_gnu;;
-        arm-*)     cross="-cross" ltsdir=$xv_armeabi_gnu;;
-        i686-*)    cross="-cross" ltsdir=$xv_x86_gnu;;
-        x86_64-*)  cross= ltsdir=$xv_x64_gnu;;
-      esac
-      if [ -n "$cross" ];then
-        SYSROOT="/usr/${arch}"
-        TOOLCHAIN="/usr/${arch}/bin"
-        CROSS_PREFIX="${arch}-"
-      else
-        TOOLCHAIN="/usr"
-        unset CROSS_PREFIX
-        unset SYSROOT
-      fi
-      CC=${CROSS_PREFIX}gcc
-      CXX=${CROSS_PREFIX}g++
-      AS=${CROSS_PREFIX}as
-      LD=${CROSS_PREFIX}ld
-      # local ltsdir=$(ls -t /usr/lib/gcc${cross}/${arch} 2>/dev/null | head -n1)
-      [ -n "$ltsdir" ] && LT_SYS_LIBRARY_PATH="/usr/lib/gcc${cross}/${arch}/${ltsdir}"
-      LDFLAGS="-Wl,-rpath,${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      CPPFLAGS+=" -I/usr/include -I/usr/local/include"
-      cmake_findrootpath="${SYSROOT}/usr/${arch}
-        ${SYSROOT}/usr/lib/gcc${cross}/${arch}/${ltsdir}
-        ${dir_install}"
-      ;;
-    Windows)
-      local ltsdir
-      PLATFORM='Windows'
-      AS="${CROSS_PREFIX}as"
-      LD="${CROSS_PREFIX}ld"
-      if [ -n "${LLVM_MINGW_HOME}" ] && $use_llvm_mingw; then
-        TOOLCHAIN="${LLVM_MINGW_HOME}/bin"
-        SYSROOT="${LLVM_MINGW_HOME}/${arch}"
-        CROSS_PREFIX="${TOOLCHAIN}/${arch}-"
-        $use_clang && {
-          CC="${CROSS_PREFIX}clang" CXX="${CC}++"
-        } || {
-          CC="${CROSS_PREFIX}gcc" CXX="${CROSS_PREFIX}g++"
-        }
-        LD+=".bfd"
-        LT_SYS_LIBRARY_PATH="${LLVM_MINGW_HOME}/lib/clang/${xv_llvm_mingw}"
-        CPPFLAGS+=" -I${LLVM_MINGW_HOME}/${arch}/include"
-        LDFLAGS="-L${LT_SYS_LIBRARY_PATH}/lib -L${SYSROOT}/lib ${LDFLAGS}"
-      else
-        CROSS_PREFIX="${arch}-"
-        TOOLCHAIN="/usr/${arch}/bin"
-        SYSROOT="/usr/${arch}"
-        $mingw_posix && posix="-posix" || unset posix
-        CC="${CROSS_PREFIX}gcc${posix}"
-        CXX="${CROSS_PREFIX}g++${posix}"
-        LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
-        LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
-      fi
-      cmake_findrootpath="${SYSROOT} ${LT_SYS_LIBRARY_PATH} ${dir_install}"
-      export RC=${CROSS_PREFIX}windres
-      ;;
-  esac
+        ;;
+      Windows)
+        local ltsdir
+        PLATFORM='Windows'
+        AS="${CROSS_PREFIX}as"
+        LD="${CROSS_PREFIX}ld"
+        if [ -n "${LLVM_MINGW_HOME}" ] && $use_llvm_mingw; then
+          TOOLCHAIN="${LLVM_MINGW_HOME}/bin"
+          SYSROOT="${LLVM_MINGW_HOME}/${arch}"
+          CROSS_PREFIX="${TOOLCHAIN}/${arch}-"
+          $use_clang && {
+            CC="${CROSS_PREFIX}clang" CXX="${CC}++"
+          } || {
+            CC="${CROSS_PREFIX}gcc" CXX="${CROSS_PREFIX}g++"
+          }
+          LD+=".bfd"
+          LT_SYS_LIBRARY_PATH="${LLVM_MINGW_HOME}/lib/clang/${xv_llvm_mingw}"
+          CPPFLAGS+=" -I${LLVM_MINGW_HOME}/${arch}/include"
+          LDFLAGS="-L${LT_SYS_LIBRARY_PATH}/lib -L${SYSROOT}/lib ${LDFLAGS}"
+        else
+          CROSS_PREFIX="${arch}-"
+          TOOLCHAIN="/usr/${arch}/bin"
+          SYSROOT="/usr/${arch}"
+          $mingw_posix && posix="-posix" || unset posix
+          CC="${CROSS_PREFIX}gcc${posix}"
+          CXX="${CROSS_PREFIX}g++${posix}"
+          LT_SYS_LIBRARY_PATH="/usr/lib/gcc/${arch}/${xv_x64_mingw}"
+          LDFLAGS="-L${LT_SYS_LIBRARY_PATH} ${LDFLAGS}"
+        fi
+        cmake_findrootpath="${SYSROOT} ${LT_SYS_LIBRARY_PATH} ${dir_install}"
+        export RC=${CROSS_PREFIX}windres
+        ;;
+    esac
+  else
+    CROSS_PREFIX=
+    TOOLCHAIN=/usr/bin
+    SYSROOT=/usr
+    CC=cc CXX=cpp AS=as LD=ld
+  fi
+
   AR=${CROSS_PREFIX}ar
   NM=${CROSS_PREFIX}nm
 
@@ -1701,6 +1753,26 @@ set_target(){
   set_env
 }
 
+set_target_build(){
+  target_trip[5]=$(uname -m)
+  arch="${target_trip[5]}-${OSTYPE}"
+  target_trip[0]=${target_trip[5]}
+  if [ "${target_triple[0]::3}" == "arm" ]; then
+    target_trip[1]="${target_triple[0]:3}"
+    target_trip[0]="${target_triple[0]::3}"
+  fi
+  arr=(${OSTYPE//-/ })
+  target_trip[2]=${arr[0]}
+  target_trip[3]=${arr[1]}
+  if [ -z "${target_trip[3]##*eabi*}" ] ;then
+    local a2=${target_trip[3]%eabi*}
+    target_trip[4]=${target_trip[3]#${a2}*}
+    target_trip[3]=${a2}
+  fi
+  set_env
+  STRIP=strip
+}
+
 set_env(){
   case ${target_trip[0]} in
     aarch64) host_arm=true;  host_arm32=false; host_arm64=true;  host_x86=false; host_x64=false;;
@@ -1731,6 +1803,8 @@ set_env(){
 
 while [ $1 ];do
   case $1 in
+    native) set_target_build
+      $host_clang && CPPFLAGS='-mtune=native' || CPPFLAGS='-march=native';;
     aa64|aa8|a*64-*android|android )
       set_target '0' 'aarch64' '' 'linux' 'android' '' 'arm64-v8a' '64' $CG3 $CG6;;
     aa7|arm-*android*eabi|arm-android)
@@ -1797,7 +1871,9 @@ while [ $1 ];do
     --list)     shift; menu_list $@; exit 0;;
 
     --patch)    shift; create_patch $@; exit 0;;
-      
+
+    --dirbuild) shift; dir_build=$1;;
+    --inline)   inline=true;;
     --clone)    only_repo=true;;   
     --cmake)    cfg='cmake';;
     --ndkcmake) ndkcmake=true;;
@@ -1828,23 +1904,7 @@ done
 # Set default Host
 
 if [ -z "${target_trip}" ];then
-  target_trip[5]=$(uname -m)
-  arch="${target_trip[5]}-${OSTYPE}"
-  target_trip[0]=${target_trip[5]}
-  if [ "${target_triple[0]::3}" == "arm" ]; then
-    target_trip[1]="${target_triple[0]:3}"
-    target_trip[0]="${target_triple[0]::3}"
-  fi
-  arr=(${OSTYPE//-/ })
-  target_trip[2]=$arr[0]
-  target_trip[3]=$arr[1]
-  if [ -z "${target_trip[3]##*eabi*}" ] ;then
-    local a2=${target_trip[3]%eabi*}
-    target_trip[4]=${target_trip[3]#${a2}*}
-    target_trip[3]=${a2}
-  fi
-  set_env
-  STRIP=strip
+  set_target_build
 fi
 
 # is cross-compile?
@@ -1862,7 +1922,7 @@ if [ -z "$ISRUNNING" ]; then
 fi
 if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  ${sudo} echo -ne "\r                                   "
+  ${sudo} echo -e "\033[2K"
 fi
 
 # usage: set_buildtype_key <input> <prefix> <on-val> <off-val>

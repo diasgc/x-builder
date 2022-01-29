@@ -1,39 +1,33 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='libyuv'
 dsc='Libyuv is an open source project that includes YUV scaling and conversion functionality'
 lic='BSD-3c'
-src='https://chromium.googlesource.com/libyuv/libyuv' sty='git'
+src='https://chromium.googlesource.com/libyuv/libyuv.git'
+dev_bra='main'
+dev_vrs='0.0.1809'
+stb_bra='stable'
+stb_vrs='0.0.1787'
 cfg='cmake'
 dep='libjpeg'
-eta='0'
+eta='90'
+
 pc_llib='-lyuv'
 pc_libsprivate='-lpthread -ljpeg'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
-lst_inc='libyuv.h 
-    libyuv/rotate_argb.h libyuv/macros_msa.h libyuv/scale.h libyuv/scale_argb.h 
-    libyuv/convert_argb.h libyuv/compare_row.h libyuv/row.h libyuv/planar_functions.h 
-    libyuv/scale_uv.h libyuv/scale_row.h libyuv/convert_from.h libyuv/version.h 
-    libyuv/convert.h libyuv/cpu_id.h libyuv/convert_from_argb.h libyuv/mjpeg_decoder.h 
-    libyuv/compare.h libyuv/rotate_row.h libyuv/rotate.h libyuv/basic_types.h 
-    libyuv/video_common.h'
+lst_inc='libyuv.h libyuv/*.h'
 lst_lib='libyuv'
 lst_bin='yuvconvert'
+lst_lic='LICENSE PATENTS OWNERS AUTHORS'
+lst_pc='libyuv.pc'
 
 . xbuilder.sh
 
 LDFLAGS+=" -ljpeg"
 
 build_patch_config(){
-    vrs=$(cat $LOGFILE | grep 'Building ver.: .*' | sed 's|Building ver.: ||')
+    vrs=$(cat ${log_file} | grep 'Building ver.: .*' | sed 's|Building ver.: ||')
+    return 0
 }
 
 start
@@ -52,9 +46,15 @@ CiBJTlNUQUxMICggRElSRUNUT1JZICR7UFJPSkVDVF9TT1VSQ0VfRElSfS9pbmNsdWRlLwkJREVT
 VElOQVRJT04gaW5jbHVkZSApCg==
 XB64_PATCH
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
 # include/libyuv.h
+# include/libyuv/loongson_intrinsics.h
 # include/libyuv/rotate_argb.h
 # include/libyuv/macros_msa.h
 # include/libyuv/scale.h
@@ -79,4 +79,8 @@ XB64_PATCH
 # lib/pkgconfig/libyuv.pc
 # lib/libyuv.so
 # lib/libyuv.a
+# share/doc/libyuv/PATENTS
+# share/doc/libyuv/LICENSE
+# share/doc/libyuv/AUTHORS
+# share/doc/libyuv/OWNERS
 # bin/yuvconvert

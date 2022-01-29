@@ -1,29 +1,35 @@
 #!/bin/bash
 
-# cpu av8 av7 x86 x64
-# NDK ++   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
-
 lib='pixman'
 apt='libpixman-1-dev'
 pkg='pixman-1'
 dsc='Pixel-manipulation library for X and cairo'
 lic='GPL-2.0'
 src='https://github.com/freedesktop/pixman.git'
-cfg='meson'
+cfg='ag'
 dep='libpng'
 eta='275'
 mki='install'
 
 . xbuilder.sh
 
-#$host_arm64 && CFG="--disable-arm-a64-neon"
-#$host_arm64 && CFG="-Dc_args='-fno-integrated-as'"
-#export c_args="-fno-integrated-as"
-#CFG="-Dloongson-mmi=disabled -Dvmx=disabled -Darm-simd=disabled -Dneon=disabled -Diwmmxt=disabled -Dmips-dspr2=disabled -Dgtk=disabled -Dgnu-inline-asm=disabled"
-$host_ndk && AS="aarch64-linux-gnu-as"
+dev_bra='master'
+dev_vrs=''
+stb_bra='tags/pixman-0.40.0'
+stb_vrs='0.40.0'
 
+lst_inc='pixman-1/*.h'
+lst_lib='libpixman-1.*'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='pixman-1.pc'
+
+$host_arm64 && CFG='--disable-arm-a64-neon'
+$host_arm32 && CFG='--disable-arm-neon --disable-arm-simd'
+
+before_make(){
+    sed -i 's/-g -O2/-O3 -flto/g;s/-Wall -W/-W/g' Makefile pixman/Makefile
+}
 
 start
 
@@ -45,3 +51,19 @@ VFVSRV9ORU9OKQotCSAgICBmZWF0dXJlcyB8PSBBUk1fTkVPTjsKLSAgICB9CisgICAgYXJtX2Nw
 dV9mZWF0dXJlc190IGZlYXR1cmVzID0gKEFSTV9WNyB8IEFSTV9WRlAgfCBBUk1fTkVPTik7CiAK
 ICAgICByZXR1cm4gZmVhdHVyZXM7CiB9Cg==
 XB64_PATCH
+
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/pixman-1/pixman-version.h
+# include/pixman-1/pixman.h
+# lib/pkgconfig/pixman-1.pc
+# lib/libpixman-1.a
+# lib/libpixman-1.la
+# lib/libpixman-1.so
+# share/doc/pixman/AUTHORS
+# share/doc/pixman/COPYING

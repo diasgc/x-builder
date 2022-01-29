@@ -25,7 +25,7 @@ $host_arm && CFG+=" --enable-arm-neon" || CFG+=" --enable-x86-sha-ni --enable-x8
 ($host_ndk || $host_mingw) && CFG+=' --disable-assembler'
 $host_cross || dir_install_pc=${dir_install}/lib64/pkgconfig
 
-build_pkgconfig_file(){
+on_create_pc(){
   [ -d "${dir_install}/lib64" ] && [ ! -d "${dir_install}/lib" ] && ln -s "${dir_install}/lib64" "${dir_install}/lib"
   return 0
 }
