@@ -23,6 +23,11 @@ extraOpts(){
   esac
 }
 
+lst_inc=''
+lst_lib=''
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc=''
 . xbuilder.sh
 
 $host_mingw && CFG+=" -DCMAKE_TOOLCHAIN_FILE=$SRCDIR/cmake/toolschains/ubuntu1804-mingw64.cmake -DEXIV2_ENABLE_WIN_UNICODE=ON"

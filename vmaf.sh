@@ -1,9 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
-# latest: 2.3.0
 
 lib='vmaf'
 pkg='libvmaf'
@@ -13,16 +8,29 @@ src='https://github.com/Netflix/vmaf.git'
 eta='52'
 config_dir="libvmaf"
 CFG='-Denable_docs=false -Denable_tests=false'
-lst_inc='libvmaf/model.h libvmaf/feature.h libvmaf/picture.h
-    libvmaf/libvmaf.h libvmaf/version.h libvmaf/compute_vmaf.h'
+
+lst_inc='libvmaf/*.h'
 lst_lib='libvmaf'
 lst_bin='vmaf'
+lst_lic='LICENSE'
+lst_pc='libvmaf.pc'
+
+dev_bra='main'
+dev_vrs='2.3.0'
+stb_bra=''
+stb_vrs=''
 
 . xbuilder.sh
 
 $host_arm || CFG+=' -Denable_avx512=true'
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------

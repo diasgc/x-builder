@@ -48,16 +48,17 @@ start
 
 # Filelist
 # --------
-# include/expat.h
 # include/expat_config.h
+# include/expat.h
 # include/expat_external.h
-# lib/pkgconfig/expat.pc
-# lib/libexpat.la
-# lib/cmake/expat-2.4.1/expat-config-version.cmake
-# lib/cmake/expat-2.4.1/expat-config.cmake
-# lib/cmake/expat-2.4.1/expat-noconfig.cmake
-# lib/cmake/expat-2.4.1/expat.cmake
-# lib/libexpat.a
-# lib/libexpat.so
+# share/doc/expat/COPYING
 # share/doc/expat/changelog
 # share/doc/expat/AUTHORS
+# lib/libexpat.a
+# lib/cmake/expat-2.4.3/expat-noconfig.cmake
+# lib/cmake/expat-2.4.3/expat.cmake
+# lib/cmake/expat-2.4.3/expat-config-version.cmake
+# lib/cmake/expat-2.4.3/expat-config.cmake
+# lib/libexpat.so
+# lib/pkgconfig/expat.pc
+# lib/libexpat.la

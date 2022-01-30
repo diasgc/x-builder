@@ -17,19 +17,16 @@ lic='LGPL-2.1'
 src='https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git'
 sty='git'
 cfg='meson'
-dep='libtool fftw samplerate soxr speex sndfile' #
+dep='glib2 fftw samplerate soxr speex sndfile' #
 pkg='pulseaudio'
 eta='60'
 
 . xbuilder.sh
 
-#BUILD_DIR=$SRCDIR/build_${arch}
-MAKE_EXECUTABLE=ninja
+#CFG="-Ddaemon=false -Ddoxygen=false -Dman=false -Dtests=false -Ddatabase=simple -Dalsa=disabled -Dglib=disabled"
+#$host_arm && CFG+=" -Datomic-arm-linux-helpers=true"
 
-CFG="-Ddaemon=false -Ddoxygen=false -Dman=false -Dtests=false -Ddatabase=simple -Dalsa=disabled -Dglib=disabled"
-$host_arm && CFG+=" -Datomic-arm-linux-helpers=true"
-
-build_make_package(){
+_build_make_package(){
     DESTDIR=${1} ninja -C ${BUILD_DIR} install
 }
 

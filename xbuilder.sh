@@ -385,8 +385,10 @@ start(){
   if fn_defined 'build_clean'; then
     build_clean
   else
-    [ -z "${mkc+x}" ] && mkc=$(make_findtarget "distclean" "clean")
-    [ -f "Makefile" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
+    if [ -f "Makefile" ]; then
+      mkc=$(make_findtarget "distclean" "clean")
+      do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
+    fi
   fi
 
   if fn_defined 'build_config'; then
@@ -1123,14 +1125,37 @@ do_git(){
 }
 
 topct(){
-  printf "%-6s"
   local sln
-  while read -r ln; do
-    str_contains $ln 'error: ' && printf $CR1
-    sln=$(grep -oP '\d+%' <<< $ln)
-    [ -n "$sln" ] && printf "\e[5D%-5s" $sln
-  done
-  printf "\e[6D"
+  local grp
+  case $build_tool in
+    cmake)
+      printf "%-6s"
+      while read -r ln; do
+        str_contains $ln 'error: ' && printf $CR1
+        sln=$(grep -oP '\d+%' <<< $ln)
+        [ -n "$sln" ] && printf "\e[5D%-5s" $sln
+      done
+      printf "\e[6D"
+      ;;
+    meson)
+      printf "%-12s"
+      while read -r ln; do
+        str_contains $ln 'error: ' && printf $CR1
+        sln=$(grep -oP '\[\d+/\d+\]' <<< $ln)
+        [ -n "$sln" ] && printf "\e[11D%-11s" $sln
+      done
+      printf "\e[12D"
+      ;;
+    *)
+      printf "%-6s"
+      while read -r ln; do
+        sln+="."
+        [ ${#sln} -eq 5 ] && sln=''
+        [ -n "$sln" ] && printf "\e[5D%-5s" $sln
+      done
+      printf "\e[6D"
+      ;;
+  esac
 }
 
 git_clone(){
