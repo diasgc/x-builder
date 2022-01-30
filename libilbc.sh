@@ -1,18 +1,26 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-# -/+  .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libilbc'
 dsc='Internet Low Bitrate Codec (iLBC) library'
 lic='BSD-3c'
 src='https://github.com/TimothyGu/libilbc.git'
-#sty='git'
-cfg='cm'
-eta='20'
-cstk='BUILD_STATIC_LIBS'
+cfg='cmake'
+eta='64'
 cbk="examples"
+
+cfg_static='BUILD_STATIC_LIBS'
+#cfg_bin=''
+
+dev_bra='main'
+dev_vrs='3.0.4'
+stb_bra='tags/3.0.4'
+stb_vrs='3.0.4'
+
+lst_inc='ilbc.h ilbc_export.h'
+lst_lib='libilbc.*'
+lst_bin='ilbc_test'
+lst_lic='COPYING AUTHORS'
+lst_pc='libilbc.pc'
 
 . xbuilder.sh
 
@@ -53,13 +61,21 @@ RElSfQogICAgICAgICBBUkNISVZFIERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9MSUJE
 SVJ9KQo=
 XB64_PATCH
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
 # include/ilbc.h
 # include/ilbc_export.h
-# share/doc/libilbc/CONTRIBUTING.md
-# share/doc/libilbc/NEWS.md
-# share/doc/libilbc/README.md
-# lib/libilbc.so
 # lib/pkgconfig/libilbc.pc
+# lib/libilbc.a
+# lib/libilbc.so
+# share/doc/libilbc/AUTHORS
+# share/doc/libilbc/README.md
+# share/doc/libilbc/NEWS.md
+# share/doc/libilbc/CONTRIBUTING.md
+# share/doc/libilbc/COPYING
 # bin/ilbc_test

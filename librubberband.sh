@@ -1,38 +1,41 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='librubberband'
+pkg='rubberband'
 dsc='An audio time-stretching and pitch-shifting library and utility program.'
 lic='GPL-2.0'
 src='https://github.com/breakfastquay/rubberband.git'
-sty='git'
 cfg='meson'
 dep='sndfile samplerate fftw'
-pkg='rubberband'
-eta='20'
+eta='49'
+
+dev_bra='default'
+dev_vrs='2.0.2'
+stb_bra='tags/v2.0.2'
+stb_vrs='2.0.2'
+
+lst_inc='rubberband/*.h'
+lst_lib='librubberband.* librubberband-jni.*'
+lst_bin='rubberband'
+lst_lic='COPYING'
+lst_pc='rubberband.pc'
 
 . xbuilder.sh
-BUILD_DIR=$SRCDIR/build_${arch}
-MAKE_EXECUTABLE=ninja
 
-CFG="-Dextra_include_dirs=$LIBSDIR/include -Dextra_lib_dirs=$LIBSDIR/lib"
-
-build_make_package(){
-    DESTDIR=${1} ninja -C ${BUILD_DIR} install
-}
 start
 
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
-
 # include/rubberband/RubberBandStretcher.h
 # include/rubberband/rubberband-c.h
 # lib/pkgconfig/rubberband.pc
-# lib/librubberband.so.2.1.4
+# lib/librubberband.so
 # lib/librubberband.a
 # lib/librubberband-jni.so
+# share/doc/librubberband/COPYING
 # bin/rubberband

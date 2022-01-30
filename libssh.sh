@@ -8,20 +8,34 @@ lib='libssh'
 dsc='The SSH library'
 lic='GLP-2.0'
 src='https://git.libssh.org/projects/libssh.git'
+bra='stable-0.9'
 cfg='cmake'
-eta='0'
+eta='170'
 
-#cshk=''
-#cstk=''
-#cbk=''
+cfg_static='BUILD_STATIC_LIB'
+#cfg_shared=''
+#cfg_bin=''
 
-lst_inc=''
-lst_lib=''
+dev_bra='master'
+dev_vrs=''
+stb_bra='stable-0.9'
+stb_vrs='0.9'
+
+lst_inc='libssh/*.h libssh/*.hpp'
+lst_lib='libssh.*'  
 lst_bin=''
+lst_lic='COPYING BSD AUTHORS'
+lst_pc='libssh.pc'
 
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  +   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------
@@ -38,3 +52,6 @@ start
 # lib/cmake/libssh/libssh-config.cmake
 # lib/cmake/libssh/libssh-config-version.cmake
 # lib/libssh.so
+# share/doc/libssh/BSD
+# share/doc/libssh/AUTHORS
+# share/doc/libssh/COPYING

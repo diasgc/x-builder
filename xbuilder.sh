@@ -384,11 +384,9 @@ start(){
 
   if fn_defined 'build_clean'; then
     build_clean
-  else
-    if [ -f "Makefile" ]; then
-      mkc=$(make_findtarget "distclean" "clean")
-      do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
-    fi
+  elif [ -f "Makefile" ]; then
+    mkc=$(make_findtarget "distclean" "clean")
+    [ -n "${mkc}" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   fi
 
   if fn_defined 'build_config'; then
@@ -418,7 +416,7 @@ start(){
       ;;
     meson)
       local cfg_file="${dir_config}/${arch}.meson"
-      [ -f "${cfg_file}" ] && rm ${MESON_CFG}
+      [ -f "${cfg_file}" ] && rm ${cfg_file}
       [ -n "${cfg_bin}" ] && config_buildtype_args_meson
       $host_clang || LD="bfd"
       meson_create_toolchain ${cfg_file}
@@ -429,6 +427,9 @@ start(){
     make)
       mkf=$CFG
       MAKE_EXECUTABLE=make
+      ;;
+    other)
+      [ -n "${cfg_cmd}" ] && do_log 'meson' ${cfg_cmd} || doErr "cfg_cmd not defined"
       ;;
     *)
       doErr "No cfg found or unknown for $cfg. Use build_config to custom configure makefile"
@@ -486,6 +487,7 @@ start(){
   elif fn_defined 'build_install'; then
     do_log 'install' build_install
   else
+    cd $dir_build
     do_log 'install' ${MAKE_EXECUTABLE} ${mki}
   fi
 
@@ -762,7 +764,9 @@ build_packages_bin(){
         cp ${dir_install_pc}/${pkg}.pc ${xb_pkgd}/
       fi
     fi
-    
+    if fn_defined 'on_editpack'; then
+      on_editpack
+    fi
     build_packages_filelist
     case $pkg_fmt in
       tgz) tar -czvf "${xb_distdir}.tar.gz" *;;
@@ -1946,8 +1950,9 @@ if [ -z "$ISRUNNING" ]; then
   export ISRUNNING=1
 fi
 if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
-  echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  ${sudo} echo -e "\033[2K"
+  echo -ne "${ind}${CY1}Requesting sudo for tool install " && sudo echo -e "\e[1A\e[2K"
+  #echo -ne "${ind}${CY1}Requesting sudo for tool install "
+  #${sudo} echo -e "\033[2K"
 fi
 
 # usage: set_buildtype_key <input> <prefix> <on-val> <off-val>
@@ -2000,6 +2005,7 @@ case $cfg in
     $build_static && $build_shared && CSH="-Ddefault_library=both"
     ;;
   mk|make) build_tool=make;;
+  other) build_tool=other;;
   *) unset build_tool;;
 esac
 

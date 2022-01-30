@@ -68,6 +68,10 @@ on_pack(){
     return 1
 }
 
+on_editpack(){
+    return 0
+}
+
 on_end(){
     return 1
 }

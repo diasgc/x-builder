@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   +   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libmysofa'
 apt="${lib}-dev"
@@ -14,14 +10,31 @@ dep='libcunit zlib'
 pkg='libmysofa'
 eta='60'
 
+cfg_static='BUILD_STATIC_LIBS'
+
+dev_bra='master'
+dev_vrs=''
+stb_bra='tags/v1.2.1'
+stb_vrs='v1.2.1'
+
+lst_inc='mysofa.h'
+lst_lib='libmysofa'
+lst_bin=''
+lst_lic='LICENSE'
+lst_pc='libmysofa.pc'
+
 . xbuilder.sh
 
 # CMAKE OPTIONS (default): -DADDRESS_SANITIZE=OFF -DCODE_COVERAGE=OFF 
 
-CFG="-DBUILD_TESTS=OFF"
-#$host_mingw && dep+=" zlib"
+cfg_cmake="-DBUILD_TESTS=OFF"
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
@@ -30,3 +43,4 @@ start
 # lib/libmysofa.so
 # lib/libmysofa.a
 # share/libmysofa/MIT_KEMAR_normal_pinna.sofa
+# share/doc/libmysofa/LICENSE

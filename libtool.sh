@@ -1,41 +1,51 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libtool'
 dsc='A library for reading and writing audio files'
 lic='LGPL-3.0'
-src='git://git.savannah.gnu.org/libtool.git'
+src='https://git.savannah.gnu.org/git/libtool.git'
 cfg='ac'
+automake_cmd='./bootstrap'
 tls='help2man'
 eta='35'
 pc_llib="-ltdl"
 pc_url="https://savannah.gnu.org/git/?group=libtool"
 
-. xbuilder.sh
+lst_inc=''
+lst_lib=''
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc=''
+mki='install'
 
-source_config(){
-    pushdir $SRCDIR
-    ./bootstrap
-    popdir
-}
+dev_bra='main'
+dev_vrs='2.4.6'
+stb_bra=''
+stb_vrs=''
+
+. xbuilder.sh
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
-
 # include/ltdl.h
 # include/libltdl/lt_error.h
 # include/libltdl/lt_dlloader.h
 # include/libltdl/lt_system.h
+# lib/pkgconfig/libtool.pc
 # lib/libltdl.a
 # lib/libltdl.la
 # lib/libltdl.so
 # share/man/man1/libtoolize.1
 # share/man/man1/libtool.1
+# share/doc/libtool/AUTHORS
+# share/doc/libtool/COPYING
 # share/aclocal/ltoptions.m4
 # share/aclocal/ltsugar.m4
 # share/aclocal/libtool.m4
