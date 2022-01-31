@@ -118,14 +118,30 @@
             "fludrocortisona": {
                 "110004433": "fludrocortisona susp.oral 0.02 mg/ml 50ml [man]"
             },
-            "110004454": "folinato calcio susp.oral 5mg/ml 30ml [man]",
-            "110000772": "furosemida sol.oral 2.5mg/ml 40ml [man]",
-            "110003309": "gabapentina susp.oral 100mg/ml fr. 20ml [man]",
-            "110002914": "hidrato de cloral sol.oral 10% 100mg/ml 100ml [man]",
-            "110003319": "hidrato de cloral sol.oral 10% 100mg/ml 50ml [man]",
-            "110002671": "hidroCLOROtiazida susp.oral 2mg/ml fr.100ml [man]",
-            "110004421": "hidrocortisona susp.or. 0.1% 50ml fr. [man]",
-            "110004300": "hidroxicloroquina susp.oral 25mg/ml 96ml [man]",
+            "folinato calcio": {
+                "110004454": "folinato calcio susp.oral 5mg/ml 30ml [man]"
+            },
+            "furosemida": {
+                "110000772": "furosemida sol.oral 2.5mg/ml 40ml [man]"
+            },
+            "gabapentina": {
+                "110003309": "gabapentina susp.oral 100mg/ml fr. 20ml [man]"
+            },
+            "hidrato de cloral": {
+                "110002914": "hidrato de cloral sol.oral 10% 100mg/ml 100ml [man]",
+                "110003319": "hidrato de cloral sol.oral 10% 100mg/ml 50ml [man]"
+            },
+            "hidroCLOROtiazida": {
+                "110002671": "hidroCLOROtiazida susp.oral 2mg/ml fr.100ml [man]"
+            },
+            "hidrocortisona": {
+                "110004421": "hidrocortisona susp.or. 0.1% 50ml fr. [man]"
+            },
+            "hidroxicloroquina": {
+                "110004300": "hidroxicloroquina susp.oral 25mg/ml 96ml [man]"
+            },
+            
+            
             "110003157": "indometacina xar. 2mg/ml fr. 100ml  [man]",
             "110002964": "levodopa carbidopa sol.oral 1+0.25mg/ml 100ml [man]",
             "110003845": "levodopa carbidopa sol.oral 10+1mg/ml 100ml [man]",
