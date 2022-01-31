@@ -16,23 +16,26 @@ eta='10'
 mki='install-strip'
 mkc='distclean'
 
-lst_inc='dvdread/nav_types.h \
-	dvdread/ifo_print.h \
-	dvdread/bitreader.h \
-	dvdread/ifo_types.h \
-	dvdread/dvd_udf.h \
-	dvdread/version.h \
-	dvdread/nav_read.h \
-	dvdread/dvd_reader.h \
-	dvdread/nav_print.h \
-	dvdread/ifo_read.h'
-lst_lib='libdvdread'
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
+lst_inc='dvdread/*.h'
+lst_lib='libdvdread'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc=''
 . xbuilder.sh
 
 CFG="--disable-apidoc"
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

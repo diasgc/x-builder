@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   F   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='flite'
 apt='flite'
@@ -19,10 +15,6 @@ pc_llibs='-lflite -lflite_cmu_grapheme_lang \
 		 -lflite_cmu_us_awb -lflite_cmu_us_kal16 -lflite_cmu_us_kal \
 		 -lflite_cmu_us_rms -lflite_cmu_us_slt -lflite_usenglish'
 pc_libsprivate='-lm'
-
-#cfg_static=''
-#cfg_shared=''
-#cfg_bin=''
 
 dev_bra='main'
 dev_vrs=''
@@ -45,3 +37,8 @@ source_patch(){
 }
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc

@@ -51,6 +51,8 @@ ndk_testtc=false
 build_shared=false
 build_static=true
 build_bin=false
+build_man=false
+
 build_usepkgflags=false
 git_stable=false
 ndkcmake=false
@@ -1865,11 +1867,18 @@ while [ $1 ];do
     --help|-h)  showBanner; usage; exit 0
       ;;
     
-    --full|--all) build_shared=true; build_static=true; build_bin=true; build_dist=true; dep_build="--full";;
+    --full)     build_shared=true
+                build_static=true
+                build_bin=true
+                build_dist=true
+                build_man=true
+                dep_build="--full"
+                ;;
     --shared)   build_shared=true; build_static=false;;
     --static)   build_static=true; build_shared=false;;
     --both)     build_static=true; build_shared=true;;
     --bin)      build_bin=true;;
+    --man)      build_man=true;;
     --no-bin)   build_bin=false;;
     --no-dist)  build_dist=false;;
     --no-strip) build_strip=false;;
