@@ -6,8 +6,6 @@ lic='MIT'
 src='https://github.com/open-source-parsers/jsoncpp.git'
 cfg='cmake'
 eta='60'
-cstk='BUILD_STATIC_LIBS'
-cbk='JSONCPP_WITH_EXAMPLE'
 
 lst_inc='json/*.h'
 lst_lib='libjsoncpp.*'
@@ -19,7 +17,9 @@ lst_pc='jsoncpp.pc'
 
 # -DBUILD_OBJECT_LIBS -DBUILD_SHARED_LIBS -DBUILD_STATIC_LIBS -DBUILD_TESTING -DJSONCPP_WITH_EXAMPLE
 
-CFG="-DBUILD_TESTING=OFF -DJSONCPP_WITH_TESTS=OFF"
+cfg_cmake="-DBUILD_TESTING=OFF -DJSONCPP_WITH_TESTS=OFF"
+cfg_static='BUILD_STATIC_LIBS'
+cfg_bin='JSONCPP_WITH_EXAMPLE'
 
 start
 
@@ -27,3 +27,29 @@ start
 # NDK ++   .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/json/assertions.h
+# include/json/allocator.h
+# include/json/value.h
+# include/json/json_features.h
+# include/json/config.h
+# include/json/writer.h
+# include/json/reader.h
+# include/json/json.h
+# include/json/version.h
+# include/json/forwards.h
+# lib/pkgconfig/jsoncpp.pc
+# lib/objects-Release/jsoncpp_object/json_reader.cpp.o
+# lib/objects-Release/jsoncpp_object/json_writer.cpp.o
+# lib/objects-Release/jsoncpp_object/json_value.cpp.o
+# lib/cmake/jsoncpp/jsoncpp-targets.cmake
+# lib/cmake/jsoncpp/jsoncpp-namespaced-targets.cmake
+# lib/cmake/jsoncpp/jsoncppConfigVersion.cmake
+# lib/cmake/jsoncpp/jsoncpp-targets-release.cmake
+# lib/cmake/jsoncpp/jsoncppConfig.cmake
+# lib/libjsoncpp.so
+# lib/libjsoncpp.a
+# share/doc/jsoncpp/LICENSE
+# share/doc/jsoncpp/AUTHORS

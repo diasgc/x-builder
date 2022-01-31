@@ -143,7 +143,7 @@ main(){
     : "${dsc:=$(echo "$gitjson" | jq .description)}"
   fi
   # show package info
-  [ ! -f "${dir_install_pc}/${pkg}.pc" ] || [ $inline ] || pkgInfo
+  [ ! -f "${dir_install_pc}/${pkg}.pc" ] || pkgInfo
 
   log_file="${dir_install}/${lib}.log"
 }

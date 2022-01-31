@@ -12,24 +12,36 @@ cfg='ac'
 pkg='caca'
 eta='80'
 
+dev_bra='main'
+dev_vrs=''
+stb_bra='tags/v0.99.beta20'
+stb_vrs='v0.99.beta20'
+
+lst_inc='caca++.h caca.h caca0.h caca_types.h caca_conio.h'
+lst_lib='libcaca.* libcaca++.*'
+lst_bin='caca-config cacafire cacaserver img2txt cacaclock cacademo cacaview cacaplay'
+lst_lic='COPYING COPYING.GPL COPYING.LGPL COPYING.ISC AUTHORS'
+lst_pc='caca++.pc caca.pc'
+
 . xbuilder.sh
 
 CFG="--disable-doc --disable-imlib2 --disable-java --disable-win32 --disable-cppunit --disable-zzuf --disable-conio"
 
 source_config(){
-  sed -i 's/^AC_PREREQ/# &/' $SRCDIR/configure.ac
-  $SRCDIR/bootstrap
-  sed -i 's/if defined _WIN32/if defined _MSC_VER/g' $SRCDIR/caca/caca.h \
-    $SRCDIR/caca/caca0.h $SRCDIR/caca/caca0.h $SRCDIR/caca/figfont.c \
-    $SRCDIR/caca/string.c
-  sed -i 's/if defined(_WIN32)/if defined(_MSC_VER)/g' $SRCDIR/cxx/caca++.h
-  sed -i 's/-O2 -fno-strength-reduce/-O3 -flto/g' $SRCDIR/configure
+  sed -i 's/^AC_PREREQ/# &/' configure.ac
+  ./bootstrap
+  sed -i 's/if defined _WIN32/if defined _MSC_VER/g' caca/caca.h \
+    caca/caca0.h caca/caca0.h caca/figfont.c \
+    caca/string.c
+  sed -i 's/if defined(_WIN32)/if defined(_MSC_VER)/g' cxx/caca++.h
+  sed -i 's/-O2 -fno-strength-reduce/-O3 -flto/g' configure
 }
 
 WFLAGS="-Wno-ignored-optimization-argument -Wno-absolute-value -Wno-unused-but-set-variable"
 
 start
 
+# patch 01 caca/driver/win32.c to support llvm-mingw toolchain
 <<'XB64_PATCH'
 LS0tIGNhY2EvZHJpdmVyL3dpbjMyLmMJMjAyMS0xMC0yOCAyMTozNTo0NC41MDgwMDAwMDAgKzAx
 MDAKKysrIGNhY2EvZHJpdmVyL3dpbjMyLmMJMjAyMS0xMC0yOCAyMTozNTo0Ny4xMTUwMDAwMDAg
