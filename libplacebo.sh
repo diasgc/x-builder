@@ -12,35 +12,20 @@ cfg='meson'
 eta='0'
 tls='python3-mako'
 
-#cshk=''
-#cstk=''
-#cbk=''
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
-lst_inc='libplacebo/config.h libplacebo/swapchain.h
-    libplacebo/dither.h libplacebo/filters.h
-    libplacebo/shaders.h libplacebo/log.h
-    libplacebo/dispatch.h libplacebo/shaders/custom.h
-    libplacebo/shaders/film_grain.h
-    libplacebo/shaders/colorspace.h
-    libplacebo/shaders/lut.h
-    libplacebo/shaders/sampling.h
-    libplacebo/vulkan.h libplacebo/gpu.h
-    libplacebo/renderer.h libplacebo/common.h
-    libplacebo/dummy.h libplacebo/context.h
-    libplacebo/utils/libav_internal.h
-    libplacebo/utils/dav1d.h
-    libplacebo/utils/libav.h
-    libplacebo/utils/upload.h
-    libplacebo/utils/frame_queue.h
-    libplacebo/utils/dav1d_internal.h
-    libplacebo/colorspace.h'
+lst_inc='libplacebo/*.h'
 lst_lib='libplacebo'
 lst_bin=''
-
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 . xbuilder.sh
-CFG="-Ddemos=false"
+meson_cfg="-Ddemos=false"
 case $host_os in
-    android) dep='glslang vulkan' CFG+=" -Dvulkan-registry=$LIBSDIR/share/vulkan/registry/vk.xml";;
+    android) dep='glslang vulkan' meson_cfg+=" -Dvulkan-registry=${dir_install}/share/vulkan/registry/vk.xml";;
     gnu) LD="bfd";;
 esac
 start

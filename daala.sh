@@ -12,24 +12,31 @@ lic='BSD-2c'
 src='https://gitlab.xiph.org/xiph/daala.git'
 dep='ogg libpng'
 eta='60'
-cb0="--disable-tools"
-cb1="--enable-tools"
-# -----------------------------------------
 
-. xbuilder.sh
-
-CFG="--disable-doc \
+ac_bin="--disable-tools|--enable-tools"
+ac_cfg="--disable-doc \
      --disable-examples \
      --disable-player \
      --disable-unit-tests \
      --disable-encoder-check"
 
-$build_bin && dep+="libjpeg"
+dev_bra='main'
+dev_vrs='0.0-1731*'
+stb_bra=''
+stb_vrs=''
 
-# ??
-export PNG_CFLAGS=$(./libpng.sh --get cflags) PNG_LIBS=$(./libpng.sh --get ldstatic)
+lst_inc='daala/*.h'
+lst_lib='libdaalaenc libdaaladec libdaalabase'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='daaladec.pc daalaenc.pc'
+
+. xbuilder.sh
+
+$build_bin && dep+=" libjpeg"
 
 start
+
 
 # Filelist
 # --------

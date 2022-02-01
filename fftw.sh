@@ -9,7 +9,7 @@ vrs='3.3.10'
 src="http://fftw.org/fftw-${vrs}.tar.gz"
 cfg='cmake'
 eta='120'
-CFG="-DBUILD_TESTS=OFF -DENABLE_THREADS=ON -DWITH_COMBINED_THREADS=ON"
+cmake_cfg="-DBUILD_TESTS=OFF -DENABLE_THREADS=ON -DWITH_COMBINED_THREADS=ON"
 
 dev_vrs='3.3.10'
 stb_vrs='3.3.9'
@@ -22,15 +22,15 @@ lst_pc='fftw3.pc'
 
 extraOpts(){
   case $1 in
-    -f|--float ) CFG+=" -DENABLE_FLOAT=ON" pkg='fftwf' pc_llib='-lfftwf';;
-    -l|--long )  CFG+=" -DENABLE_LONG_DOUBLE=ON" pkg='fftwl' pc_llib='-lfftwl';;
-    -q|--quad )  CFG+=" -DENABLE_QUAD_PRECISION=ON" pkg='fftwq' pc_llib=='-lfftwq';;
+    -f|--float ) cmake_cfg+=" -DENABLE_FLOAT=ON" pkg='fftwf' pc_llib='-lfftwf';;
+    -l|--long )  cmake_cfg+=" -DENABLE_LONG_DOUBLE=ON" pkg='fftwl' pc_llib='-lfftwl';;
+    -q|--quad )  cmake_cfg+=" -DENABLE_QUAD_PRECISION=ON" pkg='fftwq' pc_llib=='-lfftwq';;
   esac
 }
 
 . xbuilder.sh
 
-$host_arm || CFG+=" -DENABLE_SSE=ON -DENABLE_SSE2=ON -DENABLE_AVX=ON -DENABLE_AVX2=ON"
+$host_arm || cmake_cfg+=" -DENABLE_SSE=ON -DENABLE_SSE2=ON -DENABLE_AVX=ON -DENABLE_AVX2=ON"
 
 start
 

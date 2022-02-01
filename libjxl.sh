@@ -13,7 +13,8 @@ sub='submodule update --init --recursive --depth 1 --recommend-shallow'
 cfg='cmake'
 eta='164'
 dep='highway openexr gflags lcms2'
-cstl='JPEGXL_STATIC'
+cmake_static='JPEGXL_STATIC'
+cmake_cfg="-DBUILD_TESTING=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_MANPAGES=OFF"
 API=28
 
 lst_inc=''
@@ -25,7 +26,7 @@ lst_pc=''
 . xbuilder.sh
 
 
-CFG="-DBUILD_TESTING=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_MANPAGES=OFF"
+
 
 start
 

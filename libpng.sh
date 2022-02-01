@@ -12,9 +12,9 @@ cfg='cmake'
 dep='zlib'
 
 mki='install/strip'
-cstk="PNG_STATIC"
-cshk="PNG_SHARED"
-cbk="PNG_EXECUTABLES"
+cmake_static="PNG_STATIC"
+cmake_shared="PNG_SHARED"
+cmake_bin="PNG_EXECUTABLES"
 
 lst_inc='pnglibconf.h png.h pngconf.h libpng16/*.h'
 lst_lib='libpng.* libpng16.*'
@@ -26,7 +26,7 @@ eta='20'
 
 . xbuilder.sh
 
-CFG="-DPNG_TESTS=OFF -DPNG_HARDWARE_OPTIMIZATIONS=OFF -DHAVE_LD_VERSION_SCRIPT=OFF"
+cmake_cfg="-DPNG_TESTS=OFF -DPNG_HARDWARE_OPTIMIZATIONS=OFF -DHAVE_LD_VERSION_SCRIPT=OFF"
 
 start
 

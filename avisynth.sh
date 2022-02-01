@@ -5,15 +5,18 @@ dsc='A powerful nonlinear scripting language for video'
 lic='GPL'
 src='https://github.com/AviSynth/AviSynthPlus.git'
 cfg='cmake'
-cbk="ENABLE_PLUGINS"
-CFG="-DHEADERS_ONLY=OFF"
+
+cmake_bin="ENABLE_PLUGINS"
+cmake_cfg="-DHEADERS_ONLY=OFF"
 
 lst_inc='avisynth/*.h'
 lst_lib='libavisynth.* avisynth/libconvertstacked.* avisynth/libshibatch.* avisynth/libtimestretch.*'
 lst_bin=''
 lst_lic=''
 lst_pc='avisynth.pc'
+
 eta=240
+
 . xbuilder.sh
 
 # dont pass LT_SYS_LIBRARY_PATH to avoid redefinition error

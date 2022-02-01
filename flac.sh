@@ -1,6 +1,5 @@
 #!/bin/bash
 
-lvr='1.3.3'
 lib='flac'
 dsc='Free Lossless Audio Codec'
 lic='BSD'
@@ -15,22 +14,22 @@ lst_bin='flac metaflac'
 lst_lic='COPYING.FDL COPYING.GPL COPYING.LGPL COPYING.Xiph AUTHORS'
 lst_pc='flac.pc flac++.pc'
 
+cmake_cfg='-DBUILD_CXXLIBS=ON -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF -DWITH_ASM=ON -DWITH_OGG=ON'
+cmake_bin='BUILD_PROGRAMS'
+
+dev_bra='main'
+dev_vrs='1.3.3'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
-case $build_tool in
-  cmake)
-    CFG="-DBUILD_CXXLIBS=ON -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF -DWITH_ASM=ON -DWITH_OGG=ON"
-    $host_mingw && {
-      LD=$CC; AS=nasm
-    }
-    $build_bin && CBH="-DBUILD_PROGRAMS=ON" || CBH="-DBUILD_PROGRAMS=OFF"
-    ;;
-  automake)
-    $host_arm && CFG+=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
-    ;;
-esac
+$host_arm && ac_cfg=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
+if [ "$build_tool" == "cmake" ] && $host_mingw; then
+  LD=$CC; AS=nasm
+fi
 
-build_patch_config(){
+before_make(){
   # Patch to remove docs (automake)
   [ "$build_tool" == "automake" ] && sed -i "s|SUBDIRS = doc include|SUBDIRS = include|g" Makefile
 }

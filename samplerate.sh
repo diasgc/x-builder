@@ -23,7 +23,7 @@ lst_pc='samplerate.pc'
 
 . xbuilder.sh
 
-cfg_cmake="-DBUILD_TESTING=OFF -DLIBSAMPLERATE_EXAMPLES=OFF"
+cmake_cfg="-DBUILD_TESTING=OFF -DLIBSAMPLERATE_EXAMPLES=OFF"
 
 start
 

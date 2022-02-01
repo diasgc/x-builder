@@ -10,7 +10,7 @@ dep='sndfile'
 eta='30'
 
 dev_bra='main'
-dev_vrs=''
+dev_vrs='3.1.0'
 stb_bra=''
 stb_vrs=''
 
@@ -28,3 +28,18 @@ start
 # NDK +++  .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/bs2b/bs2btypes.h
+# include/bs2b/bs2b.h
+# include/bs2b/bs2bversion.h
+# include/bs2b/bs2bclass.h
+# lib/pkgconfig/libbs2b.pc
+# lib/libbs2b.so
+# lib/libbs2b.a
+# lib/libbs2b.la
+# share/doc/libbs2b/AUTHORS
+# share/doc/libbs2b/COPYING
+# bin/bs2bstream
+# bin/bs2bconvert

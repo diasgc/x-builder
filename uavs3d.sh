@@ -7,7 +7,7 @@ src='https://github.com/uavs3/uavs3d.git'
 cfg='cmake'
 eta='80'
 
-cfg_static='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 #cfg_shared=''
 #cfg_bin=''
 

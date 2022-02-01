@@ -19,8 +19,8 @@ lst_bin='giftext gifsponge giffilter giffix gifecho gifbg gifhisto gifwedge gift
 lst_lic='COPYING AUTHORS'
 lst_pc='giflib.pc'
 
-cfg_bin='BUILD_UTILITIES'
-cfg_static='BUILD_STATIC_LIBS'
+cmake_bin='BUILD_UTILITIES'
+cmake_static='BUILD_STATIC_LIBS'
 
 dev_bra='main'
 dev_vrs=''

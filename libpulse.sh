@@ -5,10 +5,7 @@ apt="${lib}-dev"
 dsc='PulseAudio Client Interface'
 lic='LGPL-2.1'
 vrs='15.0'
-#src="https://www.freedesktop.org/software/pulseaudio/releases/pulseaudio-${vrs}.tar.xz"
-#sty='txz'
 src='https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git'
-sty='git'
 cfg='meson'
 dep='glib2 libtool' # fftwf samplerate soxr speex sndfile
 pkg='libpulse'
@@ -23,7 +20,7 @@ lst_pc='libpulse.pc libpulse-simple.pc libpulse-mainloop-glib.pc'
 
 . xbuilder.sh
 
-CFG="-Ddaemon=false -Ddoxygen=false -Dman=false -Dtests=false -Ddatabase=simple -Dalsa=disabled -Dglib=enabled \
+meson_cfg="-Ddaemon=false -Ddoxygen=false -Dman=false -Dtests=false -Ddatabase=simple -Dalsa=disabled -Dglib=enabled \
     -D stream-restore-clear-old-devices=true \
     -D zshcompletiondir=no \
     -D asyncns=disabled \

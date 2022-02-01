@@ -9,8 +9,10 @@ src='https://github.com/BLAKE2/libb2.git'
 cfg='autom'
 eta='100'
 
-#CFG-defaults
-#--enable-native=yes --enable-fat=no --disable-openmp
+dev_bra='main'
+dev_vrs='0.98.1'
+stb_bra=''
+stb_vrs=''
 
 lst_inc='blake2.h'
 lst_lib='libb2.*'

@@ -6,8 +6,10 @@ dsc='A speech codec for 2400 bit/s and below'
 lic='LGPL-2.1'
 src='https://github.com/drowe67/codec2.git'
 cfg='cmake'
-cstk="BUILD_STATIC_LIBS"
 eta='80'
+
+cmake_static="BUILD_STATIC_LIBS"
+cmake_cfg="-DUNITTEST=FALSE"
 
 lst_inc='codec2/*.h'
 lst_lib='libcodec2'
@@ -17,13 +19,12 @@ lst_pc='codec2.pc'
 
 . xbuilder.sh
 
-CFG="-DUNITTEST=FALSE"
 unset LDFLAGS
 
 build_patch_config(){
     $host_mingw && {
-        sed -i "s|include|# include|" $BUILD_DIR/cmake/GetDependencies.cmake
-        sed -i "s|get_prerequisites|# get_prerequisites|" $BUILD_DIR/cmake/GetDependencies.cmake
+        sed -i "s|include|# include|" ${dir_build}/cmake/GetDependencies.cmake
+        sed -i "s|get_prerequisites|# get_prerequisites|" ${dir_build}/cmake/GetDependencies.cmake
     }
     LDFLAGS="-static"
     return 0

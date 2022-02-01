@@ -16,12 +16,12 @@ lst_bin=''
 lst_lic='LICENSE_PLEASE_READ.txt COPYING AUTHORS'
 lst_pc='opus.pc'
 
-cfg_automake="--disable-doc"
-cfg_meson='-Dtests=disabled -Ddocs=disabled'
+ac_cfg="--disable-doc"
+meson_cfg='-Dtests=disabled -Ddocs=disabled'
 
 . xbuilder.sh
 
-$build_bin && cfg_automake+=' --enable-extra-programs' && cfg_meson+=' -Dextra-programs=enabled'
+$build_bin && ac_cfg+=' --enable-extra-programs' && meson_cfg+=' -Dextra-programs=enabled'
 
 start
 

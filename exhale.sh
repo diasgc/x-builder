@@ -15,7 +15,7 @@ pc_llib="-lexhale"
 
 . xbuilder.sh
 
-CFG="-DBUILD_TESTS=OFF -DCMAKE_DL_LIBS=ON"
+cmake_cfg="-DBUILD_TESTS=OFF -DCMAKE_DL_LIBS=ON"
 
 start
 

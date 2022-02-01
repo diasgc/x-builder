@@ -8,12 +8,12 @@ src='https://aomedia.googlesource.com/aom.git'
 cfg='cmake'
 tls='perl'
 eta='240'
-cfg_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
-cfg_bin='ENABLE_EXAMPLES'
+cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
+cmake_bin='ENABLE_EXAMPLES'
 #cst0="-DCONFIG_STATIC=0"
 #cst1="-DCONFIG_STATIC=1"
 #cbk='ENABLE_EXAMPLES'
-CFG='-DENABLE_TESTS=OFF
+cmake_cfg='-DENABLE_TESTS=OFF
      -DENABLE_TOOLS=OFF
      -DENABLE_TESTDATA=OFF
      -DENABLE_DOCS=OFF'
@@ -31,11 +31,11 @@ lst_pc='aom.pc'
 
 . xbuilder.sh
 
-$host_arm && CFG+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=$AS"
-$host_arm64 && CFG+=" -DAOM_NEON_INTRIN_FLAG="
-$host_arm32 && CFG+=" -DAOM_NEON_INTRIN_FLAG=-mfpu=neon"
-$host_x86 && CFG+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'
-$host_mingw && CFG+=" -DCONFIG_PIC=1"
+$host_arm && cmake_cfg+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=$AS"
+$host_arm64 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG="
+$host_arm32 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG=-mfpu=neon"
+$host_x86 && cmake_cfg+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'
+$host_mingw && cmake_cfg+=" -DCONFIG_PIC=1"
 
 start
 

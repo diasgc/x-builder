@@ -17,13 +17,12 @@ lst_lic='COPYING AUTHORS'
 lst_pc='fontconfig.pc'
 
 . xbuilder.sh
-config_ac='--disable-docs'
-config_meson='-Db_pie=true -Db_lto=true -Ddoc=disabled -Dtests=disabled'
 
-case $build_tool in
-    automake) CFG="--disable-docs"; exec_config="autogen.sh";;
-    meson) CFG="-Db_pie=true -Db_lto=true -Ddoc=disabled -Dtests=disabled"; MAKE_EXECUTABLE=ninja;; #not recomended
-esac
+ac_cfg='--disable-docs'
+exec_config="autogen.sh"
+
+#not recomended
+meson_cfg='-Db_pie=true -Db_lto=true -Ddoc=disabled -Dtests=disabled'
 
 start
 

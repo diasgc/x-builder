@@ -13,12 +13,13 @@ cfg='ag'
 tls='python'
 dep='ogg vorbis opus flac speex sqlite3 lame'
 eta='78'
-ac_nosysroot=true
 mki='install'
 
-#cfg_static=''
-#cfg_bin='BUILD_PROGRAMS'
-#CFG="-DENABLE_PACKAGE_CONFIG=ON -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF"
+cmake_static=''
+cmake_bin='BUILD_PROGRAMS'
+cmake_cfg="-DENABLE_PACKAGE_CONFIG=ON -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF"
+
+ac_nosysroot=true
 
 dev_bra='main'
 dev_vrs='1.1.0beta2'

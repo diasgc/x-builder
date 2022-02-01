@@ -21,7 +21,7 @@ dsc='International Components for Unicode library'
 lic='BSD'
 src='https://github.com/unicode-org/icu.git'
 cfg='ac'
-dir_config='icu4c/source'
+config_dir='icu4c/source'
 mki='install'
 eta='580'
 
@@ -35,17 +35,17 @@ lst_bin=''
 
 . xbuilder.sh
 
-BUILD_DIR="${SRCDIR}/${dir_config}/build_${arch}"
-CFG="--with-data-packaging=archive"
+dir_build="${dir_src}/${config_dir}/build_${arch}"
+ac_cfg="--with-data-packaging=archive"
 
 if $host_cross; then
-    dir_cross="${SRCDIR}/${dir_config}/build_${build_arch}"
+    dir_cross="${dir_src}/${config_dir}/build_${build_arch}"
     a=${arch}
     if [ ! -d "${dir_cross}" ];then
         ./libicu.sh lx64 --both --bin
     fi
     arch=$a
-    CFG+=" --with-cross-build=${dir_cross}"
+    ac_cfg+=" --with-cross-build=${dir_cross}"
 fi
 
 start

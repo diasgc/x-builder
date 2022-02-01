@@ -19,7 +19,7 @@ cmake_shared='CARES_SHARED'
 cmake_bin='CARES_BUILD_TOOLS'
 
 dev_bra='main'
-dev_vrs=''
+dev_vrs='1.18.1'
 stb_bra=''
 stb_vrs=''
 
@@ -38,6 +38,21 @@ on_editpack(){
 start
 
 # cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
+# NDK ++   .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+# Filelist
+# --------
+# include/ares_version.h
+# include/ares.h
+# include/ares_nameser.h
+# include/ares_dns.h
+# include/ares_rules.h
+# include/ares_build.h
+# lib/pkgconfig/libcares.pc
+# lib/libcares.so
+# lib/libcares.a
+# lib/libcares.la
+# share/doc/libcares/AUTHORS
+# share/doc/libcares/LICENSE.md

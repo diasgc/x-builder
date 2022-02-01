@@ -10,7 +10,7 @@ dep='libcunit zlib'
 pkg='libmysofa'
 eta='60'
 
-cfg_static='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 
 dev_bra='master'
 dev_vrs=''
@@ -27,7 +27,7 @@ lst_pc='libmysofa.pc'
 
 # CMAKE OPTIONS (default): -DADDRESS_SANITIZE=OFF -DCODE_COVERAGE=OFF 
 
-cfg_cmake="-DBUILD_TESTS=OFF"
+cmake_cfg="-DBUILD_TESTS=OFF"
 
 start
 

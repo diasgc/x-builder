@@ -9,12 +9,9 @@ cfg='meson'
 tls='meson ninja'
 eta='60'
 build_strip=false
-#cb0='-Denable_tools=false'
-#cb1='-Denable_tools=true'
 
-#cfg_static=''
-#cfg_shared=''
-cfg_bin='enable_tools'
+meson_bin='enable_tools'
+meson_cfg="-Db_pie=true -Db_lto=true"
 
 dev_bra='main'
 dev_vrs='0.9.2'
@@ -28,12 +25,6 @@ lst_lic='COPYING'
 lst_pc='dav1d.pc'
 
 . xbuilder.sh
-
-CFG="-Db_pie=true -Db_lto=true"
-
-build_make_package(){
-    DESTDIR=${1} ninja -C ${dir_build} install
-}
 
 start
 

@@ -11,7 +11,7 @@ eta='12'
 
 mkc='clean'
 mki='install/strip'
-cstk="BUILD_STATIC_LIBS"
+cmake_static="BUILD_STATIC_LIBS"
 
 lst_inc='chromaprint.h'
 lst_lib='libchromaprint.*'
@@ -23,7 +23,7 @@ lst_pc='libchromaprint.pc'
 
 . xbuilder.sh
 
-CFG="-DKISSFFT_SOURCE_DIR=${dir_src}/src/3rdparty/kissfft -DBUILD_TOOLS=OFF -DBUILD_TESTS=OFF"
+cmake_cfg="-DKISSFFT_SOURCE_DIR=${dir_src}/src/3rdparty/kissfft -DBUILD_TOOLS=OFF -DBUILD_TESTS=OFF"
 
 start
 

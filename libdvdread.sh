@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#             a8  a7  x86 x64
-# ndk-clang   ++o ++o ++o ++o
-# linux-gnu   ... ... ... ...
-# mingw-llvm  ... ... ... ++o
-
 lib='libdvdread'
 apt="${lib}-dev"
 pkg='dvdread'
@@ -12,12 +7,12 @@ dsc='Library to read DVD disks'
 lic='GPL-2.0'
 src='https://code.videolan.org/videolan/libdvdread.git'
 cfg='ar'
-eta='10'
+eta='52'
 mki='install-strip'
 mkc='distclean'
 
 dev_bra='main'
-dev_vrs=''
+dev_vrs='6.1.2'
 stb_bra=''
 stb_vrs=''
 
@@ -25,7 +20,8 @@ lst_inc='dvdread/*.h'
 lst_lib='libdvdread'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
-lst_pc=''
+lst_pc='dvdread.pc'
+
 . xbuilder.sh
 
 CFG="--disable-apidoc"
@@ -36,6 +32,8 @@ start
 # NDK ++   .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
+
+
 
 # Filelist
 # --------

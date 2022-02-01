@@ -391,6 +391,7 @@ start(){
     [ -n "${mkc}" ] && do_quietly 'clean' ${MAKE_EXECUTABLE} $mkc
   fi
 
+  local arr
   if fn_defined 'build_config'; then
     build_config
   else case $build_tool in
@@ -398,8 +399,35 @@ start(){
       : "${exec_config:=${CMAKE_EXECUTABLE}}"
       [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
       [ -f "${cmake_toolchain_file}" ] && CTC="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file}"
-      [ -n "${cfg_cmake}" ] && CFG="${cfg_cmake} ${CFG}"
-      [ -n "${cfg_static}" ] && config_buildtype_args_cmake
+      
+      if [ -n "${cmake_static}" ]; then
+          arr=(${cmake_static//|/ })
+          case ${#arr[@]} in
+            1) $build_static && CSH="-D${arr[0]}=ON" || CSH="-D${arr[0]}=OFF";;
+            2) $build_static && CSH="-D${arr[0]}" || CSH="-D${arr[1]}";;
+          esac
+      fi
+
+      if [ -z "${cmake_shared}" ]; then
+        $build_shared && CSH+=' -DBUILD_SHARED_LIBS=ON' || CSH+=' -DBUILD_SHARED_LIBS=OFF'
+      else
+        arr=(${cmake_shared//|/ })
+        case ${#arr[@]} in
+          1) $build_shared && CSH+=" -D${arr[0]}=ON" || CSH+=" -D${arr[0]}=OFF";;
+          2) $build_shared && CSH+=" -D${arr[1]}" || CSH+=" -D${arr[0]}";;
+        esac
+      fi
+
+      if [ -n "${cmake_bin}" ]; then
+        arr=(${cmake_bin//|/ })
+        case ${#arr[@]} in
+          1) $build_bin && CBN="-D${arr[0]}=ON" || CBN="-D${arr[0]}=OFF";;
+          2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+        esac
+      fi
+      
+      [ -n "${cmake_cfg}" ] && CFG="${cmake_cfg} ${CFG}"
+      
       do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CTC} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
@@ -409,23 +437,57 @@ start(){
     automake)
       [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
       [ -z "$exec_config" ] && exec_config='configure' # default config executable
-      ! $ac_nohost && [ "$arch" != "${build_arch}" ] && CFG+=" --host=${arch}"
-      ! $ac_nosysroot && CFG+=" --with-sysroot=${SYSROOT}"
-      ! $ac_nopic && CFG+=" --with-pic=1"
-      [ -n "${cfg_automake}" ] && CFG="${cfg_automake} ${CFG}"
+      [ -n "${ac_cfg}" ] && CFG=${ac_cfg}
+      
+      if [ -n "${ac_static}" ]; then
+          arr=(${ac_static//|/ })
+          case ${#arr[@]} in
+            1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
+            2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
+          esac
+      fi
+
+      if [ -n "${ac_shared}" ]; then
+        arr=(${ac_shared//|/ })
+        case ${#arr[@]} in
+          1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
+          2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
+        esac
+      fi
+
+      if [ -n "${ac_bin}" ]; then
+        arr=(${ac_bin//|/ })
+        case ${#arr[@]} in
+          1) $build_bin && CBN="${arr[0]}=1" || CBN="${arr[0]}=0";;
+          2) $build_bin && CBN="${arr[1]}" || CBN="${arr[0]}";;
+        esac
+      fi
+
+      $ac_nohost || $host_cross && CFG+=" --host=${arch}"
+      $ac_nosysroot || CFG+=" --with-sysroot=${SYSROOT}"
+      $ac_nopic || CFG+=" --with-pic=1"
+      
       do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} $CSH $CBN "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
+
     meson)
       local cfg_file="${dir_config}/${arch}.meson"
       [ -f "${cfg_file}" ] && rm ${cfg_file}
-      [ -n "${cfg_bin}" ] && config_buildtype_args_meson
       $host_clang || LD="bfd"
+      if [ -n "${meson_bin}" ]; then
+        arr=(${meson_bin//|/ })
+        case ${#arr[@]} in
+          1) $build_bin && CBN="-D${arr[0]}=true" || CBN="-D${arr[0]}=false";;
+          2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
+        esac
+      fi
       meson_create_toolchain ${cfg_file}
       MAKE_EXECUTABLE=ninja
-      [ -n "${cfg_meson}" ] && CFG="${cfg_meson} ${CFG}"
+      [ -n "${meson_cfg}" ] && CFG="${meson_cfg} ${CFG}"
       do_log 'meson' meson setup --buildtype=release --cross-file=${cfg_file} --prefix=${dir_install} ${CFG} ${CSH} ${CBN}
       ;;
+
     make)
       mkf=$CFG
       MAKE_EXECUTABLE=make
@@ -532,64 +594,18 @@ start(){
   end_script
 }
 
-config_buildtype_args_cmake(){
+#1=cmake_key 2=$build_key_bool 
+cmake_readkey(){
   local arr
-  if [ -n "${cfg_static}" ]; then
-      arr=(${cfg_static//|/ })
+  locat ret=''
+  if [ -n "${!1}" ]; then
+      arr=(${!cfg_static//|/ })
       case ${#arr[@]} in
-        1) $build_static && CSH="-D${arr[0]}=ON" || CSH="-D${arr[0]}=OFF";;
-        2) $build_static && CSH="-D${arr[0]}" || CSH="-D${arr[1]}";;
+        1) ${!2} && ret="-D${arr[0]}=ON" || ret="-D${arr[0]}=OFF";;
+        2) ${!2} && ret="-D${arr[0]}" || ret="-D${arr[1]}";;
       esac
   fi
-  if [ -z "${cfg_shared}" ]; then
-    $build_shared && CSH+=' -DBUILD_SHARED_LIBS=ON' || CSH+=' -DBUILD_SHARED_LIBS=OFF'
-  else
-    arr=(${cfg_shared//|/ })
-    case ${#arr[@]} in
-      1) $build_shared && CSH+=" -D${arr[0]}=ON" || CSH+=" -D${arr[0]}=OFF";;
-      2) $build_shared && CSH+=" -D${arr[1]}" || CSH+=" -D${arr[0]}";;
-    esac
-  fi
-  if [ -n "${cfg_bin}" ]; then
-    arr=(${cfg_bin//|/ })
-    case ${#arr[@]} in
-      1) $build_bin && CBN="-D${arr[0]}=ON" || CBN="-D${arr[0]}=OFF";;
-      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
-    esac
-  fi
-}
-
-config_buildtype_args_autotools(){
-  local arr
-  if [ -n "${cfg_static}" ]; then
-      arr=(${cfg_static//|/ })
-      case ${#arr[@]} in
-        1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
-        2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
-      esac
-  fi
-  if [ -n "${cfg_shared}" ]; then
-    arr=(${cfg_shared//|/ })
-    case ${#arr[@]} in
-      1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
-      2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
-    esac
-  fi
-  if [ -n "${cfg_bin}" ]; then
-    arr=(${cfg_bin//|/ })
-    case ${#arr[@]} in
-      1) $build_bin && CBN="-D${arr[0]}=1" || CBN="-D${arr[0]}=0";;
-      2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
-    esac
-  fi
-}
-
-config_buildtype_args_meson(){
-  arr=(${cfg_bin//|/ })
-  case ${#arr[@]} in
-    1) $build_bin && CBN="-D${arr[0]}=true" || CBN="-D${arr[0]}=false";;
-    2) $build_bin && CBN="-D${arr[1]}" || CBN="-D${arr[0]}";;
-  esac
+  echo "${ret}"
 }
 
 doStrip(){
@@ -625,36 +641,46 @@ make_findtarget(){
 }
 
 check_install(){
-  # check includes
-  for h in $lst_inc; do 
-    [ -n "$(ls ${dir_install}/include/$h 2>/dev/null)" ] || {
-      echo "Missing header files"; return 1
-    }
-  done
-  echo "includes ok"
-  # check libs
-  for h in $lst_lib; do 
-    [ -n "$(ls ${dir_install}/lib/$h 2>/dev/null)" ] || {
-      echo "Missing lib files"; return 1
-    }
-  done
-  echo "libraries ok"
-  # check bin
-  for h in $lst_bin; do 
-    [ -n "$(ls ${dir_install}/bin/$h 2>/dev/null)" ] || {
-      echo "Missing bin files"; return 1
-    }
-  done
-  echo "binaries files ok"
-  # check pc
-  if [ -n "${lst_pc}"]; then
-    for h in ${lst_pc}; do 
-      [ -n "$(ls ${dir_install}/lib/pkgconfig/${h} 2>/dev/null)" ] || {
-        echo "Missing pkgconfig files"; return 1
-      }
+  local ext=''
+  case $1 in
+    # check includes
+    inc*)
+      for h in $lst_inc; do 
+        [ -z "$(ls ${dir_install}/include/$h 2>/dev/null)" ] && echo && return 0
+      done
+      echo 1
+      return 0
+      ;;
+    # check libs
+    static*) ext='\.a';;
+    shared*) $host_mingw && ext='\.dll*' || ext='\.so*';;
+    lib*) ext='.*';;
+    # check bin
+    bin)
+      for h in $lst_bin; do 
+        [ -z "$(ls "${dir_install}/bin/${h}" 2>/dev/null)" ] && echo && return 0
+      done
+      echo 1
+      return 0
+      ;;
+    # check pkgconfig
+    pc|pkgconfig)
+      for h in $lst_pc; do 
+        [ -z "$(ls "${dir_install}/lib/pkgconfig/${h}" 2>/dev/null)" ] && echo && return 0
+      done
+      echo 1
+      return 0
+      ;;
+  esac
+  if [ -n "${ext}" ];then
+    for h in $lst_lib; do
+      echo "listing ${dir_install}/lib/${h}${ext}"
+      [ -z "$(ls ${dir_install}/lib/${h}.* | grep ''${ext}'' 2>/dev/null)" ] && echo && return 0
     done
-    echo "pkgconfig files ok"
+    echo 1
+    return 0
   fi
+  echo
   return 0
 }
 
@@ -755,7 +781,7 @@ build_packages_bin(){
     fi
     
     # also include .pc manually-built file
-    if [ "$(type -t build_pkgconfig_file)" = 'function' ] || [ -n "$pc_llib" ];then
+    if fn_defined 'build_pkgconfig_file' || [ -n "$pc_llib" ];then
       local xb_pkgd=$(pwd)/lib/pkgconfig
       [ ! -d "${xb_pkgd}" ] && mkdir -p $xb_pkgd
       if [ -n "${pc_filelist}" ];then
@@ -766,9 +792,11 @@ build_packages_bin(){
         cp ${dir_install_pc}/${pkg}.pc ${xb_pkgd}/
       fi
     fi
+
     if fn_defined 'on_editpack'; then
       on_editpack
     fi
+
     build_packages_filelist
     case $pkg_fmt in
       tgz) tar -czvf "${xb_distdir}.tar.gz" *;;
@@ -1716,6 +1744,33 @@ showBanner(){
   fi
 }
 
+create_diff(){
+  local b64=false
+  [ -z "${1}" ] && doErr "usage: ${0} --diff [b64] newfile [oldfile]"
+  [ "${1}" == "b64" ] && b64=true && shift
+  local newfile=${1}
+  local oldfile
+  [ -f "sources/${lib}/${newfile}" ] || doErr "unable to find file sources/${lib}/${newfile}"
+  shift
+  pushdir sources/${lib}
+  if [ -z "${1}" ]; then
+    oldfile="${newfile::-3}old"
+    touch sources/${lib}/${oldfile}
+  else
+    oldfile=${1}
+    [ -f "${oldfile}" ] || doErr "unable to find file sources/${lib}/${oldfile}"
+  fi
+  if $b64; then
+    diff -Naur ${oldfile} ${newfile} | sed "s/${oldfile}/${newfile}/" | base64 -w 90 >"${newfile}.patch"
+  else
+    diff -Naur ${oldfile} ${newfile} | sed "s/${oldfile}/${newfile}/" >"${newfile}.patch"
+  fi
+  echo -e "\n  ${CC1}Done${C0}\n"
+  read -p "Open file? y|n: " yn
+  case $yn in y|Y) nano "${newfile}.patch";; esac
+  popdir
+}
+
 menu_tune(){
   case $1 in
     smd855)   CPPFLAGS+=" -mtune=cortex-a76.cortex-a55";;
@@ -1742,20 +1797,22 @@ menu_clear(){
 menu_get(){
   local pkgfile="${dir_install_pc}/${pkg}.pc"
   case $1 in
-    cflags)     [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --cflags)";;
-    ldflags)    [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs)";;
-    ldstatic)   [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs --static)";;
-    pc-ver)     [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --modversion)";;
-    pc-path|pc) echo "${pkgfile}";;
-    pc-name)    echo "${pkg}";;
-    prefix)     echo "${dir_install}";;
-    libname)    echo "${lib}";;
-    aptname)    echo "${apt}";;
-    var)        shift; echo "${!1}";;
-    vrs_remote) git_remote_version $src;;
-    vrs_local)  git_remote_version $src;;
-    vrs_latest) echo "$(github_latest_tgz)";;
-    cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";;
+    cflags)        [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --cflags)";;
+    ldflags)       [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs)";;
+    ldstatic)      [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --libs --static)";;
+    pc-ver)        [ -f "${pkgfile}" ] && echo "$(pkg-config ${pkgfile} --modversion)";;
+    pc-path|pc)    echo "${pkgfile}";;
+    pc-name)       echo "${pkg}";;
+    prefix)        echo "${dir_install}";;
+    libname)       echo "${lib}";;
+    aptname)       echo "${apt}";;
+    var)           shift; echo "${!1}";;
+    vrs_remote)    git_remote_version $src;;
+    vrs_local)     git_remote_version $src;;
+    vrs_latest)    echo "$(github_latest_tgz)";;
+    cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";exit 0;;
+    options|opts)  showOpts "$(pwd)/sources/$lib"; exit 0;;
+    log)           [ -f "${dir_install}/${lib}.log" ] && nano ${dir_install}/${lib}.log;;
   esac
   return 0
 }
@@ -1871,7 +1928,6 @@ while [ $1 ];do
                 build_static=true
                 build_bin=true
                 build_dist=true
-                build_man=true
                 dep_build="--full"
                 ;;
     --shared)   build_shared=true; build_static=false;;
@@ -1889,7 +1945,7 @@ while [ $1 ];do
 
     --prefix)   shift; dir_install=$1; LIBSDIR=$1;;
     --stable)   git_stable=true;;
-    
+    --diff)     shift; create_diff $@; exit 0;;
     --update)   update=true;;
     --upd-all)  update=true; req_update_deps=true;;
     --opts)     showOpts "$(pwd)/sources/$lib"; exit 0;;
@@ -1904,7 +1960,7 @@ while [ $1 ];do
     --desc )    echo $dsc && exit 0;;
     
     --get)      shift; menu_get $@; exit 0;;
-    --check)    shift; check_install; exit 0;;
+    --check)    shift; check_install $@; exit 0;;
 
     --list)     shift; menu_list $@; exit 0;;
 

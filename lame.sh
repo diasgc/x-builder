@@ -14,7 +14,7 @@ cbk="able-frontend"
 pc_llib="-lmp3lame"
 API=26 # required for frontends build
 
-cfg_bin='--disable-frontend|--enable-frontend'
+ac_bin='--disable-frontend|--enable-frontend'
 
 dev_bra='main'
 dev_vrs=''
@@ -32,8 +32,8 @@ lst_pc='lame.pc'
 # update latest version
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
 
-CFG="--disable-gtktest --disable-decoder --disable-debug"
-$host_mingw && CFG+=" --enable-expopt=full"
+ac_cfg="--disable-gtktest --disable-decoder --disable-debug"
+$host_mingw && ac_cfg+=" --enable-expopt=full"
 # make shared executable so
 ! $build_static && $build_bin && CBN="--enable-dynamic-frontends"
 $host_ndk && [ ${API} -lt 26 ] && unset CBN

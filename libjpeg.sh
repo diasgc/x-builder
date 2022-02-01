@@ -11,7 +11,7 @@ cstk="ENABLE_STATIC"
 cshk="ENABLE_SHARED"
 mki='install/strip'
 
-CFG="-DWITH_JPEG8=ON -DWITH_JPEG7=ON -DWITH_DOCS=OFF -DWITH_MAN=OFF"
+cmake_cfg="-DWITH_JPEG8=ON -DWITH_JPEG7=ON -DWITH_DOCS=OFF -DWITH_MAN=OFF"
 
 lst_inc='jerror.h jconfig.h jpeglib.h jmorecfg.h turbojpeg.h'
 lst_lib='libjpeg.* libturbojpeg.*'
@@ -21,9 +21,9 @@ lst_pc='libjpeg.pc libturbojpeg.pc'
 
 extraOpts(){
   case $1 in
-    --jpeg7) CFG="-DWITH_JPEG7=ON $CFG";;
-    --jpeg8) CFG="-DWITH_JPEG8=ON $CFG";;
-    --12bit) CFG="-DWITH_12BIT=ON $CFG";;
+    --jpeg7) cmake_cfg+=" -DWITH_JPEG7=ON";;
+    --jpeg8) cmake_cfg+=" -DWITH_JPEG8=ON";;
+    --12bit) cmake_cfg+=" -DWITH_12BIT=ON";;
   esac
 }
 

@@ -7,7 +7,7 @@ src='https://github.com/pkuvcl/davs2.git'
 cfg='ac'
 eta='40'
 config_dir="build/linux"
-cb0="--disable-cli"
+ac_bin="--disable-cli| "
 
 dev_bra='main'
 dev_vrs='1.6.205'
@@ -24,7 +24,7 @@ lst_pc='davs2.pc'
 
 AS=nasm
 $host_ndk && LDFLAGS+=" -L${SYSROOT}/usr/lib -llog"
-$host_arm && CFG+=" --disable-asm"
+$host_arm && ac_cfg+=" --disable-asm"
 
 start
 

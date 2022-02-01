@@ -5,10 +5,11 @@ apt='libogg0'
 dsc='Ogg media container'
 lic='BSD'
 src='https://github.com/xiph/ogg.git'
-cfg='cm'
+cfg='cmake'
 eta='45'
 mki='install'
-#cbk="able-extra-programs"
+
+ac_bin="--disable-extra-programs|--enable-extra-programs"
 
 lst_inc='ogg/*.h'
 lst_lib='libogg'
@@ -18,11 +19,11 @@ lst_pc='ogg.pc'
 
 . xbuilder.sh
 
-cfg_cmake='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
+cmake_cfg='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
 
 build_patch_config(){
   # Patch to remove docs (automake)
-  [ "$build_tool" == "automake" ] && sed -i "s|SUBDIRS = src include doc|SUBDIRS = src include|g" Makefile
+  [ -n "${ac_bin}" ] && sed -i "s|SUBDIRS = src include doc|SUBDIRS = src include|g" Makefile
   return 0
 }
 

@@ -1,23 +1,21 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK ++   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='cryptopp'
 dsc='Free C++ class library of cryptographic schemes'
 lic='CRYPTOGAMS'
 src='https://github.com/weidai11/cryptopp.git'
 cfg='cmake'
-cshk='BUILD_SHARED'
-cstk='BUILD_STATIC'
-CFG='-DBUILD_TESTING=OFF'
+
+cmake_shared='BUILD_SHARED'
+cmake_static='BUILD_STATIC'
+cmake_cfg='-DBUILD_TESTING=OFF'
 
 lst_inc='cryptopp/*.h'
 lst_lib='libcryptopp.*'
 lst_bin=''
 lst_lic='License.txt'
 lst_pc='cryptopp.pc'
+
 pc_llib='-lcryptopp'
 
 eta='190'
@@ -25,7 +23,6 @@ eta='190'
 . xbuilder.sh
 
 source_config(){
-    cd $SRCDIR
     local url="https://raw.githubusercontent.com/noloader/cryptopp-cmake/master/"
     for f in CMakeLists.txt cryptopp-config.cmake; do
         wget -O ${f} ${url}${f}
@@ -34,6 +31,10 @@ source_config(){
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

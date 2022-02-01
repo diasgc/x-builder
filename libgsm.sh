@@ -9,8 +9,9 @@ src="http://www.quut.com/gsm/gsm-${vrs}.tar.gz"
 cfg='cmake'
 eta='60'
 pc_llib="-lgsm"
-cfg_static='BUILD_STATIC_LIBS'
-cfg_bin='BUILD_TOOLS'
+
+cmake_static='BUILD_STATIC_LIBS'
+cmake_bin='BUILD_TOOLS'
 
 dev_bra=''
 dev_vrs=''

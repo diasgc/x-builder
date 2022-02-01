@@ -23,7 +23,7 @@ lst_pc='libcurl.pc'
 . xbuilder.sh
 
 # todo remove manual
-CFG="--with-openssl --disable-manual"
+ac_cfg="--with-openssl --disable-manual"
 
 start
 
