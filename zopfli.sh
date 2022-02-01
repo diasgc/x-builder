@@ -326,6 +326,7 @@ foreach lib ${libzopfli_targets}
         target_link_libraries(${lib} m)
     endif()
 endforeach()
+
 foreach lib ${libzopflipng_targets}
     if(${lib} MATCHES "-static$")
         set(btype STATIC)
