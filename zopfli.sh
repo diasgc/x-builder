@@ -1,15 +1,13 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  P   .   .   .   .   .   .   .   .   .   .  static
-#  P   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='zopfli'
 dsc='Zopfli Compression Algorithm is a compression library programmed in C to perform very good, but slow, deflate or zlib compression.'
 lic='Apache-2.0'
 src='https://github.com/google/zopfli.git'
 cfg='cmake'
-eta='20'
+eta='45'
+
+cmake_static='BUILD_STATIC_LIBS'
 
 pc_llibs="-lzopflipng -lzopfli"
 pc_url="https://github.com/google/zopfli"
@@ -20,423 +18,114 @@ lst_bin='zopflipng zopfli'
 lst_lic='COPYING'
 lst_pc='zopfli.pc'
 
+dev_bra='main'
+dev_vrs='zopfli-1.0.3'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 start
 
-<<'XB_CREATE_CMAKELISTS'
-cmake_minimum_required(VERSION 2.8.11)
+# patch 01 on CMakeLists.txt to support dual static shared builds
+<<'XB64_PATCH'
+LS0tIENNYWtlTGlzdHMudHh0CTIwMjItMDItMDEgMTI6NTk6MTMuMDYwMDU3MjAwICswMDAwCisrKyBDTWFrZUxpc3
+RzLnR4dAkyMDIyLTAyLTAxIDEzOjAzOjEzLjM5MDA1NzIwMCArMDAwMApAQCAtMTQsMjggKzE0LDggQEAKICMgT3B0
+aW9ucwogIwogCi0jIFpPUEZMSV9CVUlMRF9TSEFSRUQgY29udHJvbHMgaWYgWm9wZmxpIGxpYnJhcmllcyBhcmUgYn
+VpbHQgYXMgc2hhcmVkIG9yCi0jIHN0YXRpYwotIwotIyBJdCBkZWZhdWx0cyB0byB0aGUgdmFsdWUgb2YgQlVJTERf
+U0hBUkVEX0xJQlMgaWYgc2V0LCBhbmQgaW4gbW9zdCBjYXNlcwotIyB0aGF0IHNob3VsZCBiZSB1c2VkIGluc3RlYW
+QuIFRoZSBwdXJwb3NlIG9mIFpPUEZMSV9CVUlMRF9TSEFSRUQgaXMgdG8gYWxsb3cKLSMgb3ZlcnJpZGluZyBpdCB3
+aGVuIGJ1aWx0IGFzIGEgc3VicHJvamVjdC4KLXNldCh6b3BmbGlfc2hhcmVkX2RlZmF1bHQgT0ZGKQotaWYoREVGSU
+5FRCBCVUlMRF9TSEFSRURfTElCUykKLSAgc2V0KHpvcGZsaV9zaGFyZWRfZGVmYXVsdCAke0JVSUxEX1NIQVJFRF9M
+SUJTfSkKLWVuZGlmKCkKLW9wdGlvbihaT1BGTElfQlVJTERfU0hBUkVEICJCdWlsZCBab3BmbGkgd2l0aCBzaGFyZW
+QgbGlicmFyaWVzIiAke3pvcGZsaV9zaGFyZWRfZGVmYXVsdH0pCi11bnNldCh6b3BmbGlfc2hhcmVkX2RlZmF1bHQp
+Ci0KICMgWk9QRkxJX0JVSUxEX0lOU1RBTEwgY29udHJvbHMgaWYgWm9wZmxpIGFkZHMgYW4gaW5zdGFsbCB0YXJnZX
+QgdG8gdGhlIGJ1aWxkCi0jCi0jIFdoZW4gYnVpbHQgc3RhbmRhbG9uZSBvciBhcyBhIHNoYXJlZCBsaWJyYXJ5IHN1
+YnByb2plY3QsIHRoZSBkZWZhdWx0IGlzIE9OLAotIyBhbmQgZm9yIHN0YXRpYyBsaWJyYXJ5IHN1YnByb2plY3QgdG
+hlIGRlZmF1bHQgaXMgT0ZGLgotaWYoem9wZmxpX3N0YW5kYWxvbmUgT1IgWk9QRkxJX0JVSUxEX1NIQVJFRCkKLSAg
+b3B0aW9uKFpPUEZMSV9CVUlMRF9JTlNUQUxMICJBZGQgWm9wZmxpIGluc3RhbGwgdGFyZ2V0IiBPTikKLWVsc2UoKQ
+otICBvcHRpb24oWk9QRkxJX0JVSUxEX0lOU1RBTEwgIkFkZCBab3BmbGkgaW5zdGFsbCB0YXJnZXQiIE9GRikKLWVu
+ZGlmKCkKK29wdGlvbihaT1BGTElfQlVJTERfSU5TVEFMTCAiQWRkIFpvcGZsaSBpbnN0YWxsIHRhcmdldCIgT04pCi
+AKICMgWk9QRkxJX0RFRkFVTFRfUkVMRUFTRSBlbmFibGVzIGNoYW5naW5nIGVtcHR5IGJ1aWxkIHR5cGUgdG8gUmVs
+ZWFzZQogIwpAQCAtNjAsMTggKzQwLDkgQEAKIHNldChaT1BGTElfVkVSU0lPTl9QQVRDSCAzKQogc2V0KFpPUEZMSV
+9WRVJTSU9OICR7Wk9QRkxJX1ZFUlNJT05fTUFKT1J9LiR7Wk9QRkxJX1ZFUlNJT05fTUlOT1J9LiR7Wk9QRkxJX1ZF
+UlNJT05fUEFUQ0h9KQogCi1pZihaT1BGTElfQlVJTERfU0hBUkVEKQotICBzZXQoem9wZmxpX2xpYnJhcnlfdHlwZS
+BTSEFSRUQpCi1lbHNlKCkKLSAgc2V0KHpvcGZsaV9saWJyYXJ5X3R5cGUgU1RBVElDKQotZW5kaWYoKQotCiBpbmNs
+dWRlKEdOVUluc3RhbGxEaXJzKQogCi0jCi0jIGxpYnpvcGZsaQotIwotYWRkX2xpYnJhcnkobGliem9wZmxpICR7em
+9wZmxpX2xpYnJhcnlfdHlwZX0KK3NldChsaWJ6b3BmbGlfc3JjCiAgIHNyYy96b3BmbGkvYmxvY2tzcGxpdHRlci5j
+CiAgIHNyYy96b3BmbGkvY2FjaGUuYwogICBzcmMvem9wZmxpL2RlZmxhdGUuYwpAQCAtODUsNDMgKzU2LDY5IEBACi
+AgIHNyYy96b3BmbGkvemxpYl9jb250YWluZXIuYwogICBzcmMvem9wZmxpL3pvcGZsaV9saWIuYwogKQotdGFyZ2V0
+X2luY2x1ZGVfZGlyZWN0b3JpZXMobGliem9wZmxpCi0gIElOVEVSRkFDRQotICAgICQ8QlVJTERfSU5URVJGQUNFOi
+R7Q01BS0VfQ1VSUkVOVF9TT1VSQ0VfRElSfS9zcmMvem9wZmxpPgotICAgICQ8SU5TVEFMTF9JTlRFUkZBQ0U6JHtD
+TUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9PgotKQotc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGxpYnpvcGZsaSBQUk9QRV
+JUSUVTCi0gIE9VVFBVVF9OQU1FIHpvcGZsaQotICBWRVJTSU9OICR7Wk9QRkxJX1ZFUlNJT059Ci0gIFNPVkVSU0lP
+TiAke1pPUEZMSV9WRVJTSU9OX01BSk9SfQotKQotaWYoVU5JWCBBTkQgTk9UIChCRU9TIE9SIEhBSUtVKSkKLSAgdG
+FyZ2V0X2xpbmtfbGlicmFyaWVzKGxpYnpvcGZsaSBtKQotZW5kaWYoKQogCi0jCi0jIGxpYnpvcGZsaXBuZwotIwot
+YWRkX2xpYnJhcnkobGliem9wZmxpcG5nICR7em9wZmxpX2xpYnJhcnlfdHlwZX0KK3NldChsaWJ6b3BmbGlwbmdfc3
+JjCiAgIHNyYy96b3BmbGlwbmcvem9wZmxpcG5nX2xpYi5jYwogICBzcmMvem9wZmxpcG5nL2xvZGVwbmcvbG9kZXBu
+Zy5jcHAKICAgc3JjL3pvcGZsaXBuZy9sb2RlcG5nL2xvZGVwbmdfdXRpbC5jcHAKICkKLXRhcmdldF9saW5rX2xpYn
+JhcmllcyhsaWJ6b3BmbGlwbmcgbGliem9wZmxpKQotdGFyZ2V0X2luY2x1ZGVfZGlyZWN0b3JpZXMobGliem9wZmxp
+cG5nCi0gIElOVEVSRkFDRQotICAgICQ8QlVJTERfSU5URVJGQUNFOiR7Q01BS0VfQ1VSUkVOVF9TT1VSQ0VfRElSfS
+9zcmMvem9wZmxpcG5nPgotICAgICQ8SU5TVEFMTF9JTlRFUkZBQ0U6JHtDTUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9
+PgotKQotc2V0X3RhcmdldF9wcm9wZXJ0aWVzKGxpYnpvcGZsaXBuZyBQUk9QRVJUSUVTCi0gIE9VVFBVVF9OQU1FIH
+pvcGZsaXBuZwotICBWRVJTSU9OICR7Wk9QRkxJX1ZFUlNJT059Ci0gIFNPVkVSU0lPTiAke1pPUEZMSV9WRVJTSU9O
+X01BSk9SfQotKQorCitzZXQobGliem9wZmxpX3RhcmdldHMgbGliem9wZmxpKQorc2V0KGxpYnpvcGZsaXBuZ190YX
+JnZXRzIGxpYnpvcGZsaXBuZykKK2lmKEJVSUxEX1NIQVJFRF9MSUJTIEFORCBCVUlMRF9TVEFUSUNfTElCUykKKyAg
+ICBsaXN0KEFQUEVORCBsaWJ6b3BmbGlfdGFyZ2V0cyBsaWJ6b3BmbGktc3RhdGljKQorICAgIGxpc3QoQVBQRU5EIG
+xpYnpvcGZsaXBuZ190YXJnZXRzIGxpYnpvcGZsaXBuZy1zdGF0aWMpCitlbmRpZigpCisKK2ZvcmVhY2gobGliICR7
+bGliem9wZmxpX3RhcmdldHN9KQorICAgIGlmKCR7bGlifSBNQVRDSEVTICItc3RhdGljJCIpCisgICAgICAgIHNldC
+hidHlwZSBTVEFUSUMpCisgICAgICAgIHNldChzdHlwZSAiLXN0YXRpYyIpCisgICAgZWxzZSgpCisgICAgICAgIHNl
+dChidHlwZSAiIikKKyAgICAgICAgc2V0KHN0eXBlICIiKQorICAgIGVuZGlmKCkKKyAgICBhZGRfbGlicmFyeSgke2
+xpYn0gJHtidHlwZX0gJHtsaWJ6b3BmbGlfc3JjfSkKKyAgICB0YXJnZXRfaW5jbHVkZV9kaXJlY3Rvcmllcygke2xp
+Yn0KKyAgICAgICAgSU5URVJGQUNFCisgICAgICAgICQ8QlVJTERfSU5URVJGQUNFOiR7Q01BS0VfQ1VSUkVOVF9TT1
+VSQ0VfRElSfS9zcmMvem9wZmxpPgorICAgICAgICAkPElOU1RBTExfSU5URVJGQUNFOiR7Q01BS0VfSU5TVEFMTF9J
+TkNMVURFRElSfT4KKyAgICApCisgICAgc2V0X3RhcmdldF9wcm9wZXJ0aWVzKCR7bGlifSBQUk9QRVJUSUVTCisgIC
+AgICAgIE9VVFBVVF9OQU1FIHpvcGZsaQorICAgICAgICBWRVJTSU9OICR7Wk9QRkxJX1ZFUlNJT059CisgICAgICAg
+IFNPVkVSU0lPTiAke1pPUEZMSV9WRVJTSU9OX01BSk9SfQorICAgICkKKyAgICBpZihVTklYIEFORCBOT1QgKEJFT1
+MgT1IgSEFJS1UpKQorICAgICAgICB0YXJnZXRfbGlua19saWJyYXJpZXMoJHtsaWJ9IG0pCisgICAgZW5kaWYoKQor
+ZW5kZm9yZWFjaCgpCisKK2ZvcmVhY2gobGliICR7bGliem9wZmxpcG5nX3RhcmdldHN9KQorICAgIGlmKCR7bGlifS
+BNQVRDSEVTICItc3RhdGljJCIpCisgICAgICAgIHNldChidHlwZSBTVEFUSUMpCisgICAgICAgIHNldChzdHlwZSAi
+LXN0YXRpYyIpCisgICAgZWxzZSgpCisgICAgICAgIHNldChidHlwZSAiIikKKyAgICAgICAgc2V0KHN0eXBlICIiKQ
+orICAgIGVuZGlmKCkKKyAgICBhZGRfbGlicmFyeSgke2xpYn0gJHtidHlwZX0gJHtsaWJ6b3BmbGlwbmdfc3JjfSkK
+KyAgICB0YXJnZXRfbGlua19saWJyYXJpZXMoJHtsaWJ9IGxpYnpvcGZsaSR7c3R5cGV9KQorICAgIHRhcmdldF9pbm
+NsdWRlX2RpcmVjdG9yaWVzKCR7bGlifQorICAgICAgICBJTlRFUkZBQ0UKKyAgICAgICAgJDxCVUlMRF9JTlRFUkZB
+Q0U6JHtDTUFLRV9DVVJSRU5UX1NPVVJDRV9ESVJ9L3NyYy96b3BmbGlwbmc+CisgICAgICAgICQ8SU5TVEFMTF9JTl
+RFUkZBQ0U6JHtDTUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9PgorICAgICkKKyAgICBzZXRfdGFyZ2V0X3Byb3BlcnRp
+ZXMoJHtsaWJ9IFBST1BFUlRJRVMKKyAgICAgICAgT1VUUFVUX05BTUUgem9wZmxpcG5nCisgICAgICAgIFZFUlNJT0
+4gJHtaT1BGTElfVkVSU0lPTn0KKyAgICAgICAgU09WRVJTSU9OICR7Wk9QRkxJX1ZFUlNJT05fTUFKT1J9CisgICAg
+ICAgICkKK2VuZGZvcmVhY2goKQogCiAjIE1TVkMgZG9lcyBub3QgZXhwb3J0IHN5bWJvbHMgYnkgZGVmYXVsdCB3aG
+VuIGJ1aWxkaW5nIGEgRExMLCB0aGlzIGlzIGEKICMgd29ya2Fyb3VuZCBmb3IgcmVjZW50IHZlcnNpb25zIG9mIENN
+YWtlCi1pZihNU1ZDIEFORCBaT1BGTElfQlVJTERfU0hBUkVEKQoraWYoTVNWQyBBTkQgQlVJTERfU0hBUkVEX0xJQl
+MpCiAgIGlmKENNQUtFX1ZFUlNJT04gVkVSU0lPTl9MRVNTIDMuNCkKICAgICBtZXNzYWdlKFdBUk5JTkcgIkF1dG9t
+YXRpYyBleHBvcnQgb2YgYWxsIHN5bWJvbHMgdG8gRExMIG5vdCBzdXBwb3J0ZWQgdW50aWwgQ01ha2UgMy40IikKIC
+AgZWxzZSgpCkBAIC0xNjQsNyArMTYxLDcgQEAKICMKIGlmKFpPUEZMSV9CVUlMRF9JTlNUQUxMKQogICAjIEluc3Rh
+bGwgYmluYXJpZXMsIGxpYnJhcmllcywgYW5kIGhlYWRlcnMKLSAgaW5zdGFsbChUQVJHRVRTIGxpYnpvcGZsaSBsaW
+J6b3BmbGlwbmcgem9wZmxpIHpvcGZsaXBuZworICBpbnN0YWxsKFRBUkdFVFMgJHtsaWJ6b3BmbGlfdGFyZ2V0c30g
+JHtsaWJ6b3BmbGlwbmdfdGFyZ2V0c30gem9wZmxpIHpvcGZsaXBuZwogICAgIEVYUE9SVCBab3BmbGlUYXJnZXRzCi
+AgICAgUlVOVElNRSBERVNUSU5BVElPTiAke0NNQUtFX0lOU1RBTExfQklORElSfQogICAgIExJQlJBUlkgREVTVElO
+QVRJT04gJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0KQEAgLTE5NCw0ICsxOTEsNCBAQAogICAgICAgREVTVElOQVRJT0
+4gJHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0vY21ha2UvWm9wZmxpCiAgICAgKQogICBlbmRpZigpCi1lbmRpZigpCitl
+bmRpZigpClwgTm8gbmV3bGluZSBhdCBlbmQgb2YgZmlsZQo=
+XB64_PATCH
 
-project(Zopfli)
-
-# Check if Zopfli is the top-level project (standalone), or a subproject
-set(zopfli_standalone FALSE)
-get_directory_property(zopfli_parent_directory PARENT_DIRECTORY)
-if(zopfli_parent_directory STREQUAL "")
-  set(zopfli_standalone TRUE)
-endif()
-unset(zopfli_parent_directory)
-
-#
-# Options
-#
-
-# ZOPFLI_BUILD_INSTALL controls if Zopfli adds an install target to the build
-option(ZOPFLI_BUILD_INSTALL "Add Zopfli install target" ON)
-
-# ZOPFLI_DEFAULT_RELEASE enables changing empty build type to Release
-#
-# Make based single-configuration generators default to an empty build type,
-# which might be surprising, but could be useful if you want full control over
-# compiler and linker flags. When ZOPFLI_DEFAULT_RELEASE is ON, change an
-# empty default build type to Release.
-option(ZOPFLI_DEFAULT_RELEASE "If CMAKE_BUILD_TYPE is empty, default to Release" ON)
-
-if(zopfli_standalone AND ZOPFLI_DEFAULT_RELEASE)
-  if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "CMAKE_BUILD_TYPE empty, defaulting to Release")
-    set(CMAKE_BUILD_TYPE Release)
-  endif()
-endif()
-
-#
-# Library version
-#
-set(ZOPFLI_VERSION_MAJOR 1)
-set(ZOPFLI_VERSION_MINOR 0)
-set(ZOPFLI_VERSION_PATCH 3)
-set(ZOPFLI_VERSION ${ZOPFLI_VERSION_MAJOR}.${ZOPFLI_VERSION_MINOR}.${ZOPFLI_VERSION_PATCH})
-
-include(GNUInstallDirs)
-
-#
-# libzopfli
-#
-set(libzopfli_src
-  src/zopfli/blocksplitter.c
-  src/zopfli/cache.c
-  src/zopfli/deflate.c
-  src/zopfli/gzip_container.c
-  src/zopfli/hash.c
-  src/zopfli/katajainen.c
-  src/zopfli/lz77.c
-  src/zopfli/squeeze.c
-  src/zopfli/tree.c
-  src/zopfli/util.c
-  src/zopfli/zlib_container.c
-  src/zopfli/zopfli_lib.c
-)
-set(libzopfli_targets libzopfli libzopflipng)
-add_library(libzopfli ${libzopfli_src})
-target_include_directories(libzopfli
-  INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopfli>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-set_target_properties(libzopfli PROPERTIES
-  OUTPUT_NAME zopfli
-  VERSION ${ZOPFLI_VERSION}
-  SOVERSION ${ZOPFLI_VERSION_MAJOR}
-)
-if(UNIX AND NOT (BEOS OR HAIKU))
-  target_link_libraries(libzopfli m)
-endif()
-
-#
-# libzopflipng
-#
-set(libzopflipng_src
-  src/zopflipng/zopflipng_lib.cc
-  src/zopflipng/lodepng/lodepng.cpp
-  src/zopflipng/lodepng/lodepng_util.cpp
-)
-add_library(libzopflipng ${libzopflipng_src})
-target_link_libraries(libzopflipng libzopfli)
-target_include_directories(libzopflipng
-  INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopflipng>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-set_target_properties(libzopflipng PROPERTIES
-  OUTPUT_NAME zopflipng
-  VERSION ${ZOPFLI_VERSION}
-  SOVERSION ${ZOPFLI_VERSION_MAJOR}
-)
-
-if (BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
-    list(APPEND libzopfli_targets libzopfli-static libzopflipng-static)
-    add_library(libzopfli-static STATIC ${libzopfli_src})
-    target_include_directories(libzopfli-static
-    INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopfli>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-    set_target_properties(libzopfli-static PROPERTIES
-    OUTPUT_NAME zopfli
-    VERSION ${ZOPFLI_VERSION}
-    SOVERSION ${ZOPFLI_VERSION_MAJOR}
-    )
-    if(UNIX AND NOT (BEOS OR HAIKU))
-        target_link_libraries(libzopfli-static m)
-    endif()
-    add_library(libzopflipng-static ${libzopflipng_src})
-    target_link_libraries(libzopflipng-static libzopfli-static)
-    target_include_directories(libzopflipng-static
-    INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopflipng>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-    set_target_properties(libzopflipng-static PROPERTIES
-    OUTPUT_NAME zopflipng
-    VERSION ${ZOPFLI_VERSION}
-    SOVERSION ${ZOPFLI_VERSION_MAJOR}
-    )
-endif()
-# MSVC does not export symbols by default when building a DLL, this is a
-# workaround for recent versions of CMake
-if(MSVC AND BUILD_SHARED_LIBS)
-  if(CMAKE_VERSION VERSION_LESS 3.4)
-    message(WARNING "Automatic export of all symbols to DLL not supported until CMake 3.4")
-  else()
-    set_target_properties(libzopfli PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    set_target_properties(libzopflipng PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  endif()
-endif()
-
-#
-# zopfli
-#
-add_executable(zopfli src/zopfli/zopfli_bin.c)
-target_link_libraries(zopfli libzopfli)
-if(MSVC)
-  target_compile_definitions(zopfli PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
-
-#
-# zopflipng
-#
-add_executable(zopflipng src/zopflipng/zopflipng_bin.cc)
-target_link_libraries(zopflipng libzopflipng)
-if(MSVC)
-  target_compile_definitions(zopflipng PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
-
-# Create aliases
-#
-# Makes targets available to projects using Zopfli as a subproject using the
-# same names as in the config file package.
-if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-  add_library(Zopfli::libzopfli ALIAS libzopfli)
-  add_library(Zopfli::libzopflipng ALIAS libzopflipng)
-  add_executable(Zopfli::zopfli ALIAS zopfli)
-  add_executable(Zopfli::zopflipng ALIAS zopflipng)
-endif()
-
-#
-# Install
-#
-if(ZOPFLI_BUILD_INSTALL)
-  # Install binaries, libraries, and headers
-  install(TARGETS ${libzopfli_targets} zopfli zopflipng
-    EXPORT ZopfliTargets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
-  install(FILES src/zopfli/zopfli.h src/zopflipng/zopflipng_lib.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-
-  # Install config file package
-  #
-  # This allows CMake based projects to use the installed libraries with
-  # find_package(Zopfli).
-  if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/ZopfliConfigVersion.cmake
-      VERSION ${ZOPFLI_VERSION}
-      COMPATIBILITY SameMajorVersion
-    )
-    # Since we have no dependencies, use export file directly as config file
-    install(EXPORT ZopfliTargets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Zopfli
-      NAMESPACE Zopfli::
-      FILE ZopfliConfig.cmake
-    )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ZopfliConfigVersion.cmake
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Zopfli
-    )
-  endif()
-endif()
-XB_CREATE_CMAKELISTS
-
-<<'CMakeLists2'
-cmake_minimum_required(VERSION 2.8.11)
-
-project(Zopfli)
-
-# Check if Zopfli is the top-level project (standalone), or a subproject
-set(zopfli_standalone FALSE)
-get_directory_property(zopfli_parent_directory PARENT_DIRECTORY)
-if(zopfli_parent_directory STREQUAL "")
-  set(zopfli_standalone TRUE)
-endif()
-unset(zopfli_parent_directory)
-
-#
-# Options
-#
-
-# ZOPFLI_BUILD_INSTALL controls if Zopfli adds an install target to the build
-option(ZOPFLI_BUILD_INSTALL "Add Zopfli install target" ON)
-
-# ZOPFLI_DEFAULT_RELEASE enables changing empty build type to Release
-#
-# Make based single-configuration generators default to an empty build type,
-# which might be surprising, but could be useful if you want full control over
-# compiler and linker flags. When ZOPFLI_DEFAULT_RELEASE is ON, change an
-# empty default build type to Release.
-option(ZOPFLI_DEFAULT_RELEASE "If CMAKE_BUILD_TYPE is empty, default to Release" ON)
-
-if(zopfli_standalone AND ZOPFLI_DEFAULT_RELEASE)
-  if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "CMAKE_BUILD_TYPE empty, defaulting to Release")
-    set(CMAKE_BUILD_TYPE Release)
-  endif()
-endif()
-
-#
-# Library version
-#
-set(ZOPFLI_VERSION_MAJOR 1)
-set(ZOPFLI_VERSION_MINOR 0)
-set(ZOPFLI_VERSION_PATCH 3)
-set(ZOPFLI_VERSION ${ZOPFLI_VERSION_MAJOR}.${ZOPFLI_VERSION_MINOR}.${ZOPFLI_VERSION_PATCH})
-
-include(GNUInstallDirs)
-
-set(libzopfli_src
-  src/zopfli/blocksplitter.c
-  src/zopfli/cache.c
-  src/zopfli/deflate.c
-  src/zopfli/gzip_container.c
-  src/zopfli/hash.c
-  src/zopfli/katajainen.c
-  src/zopfli/lz77.c
-  src/zopfli/squeeze.c
-  src/zopfli/tree.c
-  src/zopfli/util.c
-  src/zopfli/zlib_container.c
-  src/zopfli/zopfli_lib.c
-)
-
-set(libzopflipng_src
-  src/zopflipng/zopflipng_lib.cc
-  src/zopflipng/lodepng/lodepng.cpp
-  src/zopflipng/lodepng/lodepng_util.cpp
-)
-
-set(libzopfli_targets libzopfli)
-set(libzopflipng_targets libzopflipng)
-if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
-    list(APPEND libzopfli_targets libzopfli-static)
-    list(APPEND libzopflipng_targets libzopflipng-static)
-endif()
-
-foreach lib ${libzopfli_targets}
-    if(${lib} MATCHES "-static$")
-        set(btype STATIC)
-        set(stype "-static")
-    else()
-        set(btype "")
-        set(stype "")
-    endif()
-    add_library(${lib} ${btype} ${libzopfli_src})
-    target_include_directories(${lib}
-        INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopfli>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-    set_target_properties(${lib} PROPERTIES
-        OUTPUT_NAME zopfli
-        VERSION ${ZOPFLI_VERSION}
-        SOVERSION ${ZOPFLI_VERSION_MAJOR}
-    )
-    if(UNIX AND NOT (BEOS OR HAIKU))
-        target_link_libraries(${lib} m)
-    endif()
-endforeach()
-
-foreach lib ${libzopflipng_targets}
-    if(${lib} MATCHES "-static$")
-        set(btype STATIC)
-        set(stype "-static")
-    else()
-        set(btype "")
-        set(stype "")
-    endif()
-    add_library(${lib} ${btype} ${libzopflipng_src})
-    target_link_libraries(${lib} libzopfli${stype})
-    target_include_directories(${lib}
-        INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/zopflipng>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    )
-    set_target_properties(${lib} PROPERTIES
-        OUTPUT_NAME zopflipng
-        VERSION ${ZOPFLI_VERSION}
-        SOVERSION ${ZOPFLI_VERSION_MAJOR}
-        )
-endforeach()
-
-# MSVC does not export symbols by default when building a DLL, this is a
-# workaround for recent versions of CMake
-if(MSVC AND BUILD_SHARED_LIBS)
-  if(CMAKE_VERSION VERSION_LESS 3.4)
-    message(WARNING "Automatic export of all symbols to DLL not supported until CMake 3.4")
-  else()
-    set_target_properties(libzopfli PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    set_target_properties(libzopflipng PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  endif()
-endif()
-
-#
-# zopfli
-#
-add_executable(zopfli src/zopfli/zopfli_bin.c)
-target_link_libraries(zopfli libzopfli)
-if(MSVC)
-  target_compile_definitions(zopfli PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
-
-#
-# zopflipng
-#
-add_executable(zopflipng src/zopflipng/zopflipng_bin.cc)
-target_link_libraries(zopflipng libzopflipng)
-if(MSVC)
-  target_compile_definitions(zopflipng PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
-
-# Create aliases
-#
-# Makes targets available to projects using Zopfli as a subproject using the
-# same names as in the config file package.
-if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-  add_library(Zopfli::libzopfli ALIAS libzopfli)
-  add_library(Zopfli::libzopflipng ALIAS libzopflipng)
-  add_executable(Zopfli::zopfli ALIAS zopfli)
-  add_executable(Zopfli::zopflipng ALIAS zopflipng)
-endif()
-
-#
-# Install
-#
-if(ZOPFLI_BUILD_INSTALL)
-  # Install binaries, libraries, and headers
-  install(TARGETS ${libzopfli_targets} ${libzopflipng_targets} zopfli zopflipng
-    EXPORT ZopfliTargets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
-  install(FILES src/zopfli/zopfli.h src/zopflipng/zopflipng_lib.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-
-  # Install config file package
-  #
-  # This allows CMake based projects to use the installed libraries with
-  # find_package(Zopfli).
-  if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/ZopfliConfigVersion.cmake
-      VERSION ${ZOPFLI_VERSION}
-      COMPATIBILITY SameMajorVersion
-    )
-    # Since we have no dependencies, use export file directly as config file
-    install(EXPORT ZopfliTargets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Zopfli
-      NAMESPACE Zopfli::
-      FILE ZopfliConfig.cmake
-    )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ZopfliConfigVersion.cmake
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Zopfli
-    )
-  endif()
-endif()
-CMakeLists2
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
-
 # include/zopflipng_lib.h
 # include/zopfli.h
+# lib/pkgconfig/zopflipng.pc
+# lib/pkgconfig/zopfli.pc
+# lib/libzopfli.a
 # lib/cmake/Zopfli/ZopfliConfigVersion.cmake
 # lib/cmake/Zopfli/ZopfliConfig.cmake
 # lib/cmake/Zopfli/ZopfliConfig-release.cmake
 # lib/libzopflipng.so
 # lib/libzopfli.so
+# lib/libzopflipng.a
+# share/doc/zopfli/COPYING
 # bin/zopflipng
 # bin/zopfli
-

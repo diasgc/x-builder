@@ -1,27 +1,24 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK ++   .   .   .  clang
-# GNU ++   .   .  ++  gcc
-# WIN ++   .   .  ++  clang/gcc
 
 lib='libplacebo'
 dsc='Reusable library for GPU-accelerated image/video processing primitives and shaders'
 lic='LGLP-2.1'
 src='https://code.videolan.org/videolan/libplacebo.git'
 cfg='meson'
-eta='0'
+eta='60'
 tls='python3-mako'
 
 dev_bra='main'
-dev_vrs=''
+dev_vrs='4.192.0'
 stb_bra=''
 stb_vrs=''
 
-lst_inc='libplacebo/*.h'
+lst_inc='libplacebo/*.h libplacebo/utils/*.h'
 lst_lib='libplacebo'
 lst_bin=''
-lst_lic='LICENSE AUTHORS'
+lst_lic='LICENSE'
 lst_pc=''
+
 . xbuilder.sh
 meson_cfg="-Ddemos=false"
 case $host_os in
@@ -29,6 +26,11 @@ case $host_os in
     gnu) LD="bfd";;
 esac
 start
+
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU ++   .   .  ++  gcc
+# WIN ++   .   .  ++  clang/gcc
 
 # Filelist
 # --------
@@ -60,3 +62,4 @@ start
 # lib/pkgconfig/libplacebo.pc
 # lib/libplacebo.so
 # lib/libplacebo.a
+# share/doc/libplacebo/LICENSE
