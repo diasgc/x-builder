@@ -11,7 +11,7 @@ cmake_static='BUILD_STATIC'
 cmake_cfg='-DBUILD_TESTING=OFF'
 
 lst_inc='cryptopp/*.h'
-lst_lib='libcryptopp.*'
+lst_lib='libcryptopp'
 lst_bin=''
 lst_lic='License.txt'
 lst_pc='cryptopp.pc'

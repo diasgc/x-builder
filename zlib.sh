@@ -11,19 +11,26 @@ lic='Zlib'
 src='https://github.com/madler/zlib.git'
 cfg='cmake'
 eta='22'
-cbk="BUILD_TOOLS"
+cmake_bin="BUILD_TOOLS"
 mkc='distclean'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc='zlib.h zconf.h'
 lst_lib='libz'
+lst_bin=''
+lst_lic='LICENSE AUTHORS'
 lst_pc='zlib.pc'
 
 . xbuilder.sh
 
 on_end(){
     $host_mingw && {
-        ln -s $INSTALL_DIR/lib/libzlib.dll.a $INSTALL_DIR/lib/libz.a 2>/dev/null
-        ln -s $INSTALL_DIR/lib/libzlibstatic.a $INSTALL_DIR/lib/libzstatic.a 2>/dev/null
+        ln -s ${dir_install_lib}/libzlib.dll.a ${dir_install_lib}/libz.a 2>/dev/null
+        ln -s ${dir_install_lib}/libzlibstatic.a ${dir_install_lib}/libzstatic.a 2>/dev/null
     }
 }
 

@@ -6,10 +6,10 @@ lic='Apache-2.0'
 src='https://github.com/google/cpu_features.git'
 cfg='cmake'
 pkg='cpu_features'
-cstk='BUILD_STATIC_LIBS'
 pc_llib='-lcpufeatures'
 
-CFG='-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF'
+cmake_bin='BUILD_STATIC_LIBS'
+cmake_cfg='-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF'
 
 lst_inc='ndk_compat/cpu-features.h cpu_features/*.h'
 lst_lib='libcpu_features.* libndk_compat.*'

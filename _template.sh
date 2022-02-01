@@ -13,15 +13,15 @@ eta='0'
 
 mki=''
 mkc=''
+mk_clean
+mk_install
 
-# decaprated
-cstk=''
-cshk=''
-cbk=''
 # use this instead
 cfg_static=''
 cfg_shared=''
 cfg_bin=''
+
+
 
 dev_bra='main'
 dev_vrs=''
@@ -37,8 +37,6 @@ lst_pc=''
 eta='20'
 
 . xbuilder.sh
-
-CFG=
 
 before_make(){
     return 1

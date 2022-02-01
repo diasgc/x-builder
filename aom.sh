@@ -8,15 +8,6 @@ src='https://aomedia.googlesource.com/aom.git'
 cfg='cmake'
 tls='perl'
 eta='240'
-cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
-cmake_bin='ENABLE_EXAMPLES'
-#cst0="-DCONFIG_STATIC=0"
-#cst1="-DCONFIG_STATIC=1"
-#cbk='ENABLE_EXAMPLES'
-cmake_cfg='-DENABLE_TESTS=OFF
-     -DENABLE_TOOLS=OFF
-     -DENABLE_TESTDATA=OFF
-     -DENABLE_DOCS=OFF'
 
 dev_bra='main'
 dev_vrs='3.2.0'
@@ -24,14 +15,21 @@ stb_bra='tags/v3.2.0'
 stb_vrs='v3.2.0'
 
 lst_inc='aom/*.h'
-lst_lib='libaom.a libaom.so'
+lst_lib='libaom'
 lst_bin='aomdec aomenc'
 lst_lic='LICENSE PATENTS AUTHORS'
 lst_pc='aom.pc'
 
 . xbuilder.sh
+~
+cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
+cmake_bin='ENABLE_EXAMPLES'
+cmake_cfg='-DENABLE_TESTS=OFF
+     -DENABLE_TOOLS=OFF
+     -DENABLE_TESTDATA=OFF
+     -DENABLE_DOCS=OFF'
 
-$host_arm && cmake_cfg+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=$AS"
+$host_arm && cmake_cfg+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=${AS}"
 $host_arm64 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG="
 $host_arm32 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG=-mfpu=neon"
 $host_x86 && cmake_cfg+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'

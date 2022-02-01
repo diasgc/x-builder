@@ -15,6 +15,12 @@ lst_bin=''
 lst_lic='LICENSE AUTHORS'
 lst_pc=''
 
+lst_inc=''
+lst_lib=''
+lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
+
 . xbuilder.sh
 
 start

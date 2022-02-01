@@ -12,13 +12,16 @@ cfg='ag'
 eta='0'
 dep='xorg-macros'
 
-#cshk=''
-#cstk=''
-#cbk=''
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 

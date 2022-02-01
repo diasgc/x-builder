@@ -4,27 +4,34 @@ lib='xavs2'
 dsc='An open-source encoder of AVS2-P2/IEEE1857.4 video coding standard'
 lic='GPL-2.0'
 src='https://github.com/pkuvcl/xavs2.git'
-sty='git'
 cfg='ac'
 eta='40'
-cb0="--disable-cli"
-cb1=''
+
+ac_bin='--disable-cli| '
+config_dir='build/linux'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='xavs2*.h'
+lst_lib='libxavs2'
+lst_bin='xavs2'
+lst_lic='LICENSE AUTHORS'
+lst_pc='xavs2.pc'
 
 . xbuilder.sh
 
-SRCDIR=$SRCDIR/build/linux
-CFG="--sysroot=${SYSROOT} --enable-lto --enable-strip --enable-pic"
-case $arch in
-    aarch*|arm*|*64-*) CFG="$CFG --disable-asm";;
-    *) AS=NASM;;
-esac
+ac_cfg="--sysroot=${SYSROOT} --enable-lto --enable-strip --enable-pic"
+$host_x86 && AS=nasm || ac_cfg+=' --disable-asm'
 
 start
 
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   +   +   .   .   .   .   .   .   .  static
-#  +   +   +   +   .   .   .   .   .   .   .  shared
-#  +   +   +   +   .   .   .   .   .   .   .  bin
+# cpu av8 av7 x86 x64
+# NDK +++ +++ +++ +++ clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------------------------------------------

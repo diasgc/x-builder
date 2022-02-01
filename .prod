@@ -140,17 +140,31 @@
             "hidroxicloroquina": {
                 "110004300": "hidroxicloroquina susp.oral 25mg/ml 96ml [man]"
             },
-            
-            
-            "110003157": "indometacina xar. 2mg/ml fr. 100ml  [man]",
-            "110002964": "levodopa carbidopa sol.oral 1+0.25mg/ml 100ml [man]",
-            "110003845": "levodopa carbidopa sol.oral 10+1mg/ml 100ml [man]",
-            "110004480": "levoFLOXacina susp.oral 50mg/ml 50ml [man]",
-            "110004463": "levoTIROXina susp.oral 25mcg/ml srg. 5ml [man]",
-            "110004429": "lisinopril susp.oral 1mg/ml fr. 50-100ml [man]",
-            "110004425": "mercaptupurina susp.oral 25mg/2.5ml srg [man]",
-            "110003237": "metoprolol susp.oral 1% [man]",
-            "110002526": "metoxsaleno emulsão 0,1% (m/m) bg 25g [man]",
+            "indometacina": {
+                "110003157": "indometacina xar. 2mg/ml fr. 100ml  [man]"
+            },
+            "levodopa carbidopa": {
+                "110002964": "levodopa carbidopa sol.oral 1+0.25mg/ml 100ml [man]",
+                "110003845": "levodopa carbidopa sol.oral 10+1mg/ml 100ml [man]"
+            },
+            "levoFLOXacina": {
+                "110004480": "levoFLOXacina susp.oral 50mg/ml 50ml [man]"
+            }
+            "levoTIROXina": {
+                "110004463": "levoTIROXina susp.oral 25mcg/ml srg. 5ml [man]"
+            },
+            "lisinopril": {
+                "110004429": "lisinopril susp.oral 1mg/ml fr. 50-100ml [man]"
+            },
+            "mercaptupurina": {
+                "110004425": "mercaptupurina susp.oral 25mg/2.5ml srg [man]"
+            },
+            "metoprolol": {
+                "110003237": "metoprolol susp.oral 1% [man]"
+            },
+            "metoxsaleno": {
+                "110002526": "metoxsaleno emulsão 0,1% (m/m) bg 25g [man]"
+            },
             "110000732": "metRONIDAZOL susp.oral 2% 100mg/5ml 125ml [man]",
             "110003238": "midazolam sol.intrabucal 5mg/1ml [man]",
             "110003574": "midazolam susp.oral 2.5mg/ml 20ml [man][f]",

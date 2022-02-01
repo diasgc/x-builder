@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN +++  .   .   .  clang/gcc
 
 lib='shine'
 dsc='Super fast fixed-point MP3 encoder.'
@@ -12,17 +8,25 @@ cfg='ac'
 automake_cmd='./bootstrap'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
-lst_inc=''
-lst_lib=''
-lst_bin=''
+lst_inc='shine/layer3.h'
+lst_lib='libshine'
+lst_bin='shineenc'
+lst_lic='COPYING'
+lst_pc='shine.pc'
 
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 # Filelist
 # --------

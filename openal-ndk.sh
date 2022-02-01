@@ -13,19 +13,28 @@ eta='0'
 
 #cshk=''
 #cstk=''
-cbk='UTILS'
+cmake_bin='UTILS'
 
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
-CFG="-DEXAMPLES=OFF"
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+cmake_cfg="-DEXAMPLES=OFF"
 
 . xbuilder.sh
 
+$host_ndk && cmake_cfg+=' -DANDROID_LOW_LATENCY=ON'
+$host_mingw && cmake_cfg+=' -DALSA=OF'
 case $host_os in
-    android) CFG+=" -DANDROID_LOW_LATENCY=ON";;
-    mingw32) CFG+=" -DALSA=OFF";;
+    android) CFG+=;;
+    mingw32) CFG+="F";;
 esac
 
 start

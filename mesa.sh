@@ -11,9 +11,10 @@ src='https://gitlab.freedesktop.org/mesa/mesa.git'
 cfg='meson'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc=''
 lst_lib=''

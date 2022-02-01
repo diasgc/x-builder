@@ -12,35 +12,25 @@ src='https://github.com/strukturag/libde265.git'
 cfg='cmake'
 eta='140'
 
-lst_inc='libde265/motion.h libde265/fallback-dct.h
-  libde265/cabac.h libde265/deblock.h
-  libde265/pps.h libde265/en265.h
-  libde265/fallback-motion.h libde265/sei.h
-  libde265/fallback.h libde265/image-io.h
-  libde265/scan.h libde265/threads.h
-  libde265/contextmodel.h libde265/transform.h
-  libde265/bitstream.h libde265/sps.h
-  libde265/vps.h libde265/slice.h
-  libde265/md5.h libde265/alloc_pool.h
-  libde265/image.h libde265/sao.h
-  libde265/vui.h libde265/decctx.h
-  libde265/refpic.h libde265/de265.h
-  libde265/configparam.h libde265/quality.h
-  libde265/de265-version.h libde265/nal.h
-  libde265/nal-parser.h libde265/intrapred.h
-  libde265/visualize.h libde265/acceleration.h
-  libde265/dpb.h libde265/util.h'
+lst_inc='libde265/*.h'
 lst_lib='liblibde265'
 lst_bin='enc265 hdrcopy dec265'
+lst_lic='LICENSE AUTHORS'
+lst_pc='libde265.pc'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 . xbuilder.sh
 
 case $cfg in
-  cmake) CFG='-DENABLE_SDL=OFF'
-         $host_arm && CFG+=' -DDISABLE_SSE=ON' || CFG+=' -DDISABLE_SSE=OFF'
-         pc_llib='-lde265' pc_libsprivate='-lpthread  -lstdc++'
+  cmake) cmake_cfg='-DENABLE_SDL=OFF'
+         $host_arm && cmake_cfg+=' -DDISABLE_SSE=ON' || cmake_cfg+=' -DDISABLE_SSE=OFF'
+         pc_llib='-lde265' pc_libsprivate='-lpthread -lstdc++'
          ;;
-  ag)    $host_arm && CFG+=" --disable-sse --disable-arm"
+  ag)    $host_arm && ac_cfg+=" --disable-sse --disable-arm"
          $host_mingw && CSH=${CSH/"--disable-shared "} #see similar https://github.com/opencv/opencv/pull/9052
          ;;
 esac

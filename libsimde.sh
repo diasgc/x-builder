@@ -12,9 +12,11 @@ src='https://github.com/simd-everywhere/simde.git'
 cfg='meson'
 eta='1920'
 
-lst_inc=''
+lst_inc='simde/*.h simde/x86/*.h simde/mips/*.h simde/mips/msa/*.h simde/arm/*.h simde/arm/sve/*.h simde/arm/neon/*.h simde/x86/avx512/*.h simde/x86/sse4.1.h simde/x86/*.h simde/wasm/*.h'
 lst_lib=''
 lst_bin=''
+lst_lic='COPYING'
+lst_pc='simde.pc'
 
 . xbuilder.sh
 
@@ -369,3 +371,4 @@ start
 # include/simde/mips/msa.h
 # include/simde/hedley.h
 # lib/pkgconfig/simde.pc
+

@@ -9,7 +9,7 @@ cfg='cmake'
 eta='30'
 
 lst_inc='brunsli/*.h'
-lst_lib='libbrunslidec-c.* libbrunslienc-c.*'
+lst_lib='libbrunslidec-c libbrunslienc-c'
 lst_bin='dbrunsli cbrunsli'
 lst_lic='LICENSE'
 lst_pc='brunslienc-c.pc brunslidec-c.pc'

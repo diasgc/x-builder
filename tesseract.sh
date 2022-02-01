@@ -11,17 +11,9 @@ pkg='tesseract'
 
 . xbuilder.sh
 
-case $build_tool in
-  cmake)  CFG="-DBUILD_TRAINING_TOOLS=OFF -DGRAPHICS_DISABLED=ON -DCOMPILER_SUPPORTS_MARCH_NATIVE=OFF"
-          $host_mingw && CFG+=" -DSW_BUILD=OFF" || CFG+=" -DOPENMP_BUILD=ON -DENABLE_LTO=ON"
-          ;;
-  automake) CFG="--disable-debug \
-    --disable-graphics \
-    --disable-tessdata-prefix \
-    --disable-largefile"
-    eta='510'
-    ;;
-esac
+cmake_cfg='-DBUILD_TRAINING_TOOLS=OFF -DGRAPHICS_DISABLED=ON -DCOMPILER_SUPPORTS_MARCH_NATIVE=OFF'
+$host_mingw && cmake_cfg+=' -DSW_BUILD=OFF' || cmake_cfg+=' -DOPENMP_BUILD=ON -DENABLE_LTO=ON'
+ac_cfg='--disable-debug --disable-graphics --disable-tessdata-prefix --disable-largefile'
 
 start
 
