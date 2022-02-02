@@ -7,9 +7,10 @@ lic='BSD GPL-2.0'
 src='https://github.com/facebook/zstd.git'
 cfg='cmake'
 eta='78'
-cstk="ZSTD_BUILD_STATIC"
-cshk="ZSTD_BUILD_SHARED"
-cbk="ZSTD_BUILD_PROGRAMS"
+
+cmake_static="ZSTD_BUILD_STATIC"
+cmake_shared="ZSTD_BUILD_SHARED"
+cmake_bin="ZSTD_BUILD_PROGRAMS"
 
 nodev=false
 config_dir='build/cmake'

@@ -15,13 +15,7 @@ eta='60'
 
 cbk="able-examples"
 
-lst_inc='libraw/libraw_alloc.h
-	libraw/libraw_version.h
-	libraw/libraw_internal.h
-	libraw/libraw_datastream.h
-	libraw/libraw_const.h
-	libraw/libraw_types.h
-	libraw/libraw.h'
+lst_inc='libraw/*.h'
 lst_lib='libraw_r libraw'
 lst_bin='dcraw_half
 	postprocessing_benchmark
@@ -37,7 +31,7 @@ lst_bin='dcraw_half
 
 . xbuilder.sh
 
-CPPFLAGS+=" -Wno-deprecated-register"
+WFLAGS=" -Wno-deprecated-register"
 
 start
 

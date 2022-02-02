@@ -1,47 +1,52 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   .   .   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
-# PKGINFO-------------------------------------
+
 lib='libxml2'
 apt="${lib}-dev"
 dsc='GNOME XML library'
 lic='GPL'
 src='https://gitlab.gnome.org/GNOME/libxml2.git'
-sty='git'
 cfg='am'
 dep='liblzma'
 pkg='libxml-2.0'
 eta='90'
 
+cmake_cfg='-DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_PYTHON=OFF'
+cmake_bin='LIBXML2_WITH_PROGRAMS'
+ac_cfg='--without-debug --without-python'
+
+dev_bra='master'
+dev_vrs='2.9.12'
+stb_bra=''
+stb_vrs='2.9.12'
+
+lst_inc='libxml2/libxml/*.h'
+lst_lib='libxml2'
+lst_bin='xmllint xmlcatalog xml2-config'
+lst_lic='Copyright'
+lst_pc='libxml-2.0.pc'
+
 . xbuilder.sh
 
-case $build_tool in
-  cmake)
-    mki='install/strip'
-    CFG="-DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_PYTHON=OFF"
-    $build_bin && CBN="-DLIBXML2_WITH_PROGRAMS=ON" || CBN="-DLIBXML2_WITH_PROGRAMS=OFF"
-    ;;
-  automake)
-    mki='install-strip'
-    mkd='distclean'
-    CFG="--without-debug --without-python"
-    ;;
-esac
-
-build_patch_config(){
+before_make(){
   case $build_tool in
-    cmake) sed -i 's/xdocumentationx/xx/g' $BUILD_DIR/cmake_install.cmake;;
-    automake) sed -i -E '/SUBDIRS/ {s/(doc |example )//}' $SRCDIR/Makefile
+    cmake)    sed -i 's/xdocumentationx/xx/g' cmake_install.cmake;;
+    automake) sed -i -E '/SUBDIRS/ {s/(doc |examples )//}' Makefile
   esac
+}
+
+on_editpack(){
+  rm -rf share/doc/libxml2/examples
 }
 
 start
 
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 # Filelist
 # --------
-
 # include/libxml2/libxml/globals.h
 # include/libxml2/libxml/parserInternals.h
 # include/libxml2/libxml/xmlreader.h
@@ -97,11 +102,7 @@ start
 # lib/xml2Conf.sh
 # share/man/man1/xml2-config.1
 # share/man/man3/libxml.3
-# share/doc/libxml2-2.9.12/Copyright
-# share/doc/libxml2-2.9.12/examples/testXPath.c
-# share/doc/libxml2-2.9.12/examples/testSAX.c
-# share/doc/libxml2-2.9.12/examples/testHTML.c
-# share/doc/libxml2-2.9.12/examples/xmllint.c
+# share/doc/libxml2/Copyright
 # share/aclocal/libxml.m4
 # bin/xmllint
 # bin/xmlcatalog

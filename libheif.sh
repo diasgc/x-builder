@@ -9,20 +9,35 @@ apt='libheif-dev'
 dsc='HEIF and AVIF file format decoder and encoder'
 lic='LGPL-3.0'
 src='https://github.com/strukturag/libheif.git'
-sty='git'
 cfg='cmake'
 dep='libpng libjpeg x265 libde265 aom'
 eta='60'
 mingw_posix=true
 
-case $cfg in
-  cmake) cbk="WITH_EXAMPLES" CFG="-DWITH_AOM=ON -DWITH_X265=ON -DWITH_DAV1D=OFF -DWITH_LIBDE265=ON -DWITH_RAV1E=OFF";;
-  ag) cbk="examples" CFG="--disable-rav1e --disable-go --disable-gdk-pixbuf";;
-esac
+cmake_cfg='-DWITH_AOM=ON -DWITH_X265=ON -DWITH_DAV1D=OFF -DWITH_LIBDE265=ON -DWITH_RAV1E=OFF'
+cmake_bin='WITH_EXAMPLES'
+ac_cfg='--disable-rav1e --disable-go --disable-gdk-pixbuf'
+ac_bin='--disable-examples|--enable-examples'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='libheif/*.h'
+lst_lib=''
+lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc='-ss 19:20 -to 25:20'
 
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

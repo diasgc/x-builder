@@ -24,6 +24,7 @@ stb_vrs=''
 on_editpack(){
     rm -rf share/doc/zimg/example
 }
+
 start
 
 # cpu av8 av7 x86 x64

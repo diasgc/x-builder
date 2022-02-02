@@ -46,6 +46,7 @@ retry=false
 use_llvm_mingw=true
 use_clang=true
 ndk_testtc=false
+skip_pc=false
 
 # default build static, no shared, no executables
 build_shared=false
@@ -435,7 +436,7 @@ start(){
       #mkf='--build . --target install --config Release'
       ;;
     automake)
-      [ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
+      #[ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
       [ -z "$exec_config" ] && exec_config='configure' # default config executable
       [ -n "${ac_cfg}" ] && CFG=${ac_cfg}
       
@@ -489,11 +490,11 @@ start(){
       ;;
 
     make)
-      mkf=$CFG
+      : "${mkf:=$CFG}"
       MAKE_EXECUTABLE=make
       ;;
     other)
-      [ -n "${cfg_cmd}" ] && do_log 'meson' ${cfg_cmd} || doErr "cfg_cmd not defined"
+      [ -n "${cfg_cmd}" ] && do_log 'config' ${cfg_cmd} || doErr "cfg_cmd not defined"
       ;;
     *)
       doErr "No cfg found or unknown for $cfg. Use build_config to custom configure makefile"
@@ -527,7 +528,7 @@ start(){
   elif fn_defined 'build_make'; then
     do_log 'make' build_make
   elif ! $skip_make; then
-    do_progress 'make' ${MAKE_EXECUTABLE} $mkf -j${HOST_NPROC} || err
+    do_progress 'make' ${MAKE_EXECUTABLE} ${mkf} -j${HOST_NPROC} || err
     unset skip_make
   fi
   
@@ -539,10 +540,12 @@ start(){
   fi
 
   # strip libs
-  if fn_defined 'on_strip'; then
-    do_log 'strip' on_strip
-  elif $build_strip; then
-    do_log 'strip' doStrip
+  if ! $host_mingw; then
+    if fn_defined 'on_strip'; then
+      do_log 'strip' on_strip
+    elif $build_strip; then
+      do_log 'strip' doStrip
+    fi
   fi
 
   if fn_defined 'on_install'; then
@@ -556,26 +559,28 @@ start(){
   fi
 
   # check whether to create pkg-config .pc file
-  if fn_defined 'on_create_pc'; then
-    do_log 'pkgconfig' on_create_pc
-  # decapreted, legacy support, to remove
-  elif [ -n "${req_pcforlibs+x}" ];then
-    local pcf
-    for l in $req_pcforlibs; do
-      pcf=$(echo $l | sed 's|^lib||')
-      create_pkgconfig_file $pcf "-l$pcf"
-    done
-  # decapreted, legacy support, to remove
-  elif fn_defined 'build_pkgconfig_file'; then
-    do_log 'pkgconfig' build_pkgconfig_file
-  elif [ -n "$pc_llib" ]; then
-    do_log 'pkgconfig' create_pkgconfig_file $pkg $pc_llib
-  elif [ -n "${pc_llibs}" ]; then
-    local p
-    for f in ${pc_llibs}; do
-      [ "${f::2}" == "-l" ] && p="${f:2}" || p="$f"
-      create_pkgconfig_file $p $f
-    done
+  if ! $skip_pc; then
+    if fn_defined 'on_create_pc'; then
+      do_log 'pkgconfig' on_create_pc
+    # decapreted, legacy support, to remove
+    elif [ -n "${req_pcforlibs+x}" ];then
+      local pcf
+      for l in $req_pcforlibs; do
+        pcf=$(echo $l | sed 's|^lib||')
+        create_pkgconfig_file $pcf "-l$pcf"
+      done
+    # decapreted, legacy support, to remove
+    elif fn_defined 'build_pkgconfig_file'; then
+      do_log 'pkgconfig' build_pkgconfig_file
+    elif [ -n "$pc_llib" ]; then
+      do_log 'pkgconfig' create_pkgconfig_file $pkg $pc_llib
+    elif [ -n "${pc_llibs}" ]; then
+      local p
+      for f in ${pc_llibs}; do
+        [ "${f::2}" == "-l" ] && p="${f:2}" || p="$f"
+        create_pkgconfig_file $p $f
+      done
+    fi
   fi
 
   if fn_defined 'on_pack'; then
@@ -586,7 +591,7 @@ start(){
 
   cd ${dir_src}
 
-  logver "${dir_install_pc}/${pkg}.pc"
+  $skip_pc || logver "${dir_install_pc}/${pkg}.pc"
 
   fn_defined 'on_end' && on_end
 
@@ -899,21 +904,22 @@ cmake_create_toolchain(){
 cmake_create_toolchainfile(){
   export cmake_toolchain_file="${dir_build}/${arch}.cmake"
   cat <<-EOF >${cmake_toolchain_file}
-    set(CMAKE_SYSTEM_NAME "${PLATFORM}")
-    set(CMAKE_SYSTEM_PROCESSOR "${cmake_system_processor}")
-    set(CMAKE_C_COMPILER ${CC})
-    set(CMAKE_CXX_COMPILER ${CXX})
-    set(CMAKE_AR ${AR} CACHE FILEPATH Archiver)
-    set(CMAKE_RANLIB ${RANLIB} CACHE FILEPATH Indexer)
-    set(CMAKE_C_COMPILER_AR "${AR}")
-    set(CMAKE_CXX_COMPILER_AR "${AR}")
-    set(CMAKE_C_COMPILER_RANLIB "${RANLIB}")
-    set(CMAKE_CXX_COMPILER_RANLIB "${RANLIB}")
-    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ALWAYS)
-    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-    set(CMAKE_FIND_ROOT_PATH ${cmake_findrootpath})
+		set(CMAKE_SYSTEM_NAME "${PLATFORM}")
+		set(CMAKE_SYSTEM_PROCESSOR "${cmake_system_processor}")
+		set(CMAKE_C_COMPILER ${CC})
+		set(CMAKE_CXX_COMPILER ${CXX})
+		set(CMAKE_AR ${AR} CACHE FILEPATH Archiver)
+		set(CMAKE_RANLIB ${RANLIB} CACHE FILEPATH Indexer)
+		set(CMAKE_C_COMPILER_AR "${AR}")
+		set(CMAKE_CXX_COMPILER_AR "${AR}")
+		set(CMAKE_C_COMPILER_RANLIB "${RANLIB}")
+		set(CMAKE_CXX_COMPILER_RANLIB "${RANLIB}")
+		set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+		set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ALWAYS)
+		set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+		set(CMAKE_FIND_ROOT_PATH ${cmake_findrootpath})
 		EOF
+  [ -n "${WFLAGS}" ] && echo "add_definitions(\"${WFLAGS}\")" >>${cmake_toolchain_file}
   $host_x86 && cat <<-EOF >>${cmake_toolchain_file}
     set(CMAKE_C_COMPILER_ARG1 "-m32")
     set(CMAKE_CXX_COMPILER_ARG1 "-m32")
@@ -936,7 +942,7 @@ cmake_create_toolchainfile(){
     set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 		EOF
-  [ -n "${WFLAGS}" ] && echo "add_definitions(\"${WFLAGS}\")" >>${cmake_toolchain_file}
+  
 }
 
 cargo_create_toolchain(){
@@ -1873,10 +1879,10 @@ set_env(){
       dir_install="/usr/${arch}/local"
       ;;
     gnu)     host_sys=linux;   host_mingw=false; host_os=gnu;     host_ndk=false; host_clang=false; PLATFORM="Linux"
-      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}}"
+      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}"
       ;;
     mingw32) host_sys=windows; host_mingw=true;  host_os=mingw32; host_ndk=false; host_clang=true;  PLATFORM="Windows"
-      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}}"
+      dir_install="${ROOTDIR}/builds/${PLATFORM,,}/${target_trip[5]}"
       ;;
   esac
   #LIBSDIR="$(pwd)/builds/${PLATFORM,,}/${target_trip[5]}"
@@ -1918,7 +1924,7 @@ while [ $1 ];do
     w86|wx86|*86-win*|*86-*mingw*|w*32)
       set_target '10' 'i686' '' 'w64' 'mingw32' '' 'x86' '32' $CB0 $CB1;;
     w64|wx64|*64-win*|*64-*mingw*|windows|win|w*64)
-      set_target '10' 'i686' '' 'w64' 'mingw32' '' 'x86' '32' $CB0 $CB1
+      set_target '11' 'x86_64' '' 'w64' 'mingw32' '' 'x86_64' '64' $CB0 $CB1
       ;;
     
     --help|-h)  showBanner; usage; exit 0

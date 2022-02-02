@@ -6,10 +6,10 @@ lic='GLP-2.0'
 src='https://github.com/toots/shine.git'
 cfg='ac'
 automake_cmd='./bootstrap'
-eta='0'
+eta='35'
 
 dev_bra='main'
-dev_vrs=''
+dev_vrs='3.1.1'
 stb_bra=''
 stb_vrs=''
 
@@ -36,3 +36,4 @@ start
 # lib/libshine.la
 # lib/libshine.so
 # bin/shineenc
+# share/doc/shine/COPYING
