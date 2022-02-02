@@ -9,7 +9,7 @@ src='https://gitlab.gnome.org/GNOME/glib.git'
 dep='libiconv libffi'
 cfg='meson'
 eta='280'
-CFG='-Dgtk_doc=false -Dman=false'
+meson_cfg='-Dgtk_doc=false -Dman=false'
 
 lst_inc='libintl.h glib-2.0/*.h glib-2.0/glib/*.h glib-2.0/gobject/*.h glib-2.0/gio/*.h'
 lst_lib='libintl.* libgio-2.0.* libglib-2.0.* libgthread-2.0.* libgobject-2.0.* libgmodule-2.0.*'
@@ -28,7 +28,7 @@ build_make_package(){
     DESTDIR=${1} ninja -C ${dir_build} install
 }
 
-$host_mingw && CFG+=' -Dlibelf=disabled -Dforce_posix_threads=true'
+$host_mingw && meson_cfg+=' -Dlibelf=disabled -Dforce_posix_threads=true'
 WFLAGS='-Wno-unused-result -Wno-unused-variable -Wno-unused-function -Wno-array-bounds'
 LDFLAGS+=" -L${dir_install_lib} -liconv -lffi"
 

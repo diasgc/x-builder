@@ -23,7 +23,7 @@ cfg_bin=''
 
 
 
-dev_bra='main'
+dev_bra='master'
 dev_vrs=''
 stb_bra=''
 stb_vrs=''

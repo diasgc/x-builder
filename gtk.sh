@@ -11,7 +11,7 @@ src='https://gitlab.gnome.org/GNOME/gtk.git'
 cfg='meson'
 dep='shared-mime-info'
 eta='0'
-CFG='-Ddemos=false -Dbuild-examples=false 
+meson_cfg='-Ddemos=false -Dbuild-examples=false 
      -Dbuild-tests=false -Dwin32-backend=false'
 API=28
 

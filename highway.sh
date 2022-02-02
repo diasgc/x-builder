@@ -7,10 +7,14 @@ lic='Apache2.0'
 src='https://github.com/google/highway.git'
 cfg='cmake'
 eta='10'
-lcv='0.14.2'
-cstk='BUILD_STATIC_LIBS'
 
-CFG="-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DHWY_EXAMPLES_TESTS_INSTALL=ON"
+cmake_static='BUILD_STATIC_LIBS'
+cmake_cfg="-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DHWY_EXAMPLES_TESTS_INSTALL=ON"
+
+dev_bra='master'
+dev_vrs='0.14.2'
+stb_bra=''
+stb_vrs=''
 
 lst_inc='hwy/*.h hwy/tests/*.h hwy/contrib/*.h hwy/*.h hwy/ops/*.h'
 lst_lib='libhwy.* libhwy_test.* libhwy_contrib.*'

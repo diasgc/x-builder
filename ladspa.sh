@@ -9,27 +9,30 @@ lib='ladspa'
 apt='ladspa-sdk'
 dsc='Linux Audio Developers Simple Plugin API'
 lic='LGPL'
-vrs='1.16'
+vrs='1.17'
 src="http://www.ladspa.org/download/ladspa_sdk_${vrs}.tgz"
-cfg='mk'
+cfg='cmake'
 dep='sndfile'
 eta='60'
 pc_llib='-lladspa'
+config_dir='src'
+cmake_static='BUILD_STATIC_LIBS'
+build_strip=false
 
 . xbuilder.sh
 
-SRCDIR=$SRCDIR/src
-dbld=$SRCDIR
-
-build_patch_config(){
-	CFG=("CC=$CC" "CPP=$CXX" \
-	"INSTALL_PLUGINS_DIR=${dir_install_lib}" \
-	"INSTALL_INCLUDE_DIR=${dir_install_inc}" \
-	"INSTALL_BINARY_DIR=${dir_install_bin}")
-
-	sed -i "s|-I.$|-I. -I${dir_install_inc}|g" Makefile
-	sed -i "s|-ldl -lm -lsndfile|-ldl -lm -L${dir_install_lib} -lsndfile|g" Makefile
-	sed -i "s|-Werror|-Wno-error|g" Makefile
-}
-
 start
+
+# Filelist
+# --------
+# libs/ladspa_plugins/libamp.a
+# libs/ladspa_plugins/libdelay.a
+# libs/ladspa_plugins/libamp.so
+# libs/ladspa_plugins/libsine.a
+# libs/ladspa_plugins/libsine.so
+# libs/ladspa_plugins/libfilter.so
+# libs/ladspa_plugins/libnoise.so
+# libs/ladspa_plugins/libdelay.so
+# libs/ladspa_plugins/libnoise.a
+# libs/ladspa_plugins/libfilter.a
+# lib/pkgconfig/ladspa.pc

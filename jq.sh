@@ -18,7 +18,7 @@ lst_pc='jq.pc'
 
 . xbuilder.sh
 
-CFG="--disable-maintainer-mode --disable-docs --with-oniguruma=${dir_install}"
+ac_cfg="--disable-maintainer-mode --disable-docs --with-oniguruma=${dir_install}"
 unset CSH
 
 start

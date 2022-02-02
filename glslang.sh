@@ -17,7 +17,7 @@ lst_pc='libSPIRV.pc libOSDependent.pc libSPVRemapper.pc libOGLCompiler.pc libHLS
 
 . xbuilder.sh
 
-CFG="-DBUILD_TESTING=OFF -DENABLE_OPT=OFF -DINSTALL_GTEST=OFF"
+cmake_cfg="-DBUILD_TESTING=OFF -DENABLE_OPT=OFF -DINSTALL_GTEST=OFF"
 
 start
 

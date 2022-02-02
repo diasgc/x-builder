@@ -1,27 +1,44 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   +   +   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  -   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='harfbuzz'
 apt='libharfbuzz-dev'
 dsc='HarfBuzz text shaping engine'
-lic='Old MIT'
+lic='MIT'
 src='https://github.com/harfbuzz/harfbuzz.git'
 cfg='ag'
 tls='ragel'
-dep='freetype'
+dep=''
 eta='400'
+
+dev_bra='main'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='harfbuzz/*.h'
+lst_lib='libharfbuzz libharfbuzz-subset'
+lst_bin=''
+lst_lic='COPYING AUTHORS'
+lst_pc='libharfbuzz.pc libharfbuzz-subset.pc'
+
+ac_cfg='--with-libstdc++=yes'
+cmake_bin='HB_BUILD_UTILS'
+
+extraOpts(){
+	case $1 in
+		--min)  unset dep; ac_cfg+=' --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no';;
+		--full) dep='freetype fontconfig glib2 libcairo libicu';;
+	esac
+}
 
 . xbuilder.sh
 
-case $build_tool in
-	cmake)      $build_bin && CBN="-DHB_BUILD_UTILS=ON";;
-	automake)   CFG="--with-libstdc++=yes --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no";;
-esac
-
 start
+
+# cpu av8 av7 x86 x64
+# NDK ++   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

@@ -308,7 +308,7 @@ start(){
       esac
     else
       case $src in
-        *.tar.*) wget_tarxx $src $lib;;
+        *.tar.*|*.tgz) wget_tarxx $src $lib;;
         *.git|*git.*)   do_git $src $lib;;
         *svn.*)  do_svn $src $lib;;
         *) doErr "Unknown source type for $src";;
@@ -1767,9 +1767,9 @@ create_diff(){
     [ -f "${oldfile}" ] || doErr "unable to find file sources/${lib}/${oldfile}"
   fi
   if $b64; then
-    diff -Naur ${oldfile} ${newfile} | sed "s/${oldfile}/${newfile}/" | base64 -w 90 >"${newfile}.patch"
+    diff -Naur ${oldfile} ${newfile} | sed "s|${oldfile}|${newfile}|" | base64 -w 90 >"${newfile}.patch"
   else
-    diff -Naur ${oldfile} ${newfile} | sed "s/${oldfile}/${newfile}/" >"${newfile}.patch"
+    diff -Naur ${oldfile} ${newfile} | sed "s|${oldfile}|${newfile}|" >"${newfile}.patch"
   fi
   echo -e "\n  ${CC1}Done${C0}\n"
   read -p "Open file? y|n: " yn

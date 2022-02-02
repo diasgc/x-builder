@@ -8,16 +8,16 @@ lib='lensfun'
 dsc='An open source database of photographic lenses and their characteristics'
 lic='LGPL-3.0'
 src='https://github.com/lensfun/lensfun.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 dep='libpng glib2'
 eta='60'
-cb0="-DBUILD_LENSTOOL=OFF"
-cb1="-DBUILD_LENSTOOL=ON"
+
+cmake_bin='BUILD_LENSTOOL'
+cmake_cfg="-DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DINSTALL_HELPER_SCRIPTS=OFF -DINSTALL_PYTHON_MODULE=OFF -DBUILD_AUXFUN=ON" # -DGLIB2_BASE_DIR=$SOURCES/glib2"
 
 . xbuilder.sh
 
-CFG="-DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DINSTALL_HELPER_SCRIPTS=OFF -DINSTALL_PYTHON_MODULE=OFF -DBUILD_AUXFUN=ON" # -DGLIB2_BASE_DIR=$SOURCES/glib2"
+
 
 start
 

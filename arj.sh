@@ -24,7 +24,7 @@ source_config(){
 }
 
 BUILD_DIR="$SRCDIR"
-CFG="--host=$(echo ${arch} | sed 's/aarch64/arm/;s/android/gnu/')"
+ac_cfg="--host=$(echo ${arch} | sed 's/aarch64/arm/;s/android/gnu/')"
 mkf="-f GNUmakefile"
 
 start

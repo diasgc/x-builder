@@ -19,7 +19,7 @@ lst_pc='gmp.pc'
 
 . xbuilder.sh
 
-CFG="CC_FOR_BUILD=cc"
+ac_cfg="CC_FOR_BUILD=cc"
 unset ABI
 $host_mingw && CFG+=" --enable-fat"
 

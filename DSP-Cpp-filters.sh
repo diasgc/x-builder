@@ -26,8 +26,6 @@ eta='20'
 
 . xbuilder.sh
 
-CFG=
-
 start
 
 # Filelist

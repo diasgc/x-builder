@@ -7,7 +7,7 @@ lic='BSD-2c Patent'
 src='https://github.com/Netflix/vmaf.git'
 eta='52'
 config_dir="libvmaf"
-CFG='-Denable_docs=false -Denable_tests=false'
+meson_cfg='-Denable_docs=false -Denable_tests=false'
 
 lst_inc='libvmaf/*.h'
 lst_lib='libvmaf'
@@ -22,7 +22,7 @@ stb_vrs=''
 
 . xbuilder.sh
 
-$host_arm || CFG+=' -Denable_avx512=true'
+$host_arm || meson_cfg+=' -Denable_avx512=true'
 
 start
 

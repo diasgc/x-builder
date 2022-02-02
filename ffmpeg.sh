@@ -117,7 +117,7 @@ case $host_os in
      gnu) extopts+=" --enable-opencl --enable-nvenc --enable-opengl --enable-pic" LDFLAGS+=" -ldl -lstdc++";;
 esac
 
-CFG="--arch=$CPU \
+ac_cfg="--arch=$CPU \
      --target-os=${PLATFORM,,} \
      --cc=$CC \
      --ar=$AR \
