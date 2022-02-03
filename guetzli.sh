@@ -9,7 +9,6 @@ dsc='Perceptual JPEG encoder'
 lic='Apache-2.0'
 src='https://github.com/google/guetzli.git'
 cfg='cmake'
-cstk='BUILD_STATIC_LIBS'
 dep='libpng libjpeg'
 eta='30'
 pc_llib='-lguetzli'
@@ -19,6 +18,8 @@ lst_lib='libguetzli'
 lst_bin='butteraugli'
 lst_lic='LICENSE'
 lst_pc=''
+
+cmake_static='BUILD_STATIC_LIBS'
 
 . xbuilder.sh
 

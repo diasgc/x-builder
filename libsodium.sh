@@ -12,14 +12,16 @@ bra='stable'
 automake_cmd="./autogen.sh -s"
 eta='144'
 
-#cshk=''
-#cstk=''
-#cbk=''
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc='sodium.h sodium/*.h'
-lst_lib='libsodium.la libsodium.a libsodium.so'
+lst_lib='libsodium'
 lst_bin=''
 lst_lic='LICENSE AUTHORS'
+lst_pc='libsodium'
 
 . xbuilder.sh
 

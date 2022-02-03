@@ -25,13 +25,11 @@ config_dir='icu4c/source'
 mki='install'
 eta='580'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
-lst_inc=''
-lst_lib=''
-lst_bin=''
+lst_inc='unicode/*.h'
+lst_lib='libicutu libicuuc libicuio libicutest libicui18n libicudata'
+lst_bin='genrb makeconv icuexportdata pkgdata gencnval gencfu gendict uconv icu-config derb genbrk icuinfo'
+lst_lic='COPYING'
+lst_pc='icu-i18n.pc icu-uc.pc icu-io.pc'
 
 . xbuilder.sh
 

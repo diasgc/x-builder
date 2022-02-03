@@ -6,7 +6,7 @@ dsc='Limited Error Raster Compression'
 lic='BSD/GPL-2.0'
 src='https://github.com/Esri/lerc.git'
 cfg='cmake'
-cstk='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 eta='134'
 
 lst_inc='Lerc_c_api.h Lerc_types.h'

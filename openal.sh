@@ -13,11 +13,18 @@ eta='0'
 
 #cshk=''
 #cstk=''
-#cbk='UTILS'
+#cmake_bin='UTILS'
 
-lst_inc=''
-lst_lib=''
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='AL/*.h'
+lst_lib='libopenal'
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc='openal.pc'
 
 CFG="-DALSOFT_INSTALL_EXAMPLES=OFF -DALSOFT_EXAMPLES=OFF"
 

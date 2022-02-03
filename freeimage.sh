@@ -12,13 +12,17 @@ lic='Other'
 src='https://svn.code.sf.net/p/freeimage/svn/FreeImage/trunk'
 cfg='cmake'
 eta='440'
+
 pc_llib="-lfreeimage"
-cstk='BUILD_STATIC_LIBS'
+
+cmake_static='BUILD_STATIC_LIBS'
+
 lst_inc='FreeImage.h FreeImagePlus.h'
 lst_lib='libFreeImage'
 lst_bin=''
 
-#WFLAGS='-Wno-switch -Wno-deprecated-register -Wno-unused-value -Wno-format -Wno-format-extra-args'
+WFLAGS='-Wno-switch -Wno-deprecated-register -Wno-unused-value -Wno-format -Wno-format-extra-args'
+
 . xbuilder.sh
 
 source_patch(){

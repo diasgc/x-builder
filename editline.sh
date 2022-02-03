@@ -12,10 +12,6 @@ src='https://github.com/troglobit/editline.git'
 cfg='ar'
 eta='90'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc='editline.h'
 lst_lib='libeditline'
 lst_bin=''

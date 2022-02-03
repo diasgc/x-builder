@@ -12,10 +12,6 @@ cfg='make'
 dep='zlib openssl'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

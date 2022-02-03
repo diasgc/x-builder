@@ -8,9 +8,6 @@ cfg='ar'
 eta='60'
 ac_nohost=true
 config_dir='gnu'
-#cshk=''
-#cstk=''
-#cbk=''
 
 lst_inc=''
 lst_lib=''

@@ -7,7 +7,7 @@ lic='MIT'
 src="https://github.com/ebiggers/libdeflate.git"
 sty='git'
 cfg='cmake'
-cstk='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 eta='10'
 
 pc_llib='-ldeflate'

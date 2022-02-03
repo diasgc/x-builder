@@ -9,7 +9,8 @@ dsc='ffmpeg supporting EVC codec and file formats'
 lic='BSD-2c'
 src='https://github.com/mpeg5/ffevc.git'
 cfg='cmake'
-cstk="XEVE_APP_STATIC_BUILD"
+
+cmake_static="XEVE_APP_STATIC_BUILD"
 
 . xbuilder.sh
 

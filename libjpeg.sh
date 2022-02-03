@@ -7,8 +7,8 @@ lic='BSD'
 src='https://github.com/libjpeg-turbo/libjpeg-turbo.git'
 cfg='cmake'
 eta='78'
-cstk="ENABLE_STATIC"
-cshk="ENABLE_SHARED"
+cmake_static="ENABLE_STATIC"
+cmake_shared="ENABLE_SHARED"
 mki='install/strip'
 
 cmake_cfg="-DWITH_JPEG8=ON -DWITH_JPEG7=ON -DWITH_DOCS=OFF -DWITH_MAN=OFF"

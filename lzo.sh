@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='lzo'
 pkg='lzo2'
@@ -12,8 +8,14 @@ vrs='2.10'
 src="http://www.oberhumer.com/opensource/lzo/download/lzo-${vrs}.tar.gz"
 cfg='cmake'
 eta='10'
-cstk="ENABLE_STATIC"
-cshk="ENABLE_SHARED"
+
+cmake_static="ENABLE_STATIC"
+cmake_shared="ENABLE_SHARED"
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc='lzo/*.h'
 lst_lib='liblzo2'
@@ -24,6 +26,11 @@ lst_pc='lzo2.pc'
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

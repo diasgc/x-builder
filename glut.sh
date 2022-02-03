@@ -10,11 +10,7 @@ lic='GLP-2.0'
 src='https://github.com/markkilgard/glut.git'
 eta='0'
 
-https://github.com/dcnieho/FreeGLUT.git
-
-#cshk=''
-#cstk=''
-#cbk=''
+#https://github.com/dcnieho/FreeGLUT.git
 
 lst_inc=''
 lst_lib=''

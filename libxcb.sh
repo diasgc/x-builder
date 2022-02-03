@@ -14,13 +14,18 @@ cfg='ag'
 eta='0'
 dep='xcb-proto xcb-pthread-stubs libxau libxdmcp'
 #CFG='--enable-devel-docs'
-#cshk=''
-#cstk=''
-#cbk=''
+
 # XCBPROTO_LIBS XCBPROTO_CFLAGS NEEDED_CFLAGS NEEDED_LIBS XDMCP_CFLAGS XDMCP_LIBS CHECK_CFLAGS CHECK_LIBS
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 
