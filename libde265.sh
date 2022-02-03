@@ -11,6 +11,7 @@ lic='LGPL-3.0'
 src='https://github.com/strukturag/libde265.git'
 cfg='cmake'
 eta='140'
+automake_cmd='./autogen.sh'
 
 lst_inc='libde265/*.h'
 lst_lib='liblibde265'
@@ -36,152 +37,66 @@ case $cfg in
          ;;
 esac
 
-WFLAGS='-Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function -Wno-uninitialized'
-
-source_config(){
-       set -x
-       ./autogen.sh
-       [ -f "libde265/de265-version.h" ] || ln extra/libde265/de265-version.h libde265/de265-version.h
-       set +x
-}
-
-
 start
-<<'libde265/CMakeLists.txt'
-include(CMakePackageConfigHelpers)
 
-set (libde265_sources 
-  alloc_pool.cc
-  bitstream.cc
-  cabac.cc
-  configparam.cc
-  contextmodel.cc
-  de265.cc
-  deblock.cc
-  decctx.cc
-  dpb.cc
-  en265.cc
-  fallback-dct.cc
-  fallback-motion.cc 
-  fallback.cc
-  image-io.cc
-  image.cc
-  intrapred.cc
-  md5.cc
-  motion.cc
-  nal-parser.cc
-  nal.cc
-  pps.cc
-  quality.cc
-  refpic.cc
-  sao.cc
-  scan.cc
-  sei.cc
-  slice.cc
-  sps.cc
-  threads.cc
-  transform.cc
-  util.cc
-  visualize.cc
-  vps.cc
-  vui.cc
-)
-
-set (libde265_headers
-  acceleration.h
-  alloc_pool.h
-  bitstream.h
-  cabac.h
-  configparam.h
-  de265-version.h
-  contextmodel.h
-  de265.h
-  deblock.h
-  decctx.h
-  dpb.h
-  en265.h
-  fallback-dct.h
-  fallback-motion.h
-  fallback.h
-  image-io.h
-  image.h
-  intrapred.h
-  md5.h
-  motion.h
-  nal-parser.h
-  nal.h
-  pps.h
-  quality.h
-  refpic.h
-  sao.h
-  scan.h
-  sei.h
-  slice.h
-  sps.h
-  threads.h
-  transform.h
-  util.h
-  visualize.h
-  vps.h
-  vui.h
-)
-
-if(MSVC OR MINGW)
-  set (libde265_sources
-    ${libde265_sources}
-    ../extra/win32cond.c
-    ../extra/win32cond.h
-  )
-endif()
-
-add_definitions(-DLIBDE265_EXPORTS)
-add_compile_options(-Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-function -Wno-uninitialized)
-add_subdirectory (encoder)
-
-if(NOT DISABLE_SSE)
-  if (MSVC)
-    set(SUPPORTS_SSE2 1)
-    set(SUPPORTS_SSSE3 1)
-    set(SUPPORTS_SSE4_1 1)
-  else (MSVC)
-    check_c_compiler_flag(-msse2 SUPPORTS_SSE2)
-    check_c_compiler_flag(-mssse3 SUPPORTS_SSSE3)
-    check_c_compiler_flag(-msse4.1 SUPPORTS_SSE4_1)
-  endif (MSVC)
-
-  if(SUPPORTS_SSE4_1)
-    add_definitions(-DHAVE_SSE4_1)
-  endif()
-  if(SUPPORTS_SSE4_1 OR (SUPPORTS_SSE2 AND SUPPORTS_SSSE3))
-    add_subdirectory (x86)
-  endif()
-endif()
-
-add_library(${PROJECT_NAME} ${libde265_sources} ${ENCODER_OBJECTS} ${X86_OBJECTS})
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
-set(libde265_targets ${PROJECT_NAME})
-if(BUILD_SHARED_LIBS AND BUILD_STATIC_LIBS)
-  add_library(${PROJECT_NAME}-static STATIC ${libde265_sources} ${ENCODER_OBJECTS} ${X86_OBJECTS})
-  target_link_libraries(${PROJECT_NAME}-static PRIVATE Threads::Threads)
-  set_target_properties(${PROJECT_NAME}-static PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-  list(APPEND libde265_targets ${PROJECT_NAME}-static)
-endif()
-write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake COMPATIBILITY ExactVersion)
-
-install(TARGETS ${libde265_targets} EXPORT ${PROJECT_NAME}Config
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-install(FILES ${libde265_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/de265-version.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-
-install(EXPORT ${PROJECT_NAME}Config DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake DESTINATION
-    "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-libde265/CMakeLists.txt
+<<'XB64_PATCH'
+LS0tIGxpYmRlMjY1L0NNYWtlTGlzdHMudHh0CTIwMjItMDItMDMgMDE6MjA6NDkuNTIwNDUxODAw
+ICswMDAwCisrKyBsaWJkZTI2NS9DTWFrZUxpc3RzLnR4dAkyMDIyLTAyLTAzIDAxOjE1OjExLjM3
+MDQ1MTgwMCArMDAwMApAQCAtODYsNiArODYsNyBAQAogCiBhZGRfZGVmaW5pdGlvbnMoLURMSUJE
+RTI2NV9FWFBPUlRTKQogCithZGRfY29tcGlsZV9vcHRpb25zKC1Xbm8tdW51c2VkLXZhcmlhYmxl
+IC1Xbm8tdW51c2VkLWJ1dC1zZXQtdmFyaWFibGUgLVduby11bnVzZWQtZnVuY3Rpb24gLVduby11
+bmluaXRpYWxpemVkKQogYWRkX3N1YmRpcmVjdG9yeSAoZW5jb2RlcikKIAogaWYoTk9UIERJU0FC
+TEVfU1NFKQpAQCAtMTEwLDE4ICsxMTEsMjcgQEAKIGFkZF9saWJyYXJ5KCR7UFJPSkVDVF9OQU1F
+fSAke2xpYmRlMjY1X3NvdXJjZXN9ICR7RU5DT0RFUl9PQkpFQ1RTfSAke1g4Nl9PQkpFQ1RTfSkK
+IHRhcmdldF9saW5rX2xpYnJhcmllcygke1BST0pFQ1RfTkFNRX0gUFJJVkFURSBUaHJlYWRzOjpU
+aHJlYWRzKQogCitzZXQobGliZGUyNjVfdGFyZ2V0cyAke1BST0pFQ1RfTkFNRX0pCitpZihCVUlM
+RF9TSEFSRURfTElCUyBBTkQgQlVJTERfU1RBVElDX0xJQlMpCisgIGFkZF9saWJyYXJ5KCR7UFJP
+SkVDVF9OQU1FfS1zdGF0aWMgU1RBVElDICR7bGliZGUyNjVfc291cmNlc30gJHtFTkNPREVSX09C
+SkVDVFN9ICR7WDg2X09CSkVDVFN9KQorICB0YXJnZXRfY29tcGlsZV9kZWZpbml0aW9ucygke1BS
+T0pFQ1RfTkFNRX0tc3RhdGljIFBSSVZBVEUgTElCREUyNjVfU1RBVElDX0JVSUxEKQorICB0YXJn
+ZXRfbGlua19saWJyYXJpZXMoJHtQUk9KRUNUX05BTUV9LXN0YXRpYyBQUklWQVRFIFRocmVhZHM6
+OlRocmVhZHMpCisgIHNldF90YXJnZXRfcHJvcGVydGllcygke1BST0pFQ1RfTkFNRX0tc3RhdGlj
+IFBST1BFUlRJRVMgT1VUUFVUX05BTUUgJHtQUk9KRUNUX05BTUV9KQorICBsaXN0KEFQUEVORCBs
+aWJkZTI2NV90YXJnZXRzICR7UFJPSkVDVF9OQU1FfS1zdGF0aWMpCitlbmRpZigpCiB3cml0ZV9i
+YXNpY19wYWNrYWdlX3ZlcnNpb25fZmlsZSgke1BST0pFQ1RfTkFNRX1Db25maWdWZXJzaW9uLmNt
+YWtlIENPTVBBVElCSUxJVFkgRXhhY3RWZXJzaW9uKQogCi1pbnN0YWxsKFRBUkdFVFMgJHtQUk9K
+RUNUX05BTUV9IEVYUE9SVCAke1BST0pFQ1RfTkFNRX1Db25maWcKK2luc3RhbGwoVEFSR0VUUyAk
+e2xpYmRlMjY1X3RhcmdldHN9IEVYUE9SVCAke1BST0pFQ1RfTkFNRX1Db25maWcKICAgICBSVU5U
+SU1FIERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9CSU5ESVJ9CiAgICAgTElCUkFSWSBERVNU
+SU5BVElPTiAke0NNQUtFX0lOU1RBTExfTElCRElSfQogICAgIEFSQ0hJVkUgREVTVElOQVRJT04g
+JHtDTUFLRV9JTlNUQUxMX0xJQkRJUn0KICkKIAogaW5zdGFsbChGSUxFUyAke2xpYmRlMjY1X2hl
+YWRlcnN9IERFU1RJTkFUSU9OICR7Q01BS0VfSU5TVEFMTF9JTkNMVURFRElSfS8ke1BST0pFQ1Rf
+TkFNRX0pCi1pbnN0YWxsKEZJTEVTICR7Q01BS0VfQ1VSUkVOVF9CSU5BUllfRElSfS9kZTI2NS12
+ZXJzaW9uLmggREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9LyR7UFJPSkVD
+VF9OQU1FfSkKK2luc3RhbGwoRklMRVMgJHtDTUFLRV9TT1VSQ0VfRElSfS9saWJkZTI2NS9kZTI2
+NS12ZXJzaW9uLmggREVTVElOQVRJT04gJHtDTUFLRV9JTlNUQUxMX0lOQ0xVREVESVJ9LyR7UFJP
+SkVDVF9OQU1FfSkKIAogaW5zdGFsbChFWFBPUlQgJHtQUk9KRUNUX05BTUV9Q29uZmlnIERFU1RJ
+TkFUSU9OICIke0NNQUtFX0lOU1RBTExfTElCRElSfS9jbWFrZS8ke1BST0pFQ1RfTkFNRX0iKQog
+CiBpbnN0YWxsKEZJTEVTICR7Q01BS0VfQ1VSUkVOVF9CSU5BUllfRElSfS8ke1BST0pFQ1RfTkFN
+RX1Db25maWdWZXJzaW9uLmNtYWtlIERFU1RJTkFUSU9OCi0gICAgIiR7Q01BS0VfSU5TVEFMTF9M
+SUJESVJ9L2NtYWtlLyR7UFJPSkVDVF9OQU1FfSIpClwgTm8gbmV3bGluZSBhdCBlbmQgb2YgZmls
+ZQorICAgICIke0NNQUtFX0lOU1RBTExfTElCRElSfS9jbWFrZS8ke1BST0pFQ1RfTkFNRX0iKQor
+aW5zdGFsbChGSUxFUyAke0NNQUtFX1NPVVJDRV9ESVJ9L2xpYmRlMjY1LnBjIERFU1RJTkFUSU9O
+IGxpYi9wa2djb25maWcpCgotLS0gQ01ha2VMaXN0cy50eHQJMjAyMi0wMi0wMyAwMToyMDowOS4y
+MjA0NTE4MDAgKzAwMDAKKysrIENNYWtlTGlzdHMudHh0CTIwMjItMDItMDMgMDE6MjI6NDMuMDQw
+NDUxODAwICswMDAwCkBAIC00Niw3ICs0NiwxNSBAQAogICBhZGRfZGVmaW5pdGlvbnMoLURIQVZF
+X1BPU0lYX01FTUFMSUdOKQogZW5kaWYoKQogCi1jb25maWd1cmVfZmlsZSAobGliZGUyNjUvZGUy
+NjUtdmVyc2lvbi5oLmluIGxpYmRlMjY1L2RlMjY1LXZlcnNpb24uaCkKK2NvbmZpZ3VyZV9maWxl
+KGxpYmRlMjY1L2RlMjY1LXZlcnNpb24uaC5pbiAke0NNQUtFX1NPVVJDRV9ESVJ9L2xpYmRlMjY1
+L2RlMjY1LXZlcnNpb24uaCkKKworc2V0KFZFUlNJT04gJHtQUk9KRUNUX1ZFUlNJT059KQorc2V0
+KHByZWZpeCAke0NNQUtFX0lOU1RBTExfUFJFRklYfSkKK3NldChleGVjX3ByZWZpeCAiXCR7cHJl
+Zml4fSIpCitzZXQobGliZGlyICJcJHtwcmVmaXh9L2xpYiIpCitzZXQoTElCUyAiLWxwdGhyZWFk
+IC1sbSIpCitzZXQoaW5jbHVkZWRpciAiXCR7cHJlZml4fS9pbmNsdWRlIikKK2NvbmZpZ3VyZV9m
+aWxlKGxpYmRlMjY1LnBjLmluICR7Q01BS0VfU09VUkNFX0RJUn0vbGliZGUyNjUucGMgQE9OTFkp
+CiAKIGlmKENNQUtFX0NPTVBJTEVSX0lTX0dOVUNYWCBPUiAke0NNQUtFX0NYWF9DT01QSUxFUl9J
+RH0gTUFUQ0hFUyBDbGFuZykKICAgYWRkX2RlZmluaXRpb25zKC1XYWxsKQpAQCAtNTUsOSArNjMs
+NiBAQAogb3B0aW9uKERJU0FCTEVfU1NFICJEaXNhYmxlIFNTRSBvcHRpbWl6YXRpb25zIiBPRkYp
+CiAKIG9wdGlvbihCVUlMRF9TSEFSRURfTElCUyAiQnVpbGQgc2hhcmVkIGxpYnJhcnkiIE9OKQot
+aWYoTk9UIEJVSUxEX1NIQVJFRF9MSUJTKQotICBhZGRfZGVmaW5pdGlvbnMoLURMSUJERTI2NV9T
+VEFUSUNfQlVJTEQpCi1lbmRpZigpCiAKIGluY2x1ZGVfZGlyZWN0b3JpZXMgKCIke1BST0pFQ1Rf
+U09VUkNFX0RJUn0iKQogaW5jbHVkZV9kaXJlY3RvcmllcyAoIiR7UFJPSkVDVF9CSU5BUllfRElS
+fSIpCg==
+XB64_PATCH
 
 # Filelist
 # --------
@@ -221,6 +136,7 @@ libde265/CMakeLists.txt
 # include/libde265/acceleration.h
 # include/libde265/dpb.h
 # include/libde265/util.h
+# lib/pkgconfig/libde265.pc
 # lib/cmake/libde265/libde265ConfigVersion.cmake
 # lib/cmake/libde265/libde265Config-release.cmake
 # lib/cmake/libde265/libde265Config.cmake

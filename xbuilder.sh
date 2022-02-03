@@ -699,7 +699,7 @@ check_xbautopatch(){
         echo "${block}" >${dir_src}/CMakeLists.txt
         echo -e "\ncreate CMakeLists.txt: \n$block" >>${log_file}
         ;;
-      XB_APPLY_PATCH) pushdir ${dir_src}
+      XB_PATCH) pushdir ${dir_src}
         patch -p0 <<<$(echo "${block}") 2>&1 >${log_file}
         echo -e "\npatch found: \n$block" >>${log_file}
         popdir;;
