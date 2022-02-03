@@ -13,7 +13,7 @@ mki=install
 API=26 # min api necessary for declaration of functions like 'shmget'
 
 lst_inc='numa.h numaif.h numacompat1.h'
-lst_lib='libnuma.*'
+lst_lib='libnuma'
 lst_bin='numademo memhog migspeed numastat numactl migratepages'
 lst_lic='LICENSE.GPL2 LICENSE.LGPL2.1'
 lst_pc='numa.pc'

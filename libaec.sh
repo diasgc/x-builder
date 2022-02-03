@@ -11,7 +11,7 @@ eta='30'
 pc_llibs='-lsz -laec'
 
 lst_inc='libaec.h szlib.h'
-lst_lib='libsz.* libaec.*'
+lst_lib='libsz libaec'
 lst_bin='aec'
 lst_lic='LICENSE.txt AUTHORS'
 lst_pc='aec.pc sz.pc'

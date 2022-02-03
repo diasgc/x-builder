@@ -22,7 +22,7 @@ stb_bra='stable-0.9'
 stb_vrs='0.9'
 
 lst_inc='libssh/*.h libssh/*.hpp'
-lst_lib='libssh.*'  
+lst_lib='libssh'  
 lst_bin=''
 lst_lic='COPYING BSD AUTHORS'
 lst_pc='libssh.pc'

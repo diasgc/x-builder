@@ -18,7 +18,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='libssh2*.h'
-lst_lib='libssh2.*'
+lst_lib='libssh2'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='libssh2.pc'

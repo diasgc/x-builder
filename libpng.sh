@@ -17,7 +17,7 @@ cmake_shared="PNG_SHARED"
 cmake_bin="PNG_EXECUTABLES"
 
 lst_inc='pnglibconf.h png.h pngconf.h libpng16/*.h'
-lst_lib='libpng.* libpng16.*'
+lst_lib='libpng libpng16'
 lst_bin='png-fix-itxt libpng16-config pngfix'
 lst_lic='LICENSE AUTHORS'
 lst_pc='libpng16.pc'

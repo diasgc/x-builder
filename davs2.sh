@@ -15,7 +15,7 @@ stb_bra='tags/1.6'
 stb_vrs='1.6'
 
 lst_inc='davs2.h davs2_config.h'
-lst_lib='libdavs2.*'
+lst_lib='libdavs2'
 lst_bin='davs2'
 lst_lic='COPYING'
 lst_pc='davs2.pc'

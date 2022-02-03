@@ -13,7 +13,7 @@ cstk='BUILD_STATIC_LIBS'
 pc_llibs='-ljpegxr -jxrglue'
 
 lst_inc='libjxr/glue/*.h libjxr/image/*.h libjxr/common/*.h libjxr/test/*.h'
-lst_lib='libjpegxr.* libjxrglue.*'
+lst_lib='libjpegxr libjxrglue'
 lst_bin='JxrEncApp JxrDecApp'
 lst_lic='LICENSE AUTHORS'
 lst_pc='jpegxr.pc xrglue.pc'

@@ -10,7 +10,7 @@ cfg='cmake'
 eta='399'
 
 lst_inc='blosc2.h blosc2/*.h'
-lst_lib='libblosc2.*'
+lst_lib='libblosc2'
 lst_bin=''
 lst_lic='LICENSE.txt LICENSES/*.txt'
 lst_pc='blosc2.pc'

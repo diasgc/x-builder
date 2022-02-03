@@ -12,7 +12,7 @@ mki='install'
 automake_cmd='./autogen.sh --no-po4a'
 
 lst_inc='lzma.h lzma/*.h'
-lst_lib='liblzma.*'
+lst_lib='liblzma'
 lst_bin='xzmore xzdec xzgrep xz lzmainfo xzless lzmadec xzdiff'
 lst_lic='COPYING AUTHORS'
 lst_pc='liblzma.pc'

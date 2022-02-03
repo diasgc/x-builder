@@ -12,7 +12,7 @@ dep='libiconv'
 pc_llib='-lunistring'
 
 lst_inc='unigbrk.h uniwidth.h uniwbrk.h unitypes.h unilbrk.h unistr.h unistdio.h uniname.h uninorm.h uniconv.h unicase.h unictype.h unistring/*.h'
-lst_lib='libunistring.*'
+lst_lib='libunistring'
 lst_bin=''
 lst_lic='COPYING COPYING.LIB AUTHORS'
 lst_pc='libunistring'

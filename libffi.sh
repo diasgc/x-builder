@@ -9,7 +9,7 @@ eta='15'
 CFG='--enable-portable-binary --disable-docs'
 
 lst_inc='ffitarget.h ffi.h'
-lst_lib='libffi.*'
+lst_lib='libffi'
 lst_bin=''
 lst_lic='LICENSE LICENSE-BUILDTOOLS'
 lst_pc='libffi.pc'

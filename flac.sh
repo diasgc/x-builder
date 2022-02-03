@@ -9,7 +9,7 @@ dep='ogg libiconv'
 eta='60'
 
 lst_inc='FLAC++/*.h FLAC/*.h'
-lst_lib='libFLAC.* libFLAC++.*'
+lst_lib='libFLAC libFLAC++'
 lst_bin='flac metaflac'
 lst_lic='COPYING.FDL COPYING.GPL COPYING.LGPL COPYING.Xiph AUTHORS'
 lst_pc='flac.pc flac++.pc'

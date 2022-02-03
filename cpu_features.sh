@@ -12,7 +12,7 @@ cmake_bin='BUILD_STATIC_LIBS'
 cmake_cfg='-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF'
 
 lst_inc='ndk_compat/cpu-features.h cpu_features/*.h'
-lst_lib='libcpu_features.* libndk_compat.*'
+lst_lib='libcpu_features libndk_compat'
 lst_bin='list_cpu_features'
 lst_lic='LICENSE'
 lst_pc='cpu_features.pc'

@@ -14,7 +14,7 @@ eta='411'
 dep='libsodium'
 
 lst_inc='zmq.h zmq_utils.h'
-lst_lib='libzmq.*'
+lst_lib='libzmq'
 lst_bin='curve_keyge'
 lst_lic='COPYING COPYING.LESSER AUTHORS'
 lst_pc='libzmq.pc'

@@ -13,7 +13,7 @@ stb_bra='tags/0.0.7'
 stb_vrs='0.0.7'
 
 lst_inc='dts.h dca.h'
-lst_lib='libdca.*'
+lst_lib='libdca'
 lst_bin='dcadec extract_dca dtsdec extract_dts'
 lst_lic='COPYING AUTHORS'
 lst_pc='libdca.pc libdts.pc'

@@ -14,7 +14,7 @@ dep='libjpeg libtiff'
 eta='90'
 
 lst_inc='lcms2_plugin.h lcms2.h'
-lst_lib='liblcms2.*'
+lst_lib='liblcms2'
 lst_bin='linkicc psicc tificc jpgicc transicc'
 lst_lic='COPYING AUTHORS'
 lst_pc='lcms2.pc'

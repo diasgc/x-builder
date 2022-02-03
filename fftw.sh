@@ -15,7 +15,7 @@ dev_vrs='3.3.10'
 stb_vrs='3.3.9'
 
 lst_inc='fftw3.h fftw3.f fftw3.f03 fftw3q.f03 ftw3l.f03'
-lst_lib='libfftw3.*'
+lst_lib='libfftw3'
 lst_bin=''
 lst_lic='COPYING COPYRIGHT AUTHORS'
 lst_pc='fftw3.pc'

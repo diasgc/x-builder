@@ -12,7 +12,7 @@ cstk='GFLAGS_BUILD_STATIC_LIBS'
 cshk='GFLAGS_BUILD_SHARED_LIBS'
 
 lst_inc='gflags/*.h'
-lst_lib='libgflags.* libgflags_nothreads.*'
+lst_lib='libgflags libgflags_nothreads'
 lst_bin='gflags_completions.sh'
 lst_lic='COPYING AUTHORS'
 lst_pc='gflags.pc'

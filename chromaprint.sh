@@ -14,7 +14,7 @@ mki='install/strip'
 cmake_static="BUILD_STATIC_LIBS"
 
 lst_inc='chromaprint.h'
-lst_lib='libchromaprint.*'
+lst_lib='libchromaprint'
 lst_bin=''
 lst_lic='LICENSE.md'
 lst_pc='libchromaprint.pc'

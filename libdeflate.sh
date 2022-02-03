@@ -13,7 +13,7 @@ eta='10'
 pc_llib='-ldeflate'
 
 lst_inc='libdeflate.h'
-lst_lib='libdeflate.*'
+lst_lib='libdeflate'
 lst_bin='gzip'
 lst_lic='COPYING'
 lst_pc='libdeflate.pc'

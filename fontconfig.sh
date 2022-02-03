@@ -11,7 +11,7 @@ dep='libiconv freetype expat json-c libpng'
 eta='231'
 
 lst_inc='fontconfig/*.h'
-lst_lib='libfontconfig.*'
+lst_lib='libfontconfig'
 lst_bin='fc-match fc-cat fc-list fc-conflist fc-query fc-scan fc-pattern fc-validate fc-cache'
 lst_lic='COPYING AUTHORS'
 lst_pc='fontconfig.pc'

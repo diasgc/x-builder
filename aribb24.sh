@@ -10,7 +10,7 @@ dep='libpng'
 eta='10'
 
 lst_inc='aribb24/*.h'
-lst_lib='libaribb24.*'
+lst_lib='libaribb24'
 lst_bin=''
 lst_lic='COPYING README.md'
 lst_pc='aribb24.pc'

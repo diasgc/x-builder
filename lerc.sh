@@ -10,7 +10,7 @@ cstk='BUILD_STATIC_LIBS'
 eta='134'
 
 lst_inc='Lerc_c_api.h Lerc_types.h'
-lst_lib='libLerc.*'
+lst_lib='libLerc'
 lst_bin=''
 lst_lic='LICENSE NOTICE'
 lst_pc='Lerc.pc'

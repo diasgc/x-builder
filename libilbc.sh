@@ -17,7 +17,7 @@ stb_bra='tags/3.0.4'
 stb_vrs='3.0.4'
 
 lst_inc='ilbc.h ilbc_export.h'
-lst_lib='libilbc.*'
+lst_lib='libilbc'
 lst_bin='ilbc_test'
 lst_lic='COPYING AUTHORS'
 lst_pc='libilbc.pc'

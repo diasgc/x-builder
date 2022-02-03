@@ -11,7 +11,7 @@ dep='libiconv libcdio' # optional
 eta='10'
 
 lst_inc='cddb/*.h'
-lst_lib='libcddb.*'
+lst_lib='libcddb'
 lst_bin='cddb_query'
 lst_lic='COPYING AUTHORS'
 lst_pc='libcddb.pc'

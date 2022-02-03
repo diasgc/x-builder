@@ -15,7 +15,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='blake2.h'
-lst_lib='libb2.*'
+lst_lib='libb2'
 lst_bin=''
 lst_lic='COPYING'
 lst_pc='libb2.pc'

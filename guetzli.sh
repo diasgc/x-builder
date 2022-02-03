@@ -15,7 +15,7 @@ eta='30'
 pc_llib='-lguetzli'
 
 lst_inc=''
-lst_lib='libguetzli.*'
+lst_lib='libguetzli'
 lst_bin='butteraugli'
 lst_lic='LICENSE'
 lst_pc=''

@@ -11,7 +11,7 @@ dep='libpng brotli bzip2'
 eta='60'
 
 lst_inc='freetype2/*.h freetype2/freetype/*.h'
-lst_lib='libfreetype.*'
+lst_lib='libfreetype'
 lst_bin=''
 lst_lic='docs/FTL.TXT docs/GPLv2.TXT docs/LICENSE.TXT'
 lst_pc='freetype2.pc'

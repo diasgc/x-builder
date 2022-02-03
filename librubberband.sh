@@ -15,7 +15,7 @@ stb_bra='tags/v2.0.2'
 stb_vrs='2.0.2'
 
 lst_inc='rubberband/*.h'
-lst_lib='librubberband.* librubberband-jni.*'
+lst_lib='librubberband librubberband-jni'
 lst_bin='rubberband'
 lst_lic='COPYING'
 lst_pc='rubberband.pc'

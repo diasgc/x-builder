@@ -13,7 +13,7 @@ cmake_bin="ENABLE_APP"
 cmake_cfg="-DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF"
 
 lst_inc='bzlib.h'
-lst_lib='libbz2.* libbz2_static.a'
+lst_lib='libbz2 libbz2_static.a'
 lst_bin='bzgrep bzdiff bzip2recover bzmore bzip2'
 lst_lic='COPYING READM.md'
 lst_pc='libbrotlidec.pc libbrotlicommon.pc libbrotlienc.pc'

@@ -11,7 +11,7 @@ eta='575'
 pc_llib='-ljq'
 
 lst_inc='jv.h jq.h'
-lst_lib='libjq.*'
+lst_lib='libjq'
 lst_bin='jq'
 lst_lic='COPYING AUTHORS'
 lst_pc='jq.pc'

@@ -17,7 +17,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='hwy/*.h hwy/tests/*.h hwy/contrib/*.h hwy/*.h hwy/ops/*.h'
-lst_lib='libhwy.* libhwy_test.* libhwy_contrib.*'
+lst_lib='libhwy libhwy_test libhwy_contrib'
 lst_bin=''
 lst_lic='LICENSE AUTHORS'
 lst_pc='libhwy.pc libhwy-test.pc libhwy-contrib.pc'
