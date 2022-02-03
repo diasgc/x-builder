@@ -16,7 +16,7 @@ cstk="ENABLE_STATIC"
 cshk="ENABLE_SHARED"
 
 lst_inc='lzo/*.h'
-lst_lib='liblzo2.*'
+lst_lib='liblzo2'
 lst_bin='../libexec/lzo/examples/*'
 lst_lic='COPYING AUTHORS'
 lst_pc='lzo2.pc'

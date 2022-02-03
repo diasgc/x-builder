@@ -27,7 +27,7 @@ stb_bra='tags/v1.0.30'
 stb_vrs='1.0.30'
 
 lst_inc='sndfile.h sndfile.hh'
-lst_lib='libsndfile.*'
+lst_lib='libsndfile'
 lst_bin='sndfile-convert
 	sndfile-play
 	sndfile-deinterleave

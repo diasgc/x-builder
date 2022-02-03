@@ -16,7 +16,7 @@ nodev=false
 config_dir='build/cmake'
 
 lst_inc='zstd_errors.h zstd.h zdict.h'
-lst_lib='libzstd.*'
+lst_lib='libzstd'
 lst_bin='zstdgrep zstd zstdless'
 lst_lic='LICENSE COPYING'
 lst_pc='libzstd.pc'

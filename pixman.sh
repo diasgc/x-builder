@@ -19,7 +19,7 @@ stb_bra='tags/pixman-0.40.0'
 stb_vrs='0.40.0'
 
 lst_inc='pixman-1/*.h'
-lst_lib='libpixman-1.*'
+lst_lib='libpixman-1'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='pixman-1.pc'

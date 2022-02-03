@@ -16,7 +16,7 @@ stb_bra='tags/0.2.2'
 stb_vrs='0.2.2'
 
 lst_inc='samplerate.h'
-lst_lib='libsamplerate.*'
+lst_lib='libsamplerate'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='samplerate.pc'

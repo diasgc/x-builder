@@ -11,7 +11,7 @@ eta='90'
 cbk="able-binaries"
 
 lst_inc='speex/*.h'
-lst_lib='libspeex.*'
+lst_lib='libspeex'
 lst_bin='speexdec speexenc'
 lst_lic='COPYING AUTHORS'
 lst_pc='speex.pc'

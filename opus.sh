@@ -11,7 +11,7 @@ eta='60'
 ac_nopic=true
 
 lst_inc='opus/*.h'
-lst_lib='libopus.*'
+lst_lib='libopus'
 lst_bin=''
 lst_lic='LICENSE_PLEASE_READ.txt COPYING AUTHORS'
 lst_pc='opus.pc'

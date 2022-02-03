@@ -12,7 +12,7 @@ eta='90'
 mkc='distclean'
 
 lst_inc='nettle/*.h'
-lst_lib='libhogweed.* libnettle.*'
+lst_lib='libhogweed libnettle'
 lst_bin='pkcs1-conv nettle-lfib-stream nettle-hash nettle-pbkdf2 sexp-conv'
 lst_lic='COPYINGv2 COPYINGv3 COPYING.LESSERv3'
 lst_pc='hogweed.pc nettle.pc'

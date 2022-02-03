@@ -11,7 +11,7 @@ dep='ogg'
 eta='77'
 
 lst_inc='vorbis/*.h'
-lst_lib='libvorbisfile.* libvorbisenc.* libvorbis.*'
+lst_lib='libvorbisfile libvorbisenc libvorbis'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='vorbisfile.pc vorbisenc.pc vorbis.pc'

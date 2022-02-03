@@ -10,7 +10,7 @@ eta='305'
 tls='tcl'
 
 lst_inc='sqlite3ext.h sqlite3.h'
-lst_lib='libsqlite3.*'
+lst_lib='libsqlite3'
 lst_bin='sqlite3'
 lst_lic='LICENSE.md'
 lst_pc='sqlite3.pc'

@@ -15,7 +15,7 @@ cstk='BUILD_STATIC_LIBS'
 cbk="BUILD_APPS"
 
 lst_inc='svt-av1/*.h'
-lst_lib='libSvtAv1Dec.* libSvtAv1Enc.*'
+lst_lib='libSvtAv1Dec libSvtAv1Enc'
 lst_bin='SvtAv1DecApp SvtAv1EncApp'
 lst_lic='LICENSE.md LICENSE-BSD2.md PATENTS.md'
 lst_pc='SvtAv1Enc.pc SvtAv1Dec.pc'

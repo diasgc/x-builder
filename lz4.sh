@@ -14,7 +14,7 @@ cfg='mk'
 eta='20'
 
 lst_inc='lz4.h lz4frame.h lz4frame_static.h lz4hc.h'
-lst_lib='liblz4.*'
+lst_lib='liblz4'
 lst_bin='lz4'
 lst_lic='LICENSE'
 lst_pc='liblz4.pc'

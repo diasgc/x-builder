@@ -13,7 +13,7 @@ stb_bra='tags/6.9.7.1'
 stb_vrs='6.9.7.1'
 
 lst_inc='oniggnu.h oniguruma.h'
-lst_lib='libonig.*'
+lst_lib='libonig'
 lst_bin='onig-config'
 lst_lic='COPYING AUTHORS'
 lst_pc='oniguruma.pc'

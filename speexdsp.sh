@@ -10,7 +10,7 @@ src='https://github.com/xiph/speexdsp.git'
 eta='62'
 
 lst_inc='speex/*.h'
-lst_lib='libspeexdsp.*'
+lst_lib='libspeexdsp'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='speexdsp.pc'
