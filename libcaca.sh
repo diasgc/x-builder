@@ -18,7 +18,7 @@ stb_bra='tags/v0.99.beta20'
 stb_vrs='v0.99.beta20'
 
 lst_inc='caca++.h caca.h caca0.h caca_types.h caca_conio.h'
-lst_lib='libcaca.* libcaca++.*'
+lst_lib='libcaca libcaca++'
 lst_bin='caca-config cacafire cacaserver img2txt cacaclock cacademo cacaview cacaplay'
 lst_lic='COPYING COPYING.GPL COPYING.LGPL COPYING.ISC AUTHORS'
 lst_pc='caca++.pc caca.pc'

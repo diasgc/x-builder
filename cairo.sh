@@ -17,7 +17,7 @@ stb_bra='1.16'
 stb_vrs='1.16'
 
 lst_inc='cairo/*.h'
-lst_lib='libcairo-gobject.* libcairo-script-interpreter.* libcairo.* libcairo-script-interpreter.* libcairo.*'
+lst_lib='libcairo-gobject libcairo-script-interpreter libcairo libcairo-script-interpreter libcairo'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='cairo-gobject.pc

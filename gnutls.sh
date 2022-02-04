@@ -12,7 +12,7 @@ ac_bin='--disable-tools|--enable-tools'
 mki='install'
 
 lst_inc='gnutls/*.h'
-lst_lib='libgnutls.* libgnutlsxx.*'
+lst_lib='libgnutls libgnutlsxx'
 lst_bin='gnutls-serv srptool psktool gnutls-cli ocsptool certtool gnutls-cli-debug'
 lst_lic='LICENSE'
 lst_pc='gnutls.pc'

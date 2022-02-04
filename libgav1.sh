@@ -14,7 +14,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='gav1/*.h'
-lst_lib='libgav1.*'
+lst_lib='libgav1'
 lst_bin='gav1_decode'
 lst_lic='LICENSE AUTHORS'
 lst_pc='libgav1.pc'

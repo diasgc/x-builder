@@ -11,7 +11,7 @@ cbk="CHARLS_BUILD_SAMPLES"
 mki='install/strip'
 
 lst_inc='charls/*.h'
-lst_lib='libcharls.*'
+lst_lib='libcharls'
 lst_bin=''
 lst_lic='LICENSE.md'
 lst_pc='charls.pc'

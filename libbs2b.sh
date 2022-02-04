@@ -15,7 +15,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='bs2b/*.h'
-lst_lib='libbs2b.*'
+lst_lib='libbs2b'
 lst_bin='bs2bstream bs2bconvert'
 lst_lic='COPYING AUTHORS'
 lst_pc='libbs2b.pc'

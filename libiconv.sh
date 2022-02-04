@@ -13,7 +13,7 @@ pc_llib="-liconv"
 pc_url="https://www.gnu.org/software/libiconv"
 
 lst_inc='iconv.h libcharset.h localcharset.h'
-lst_lib='libiconv.* libcharset.*'
+lst_lib='libiconv libcharset'
 lst_bin='iconv'
 lst_lic='COPYING COPYING.LIB AUTHORS'
 lst_pc='libiconv.pc'

@@ -12,7 +12,7 @@ eta='272'
 mkc='distclean'
 
 lst_inc='gmp.h'
-lst_lib='libgmp.*'
+lst_lib='libgmp'
 lst_bin=''
 lst_lic='COPYING.LESSERv3 COPYINGv2 COPYINGv3 AUTHORS'
 lst_pc='gmp.pc'

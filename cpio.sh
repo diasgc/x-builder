@@ -25,10 +25,6 @@ eta='0'
 #  --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
 #  --without-libintl-prefix     don't search for libintl in includedir and libdir
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin='cpio'

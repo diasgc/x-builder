@@ -17,7 +17,7 @@ dep='glib2 libiconv libpng libjpeg'
 meson_cfg="-Dinstalled_tests=false -Dgtk_doc=false"
 
 lst_inc='gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf*.h'
-lst_lib='gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-*.so libgdk_pixbuf-2.0.*'
+lst_lib='gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-*.so libgdk_pixbuf-2.0'
 lst_bin='gdk-pixbuf-pixdata gdk-pixbuf-query-loaders gdk-pixbuf-csource'
 lst_lic='COPYING'
 lst_pc='gdk-pixbuf-2.0.pc'

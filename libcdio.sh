@@ -17,7 +17,7 @@ mkc='distclean'
 CFG="MAKE=make --enable-maintainer-mode"
 
 lst_inc='cdio++/*.hpp cdio/*.h'
-lst_lib='libiso9660++.* libiso9660.* libcdio++.* libcdio.* libudf.*'
+lst_lib='libiso9660++ libiso9660 libcdio++ libcdio libudf'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='libiso9660.pc libiso9660++.pc libcdio.pc libcdio++.pc libudf.pc'

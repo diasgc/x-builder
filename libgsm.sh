@@ -19,7 +19,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='gsm.h'
-lst_lib='libgsm.*'
+lst_lib='libgsm'
 lst_bin='toast untoast tcat'
 lst_lic='COPYRIGHT'
 lst_pc='libgsm.pc'

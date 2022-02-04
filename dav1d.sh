@@ -19,7 +19,7 @@ stb_bra='tags/0.9.2'
 stb_vrs='0.9.2'
 
 lst_inc='dav1d/*.h'
-lst_lib='libdav1d.*'
+lst_lib='libdav1d'
 lst_bin='dav1d'
 lst_lic='COPYING'
 lst_pc='dav1d.pc'

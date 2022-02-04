@@ -12,7 +12,7 @@ dsc='liba52 is a free library for decoding ATSC A/52 streams'
 lic='GPL'
 src="https://liba52.sourceforge.io/files/a52dec-${vrs}.tar.gz"
 cfg='cmake'
-cstk='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 eta='10'
 
 pc_llib='-la52'

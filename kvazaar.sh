@@ -8,7 +8,7 @@ cfg='ag'
 eta='70'
 
 lst_inc='kvazaar.h'
-lst_lib='libkvazaar.*'
+lst_lib='libkvazaar'
 lst_bin='kvazaar'
 lst_lic='COPYING CREDITS README.md'
 lst_pc='kvazaar.pc'

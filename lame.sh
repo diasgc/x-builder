@@ -22,7 +22,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='lame/lame.h'
-lst_lib='libmp3lame.*'
+lst_lib='libmp3lame'
 lst_bin='lame'
 lst_lic='LICENSE COPYING'
 lst_pc='lame.pc'
@@ -30,7 +30,7 @@ lst_pc='lame.pc'
 . xbuilder.sh
 
 # update latest version
-vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(.*\) release/\1/")
+vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(\) release/\1/")
 
 ac_cfg="--disable-gtktest --disable-decoder --disable-debug"
 $host_mingw && ac_cfg+=" --enable-expopt=full"

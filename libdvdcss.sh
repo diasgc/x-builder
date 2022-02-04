@@ -21,7 +21,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='dvdcss/*.h'
-lst_lib='libdvdcss.*'
+lst_lib='libdvdcss'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='libdvdcss.pc'

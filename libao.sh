@@ -10,7 +10,7 @@ pkg='ao'
 eta='60'
 
 lst_inc='ao/*.h'
-lst_lib='libao.*'
+lst_lib='libao'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='ao.pc'

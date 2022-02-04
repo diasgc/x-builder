@@ -9,7 +9,7 @@ cfg='cmake'
 eta='80'
 
 lst_inc='json-c/*.h'
-lst_lib='libjson-c.*'
+lst_lib='libjson-c'
 lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='json-c.pc'

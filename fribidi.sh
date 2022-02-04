@@ -10,7 +10,7 @@ eta='60'
 meson_cfg="-Db_lto=true -Ddocs=false"
 
 lst_inc='fribidi/*.h'
-lst_lib='libfribidi.*'
+lst_lib='libfribidi'
 lst_bin='fribidi'
 lst_lic='COPYING AUTHORS'
 lst_pc='fribidi.pc'

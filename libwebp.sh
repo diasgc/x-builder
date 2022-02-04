@@ -13,7 +13,7 @@ cfg='ar' # cmake not supporting dual static+shared build
 eta='70'
 
 lst_inc='webp/*.h'
-lst_lib='libwebp.* libwebpmux.* libwebpdemux.* libwebpdecoder.*'
+lst_lib='libwebp libwebpmux libwebpdemux libwebpdecoder'
 lst_bin='webpinfo cwebp webpmux img2webp dwebp'
 lst_lic='COPYING PATENTS AUTHORS README'
 lst_pc='libwebp.pc libwebpmux.pc libwebpdemux.pc libwebpdecoder.pc'

@@ -9,7 +9,7 @@ cfg='meson'
 eta='35'
 
 lst_inc='srtp2/*.h'
-lst_lib='libsrtp2.*'
+lst_lib='libsrtp2'
 lst_bin=''
 lst_lic='LICENSE CODEOWNERS'
 lst_pc='libsrtp2.pc'

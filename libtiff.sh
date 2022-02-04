@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  P   P   .   .   +   +   .   .   .   .   .  static
-#  P   P   +   +   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   .   .   .   .   .   .  bin
 
 lib='libtiff'
 apt="${lib}-dev"
@@ -13,22 +9,25 @@ src='https://gitlab.com/libtiff/libtiff.git'
 cfg='cmake'
 pkg='libtiff-4'
 eta='150'
-cstk='BUILD_STATIC_LIBS'
-mkc='distclean'
-mki='install/strip'
 dep='liblzma libjpeg libzstd libwebp libdeflate lerc'
-CFG="-Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON"
 mingw_posix=true
 
-lst_inc=''
-lst_lib=''
-lst_bin=''
+cmake_static='BUILD_STATIC_LIBS'
+mkc='distclean'
+mki='install/strip'
+
+cmake_cfg="-Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON"
+
+lst_inc='tiffconf.h tiffvers.h tiff.h tiffio.hxx tiffio.h'
+lst_lib='libtiffxx libtiff'
+lst_bin='tiffmedian tiffset fax2ps tiff2bw tiffdither raw2tiff tiffsplit tiff2pdf fax2tiff tiff2rgba pal2rgb tiff2ps tiffcrop tiffcmp tiffinfo tiffcp tiffdump ppm2tiff'
 lst_lic='COPYRIGHT'
-lst_pc=''
+lst_pc='libtiff-4.pc'
+
 
 extraOpts(){
     case $1 in
-        --min) unset dep CFG;;
+        --min) unset dep cmake_cfg;;
     esac
 }
 

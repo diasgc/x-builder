@@ -17,7 +17,7 @@ stb_bra='tags/v1.1'
 stb_vrs='1.1'
 
 lst_inc='uavs3d.h'
-lst_lib='libuavs3d.*'
+lst_lib='libuavs3d'
 lst_bin=''
 lst_lic='COPYING'
 lst_pc='uavs3d.pc'

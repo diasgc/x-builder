@@ -7,13 +7,13 @@ lic='MIT'
 src="https://github.com/ebiggers/libdeflate.git"
 sty='git'
 cfg='cmake'
-cstk='BUILD_STATIC_LIBS'
+cmake_static='BUILD_STATIC_LIBS'
 eta='10'
 
 pc_llib='-ldeflate'
 
 lst_inc='libdeflate.h'
-lst_lib='libdeflate.*'
+lst_lib='libdeflate'
 lst_bin='gzip'
 lst_lic='COPYING'
 lst_pc='libdeflate.pc'

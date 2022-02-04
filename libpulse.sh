@@ -13,7 +13,7 @@ eta='120'
 API=28 # required pthread_mutexattr_setprotocol
 
 lst_inc='pulse/*.h'
-lst_lib='libpulse.* libpulse-simple.* libpulse-mainloop-glib.* pulseaudio/libpulsedsp.* pulseaudio/libpulsecommon-15.0.*'
+lst_lib='libpulse libpulse-simple libpulse-mainloop-glib pulseaudio/libpulsedsp pulseaudio/libpulsecommon-15.0'
 lst_bin='pacat pactl pa-info padsp'
 lst_lic='LICENSE GPL LGPL'
 lst_pc='libpulse.pc libpulse-simple.pc libpulse-mainloop-glib.pc'

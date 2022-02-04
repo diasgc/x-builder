@@ -11,10 +11,6 @@ src='https://git.videolan.org/git/ffmpeg/nv-codec-headers.git'
 cfg='make'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

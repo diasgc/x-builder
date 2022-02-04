@@ -15,7 +15,7 @@ eta='123'
 cbk='BUILD_CODEC'
 
 lst_inc='openjpeg-2.5/*.h'
-lst_lib='libopenjp2.*'
+lst_lib='libopenjp2'
 lst_bin='opj_dump opj_decompress opj_compress'
 lst_lic='LICENSE AUTHORS'
 lst_pc='libopenjp2.pc'

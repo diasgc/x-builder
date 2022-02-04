@@ -11,11 +11,6 @@ src='https://github.com/dimtass/DSP-Cpp-filters.git'
 cfg='cmake'
 eta='0'
 
-mki=''
-cstk=''
-cshk=''
-cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

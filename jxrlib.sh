@@ -7,13 +7,14 @@ dsc='JPEG XR Image Codec reference implementation library released by Microsoft'
 lic='BSD-2c'
 src='https://github.com/4creators/jxrlib.git'
 cfg='cmake'
-cbk='BUILD_EXECUTABLES'
-cstk='BUILD_STATIC_LIBS'
+
+cmake_bin='BUILD_EXECUTABLES'
+cmake_static='BUILD_STATIC_LIBS'
 
 pc_llibs='-ljpegxr -jxrglue'
 
 lst_inc='libjxr/glue/*.h libjxr/image/*.h libjxr/common/*.h libjxr/test/*.h'
-lst_lib='libjpegxr.* libjxrglue.*'
+lst_lib='libjpegxr libjxrglue'
 lst_bin='JxrEncApp JxrDecApp'
 lst_lic='LICENSE AUTHORS'
 lst_pc='jpegxr.pc xrglue.pc'

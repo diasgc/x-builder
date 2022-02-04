@@ -14,7 +14,7 @@ cmake_shared='BUILD_SHARED'
 cmake_cfg='-DBUILD_TESTS=OFF'
 
 lst_inc='blosc-export.h blosc.h'
-lst_lib='libblosc.*'
+lst_lib='libblosc'
 lst_bin=''
 lst_lic='LICENSES/*'
 lst_pc='blosc.pc'

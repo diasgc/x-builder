@@ -10,7 +10,7 @@ pc_llibs='-lglslang -lOSDependent -lHLSL -lOGLCompiler -lSPVRemapper'
 # see https://src.fedoraproject.org/rpms/glslang/blob/rawhide/f/0001-pkg-config-compatibility.patch
 
 lst_inc='glslang/*.h glslang/Public/*.h glslang/Include/*.h glslang/MachineIndependent/*.h glslang/SPIRV/*.h glslang/HLSL/*.h'
-lst_lib='libSPIRV.* libOSDependent.* libSPVRemapper.* libOGLCompiler.* libHLSL.* libglslang.* libglslang-default-resource-limits.*'
+lst_lib='libSPIRV libOSDependent libSPVRemapper libOGLCompiler libHLSL libglslang libglslang-default-resource-limits'
 lst_bin='spirv-remap glslangValidator'
 lst_lic='LICENSE.txt'
 lst_pc='libSPIRV.pc libOSDependent.pc libSPVRemapper.pc libOGLCompiler.pc libHLSL.pc libglslang.pc libglslang-default-resource-limits.pc'

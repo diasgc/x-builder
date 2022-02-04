@@ -18,7 +18,7 @@ pc_llib="-llzf"
 pc_url="http://oldhome.schmorp.de/marc/liblzf.html"
 
 lst_inc='lzf.h'
-lst_lib='liblzf.*'
+lst_lib='liblzf'
 lst_bin='lzf'
 lst_lic='LICENSE'
 

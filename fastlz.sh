@@ -9,7 +9,7 @@ eta='30'
 pc_llib="-lfastlz"
 
 lst_inc='fastlz.h'
-lst_lib='libfastlz.*'
+lst_lib='libfastlz'
 lst_bin='6pack 6unpack'
 lst_lic='LICENSE.MIT README.md'
 lst_pc='fastlz.pc'

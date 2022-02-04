@@ -11,8 +11,6 @@ src='https://github.com/AerialX/openal-soft-android.git'
 cfg='cmake'
 eta='0'
 
-#cshk=''
-#cstk=''
 cmake_bin='UTILS'
 
 lst_inc=''
@@ -31,11 +29,7 @@ cmake_cfg="-DEXAMPLES=OFF"
 . xbuilder.sh
 
 $host_ndk && cmake_cfg+=' -DANDROID_LOW_LATENCY=ON'
-$host_mingw && cmake_cfg+=' -DALSA=OF'
-case $host_os in
-    android) CFG+=;;
-    mingw32) CFG+="F";;
-esac
+$host_mingw && cmake_cfg+=' -DALSA=OFF'
 
 start
 

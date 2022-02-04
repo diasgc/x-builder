@@ -9,9 +9,9 @@ cfg='cmake'
 eta='60'
 
 lst_inc='brotli/*.h'
-lst_lib='libbrotlidec.* libbrotlienc.* libbrotlicommon.*
-    libbrotlicommon-static.* libbrotlicommon-static.*
-    libbrotlicommon-static.*'
+lst_lib='libbrotlidec libbrotlienc libbrotlicommon
+    libbrotlicommon-static libbrotlicommon-static
+    libbrotlicommon-static'
 lst_bin='brotli'
 lst_lic='LICENSE README'
 lst_pc='libbrotlidec.pc libbrotlicommon.pc libbrotlienc.pc'

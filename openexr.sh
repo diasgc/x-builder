@@ -12,7 +12,7 @@ cbk='OPENEXR_BUILD_TOOLS'
 CFG="-DBUILD_TESTING=OFF -DOPENEXR_INSTALL_EXAMPLES=OFF"
 
 lst_inc='OpenEXR/*.h'
-lst_lib='libOpenEXRCore-3_1.* libIex-3_1.* libOpenEXRUtil-3_1.* libOpenEXR-3_1.* libIlmThread-3_1.*'
+lst_lib='libOpenEXRCore-3_1 libIex-3_1 libOpenEXRUtil-3_1 libOpenEXR-3_1 libIlmThread-3_1'
 lst_bin='exrmultipart exrmakepreview exrenvmap exrmaketiled exrmultiview exrheader exrinfo exrstdattr exr2aces'
 lst_lic='LICENSE.md PATENTES CODEOWNERS'
 lst_pc='OpenEXR.pc'

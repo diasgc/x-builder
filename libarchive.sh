@@ -11,7 +11,7 @@ mki='install'
 eta='100'
 
 lst_inc='archive.h archive_entry.h'
-lst_lib='libarchive.*'
+lst_lib='libarchive'
 lst_bin='bsdcat bsdtar bsdcpio'
 lst_lic='COPYING'
 lst_pc='libarchive.pc'

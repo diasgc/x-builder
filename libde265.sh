@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu  av8 av7 x86 x64  cc
-# NDK  P+. P+.  .   .   clang
-# GNU  P+.  .   .   .   gcc
-# WIN  P+.  .   .  P++  clang
 
 lib='libde265'
 apt='libde265-dev'
@@ -29,13 +25,17 @@ cmake_cfg='-DENABLE_SDL=OFF'
 
 . xbuilder.sh
 
-$host_arm && cmake_cfg+=' -DDISABLE_SSE=ON' || cmake_cfg+=' -DDISABLE_SSE=OFF'
-case $cfg in
-  #cmake) pc_llib='-lde265' pc_libsprivate='-lpthread -lstdc++';;
-  ag)    $host_arm && ac_cfg+=" --disable-sse --disable-arm"
-         $host_mingw && CSH=${CSH/"--disable-shared "} #see similar https://github.com/opencv/opencv/pull/9052
-         ;;
-esac
+
+if $host_arm; then
+  cmake_cfg+=' -DDISABLE_SSE=ON' 
+  ac_cfg+=" --disable-sse --disable-arm"
+else
+  cmake_cfg+=' -DDISABLE_SSE=OFF'
+fi
+
+if [ "$build_tool" == "automake" ] && $host_arm; then
+  CSH=${CSH/"--disable-shared "} #see similar https://github.com/opencv/opencv/pull/9052
+fi
 
 start
 
@@ -97,6 +97,11 @@ VEFUSUNfQlVJTEQpCi1lbmRpZigpCiAKIGluY2x1ZGVfZGlyZWN0b3JpZXMgKCIke1BST0pFQ1Rf
 U09VUkNFX0RJUn0iKQogaW5jbHVkZV9kaXJlY3RvcmllcyAoIiR7UFJPSkVDVF9CSU5BUllfRElS
 fSIpCg==
 XB64_PATCH
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

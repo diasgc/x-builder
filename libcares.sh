@@ -24,7 +24,7 @@ stb_bra=''
 stb_vrs=''
 
 lst_inc='ares_version.h ares.h ares_nameser.h ares_dns.h ares_rules.h ares_build.h'
-lst_lib='libcares.*'
+lst_lib='libcares'
 lst_bin=''
 lst_lic='LICENSE.md AUTHORS'
 lst_pc='libcares.pc'
