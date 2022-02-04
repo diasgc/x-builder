@@ -14,11 +14,19 @@ eta='48'
 lst_inc='sphinxbase/*.h'
 lst_lib='libsphinxad libsphinxbase'
 lst_bin='sphinx_jsgf2fsg sphinx_fe sphinx_pitch sphinx_lm_convert sphinx_lm_eval sphinx_cepview sphinx_cont_seg'
-CFG='--without-python'
+
+ac_cfg='--without-python'
 
 . xbuilder.sh
+
 $host_mingw && mki='install'
+
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .  +++ clang/gcc
 
 
 # Filelist

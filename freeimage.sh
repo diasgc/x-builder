@@ -11,14 +11,18 @@ dsc='Open Source library to support popular graphics image formats like PNG, BMP
 lic='Other'
 src='https://svn.code.sf.net/p/freeimage/svn/FreeImage/trunk'
 cfg='cmake'
-eta='440'
+eta='1600'
+
 pc_llib="-lfreeimage"
-cstk='BUILD_STATIC_LIBS'
+
+cmake_static='BUILD_STATIC_LIBS'
+
 lst_inc='FreeImage.h FreeImagePlus.h'
 lst_lib='libFreeImage'
 lst_bin=''
+lst_lic='license-fi.txt license-gplv2.txt license-gplv3.txt'
+lst_pc='freeimage.pc'
 
-#WFLAGS='-Wno-switch -Wno-deprecated-register -Wno-unused-value -Wno-format -Wno-format-extra-args'
 . xbuilder.sh
 
 source_patch(){
@@ -37,6 +41,7 @@ source_patch(){
 
 start
 
+# patch 01 create CMakeLists.txt with dual static shared support
 <<'XB64_PATCH'
 LS0tIENNYWtlTGlzdHMudHh0XwkyMDIyLTAxLTIwIDE5OjAwOjEyLjczMTU1ODAwMCArMDAwMAor
 KysgQ01ha2VMaXN0cy50eHQJMjAyMi0wMS0yMCAxODo1NjoyNi43MTE1NTgwMDAgKzAwMDAKQEAg
@@ -74,10 +79,15 @@ Y2x1ZGUpCitpbnN0YWxsKEZJTEVTIGxpY2Vuc2UtZmkudHh0IGxpY2Vuc2UtZ3BsdjIudHh0IGxp
 Y2Vuc2UtZ3BsdjMudHh0IERFU1RJTkFUSU9OIHNoYXJlL2RvY3MvRnJlZUltYWdlKQ==
 XB64_PATCH
 
+
+
 # Filelist
 # --------
 # include/FreeImage.h
 # include/FreeImagePlus.h
 # lib/pkgconfig/freeimage.pc
-# lib/libFreeImage.a
-# lib/libFreeImage.so
+# lib/libfreeimage.so
+# lib/libfreeimage.a
+# share/docs/FreeImage/license-fi.txt
+# share/docs/FreeImage/license-gplv3.txt
+# share/docs/FreeImage/license-gplv2.txt

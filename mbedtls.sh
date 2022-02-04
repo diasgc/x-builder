@@ -1,26 +1,59 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   +   .   .   .   +   +   .   .   .   .  static
-#  +   +   .   .   .   .   .   .   .   .   .  shared
-#  +   +   .   .   .   +   .   .   .   .   .  bin
 
 lib='mbedtls'
 apt="${lib}-dev"
 dsc='An open source, portable, easy to use, readable and flexible SSL library.'
 lic='Apache-2.0'
-vrs='v3.0.0'
 src='https://github.com/ARMmbed/mbedtls.git'
-cfg='cm'
-eta='45'
-cshk="USE_SHARED_MBEDTLS_LIBRARY"
-cbk="ENABLE_PROGRAMS"
-# -----------------------------------------
+cfg='cmake'
+tls='python3 perl'
+eta='1266'
+
+cmake_static='USE_STATIC_MBEDTLS_LIBRARY'
+cmake_shared='USE_SHARED_MBEDTLS_LIBRARY'
+cmake_bin="ENABLE_PROGRAMS"
+cmake_cfg="-DENABLE_TESTING=OFF" #-DUNSAFE_BUILD=OFF -DMBEDTLS_FATAL_WARNINGS=ON -DLINK_WITH_PTHREAD=OFF -DLINK_WITH_TRUSTED_STORAGE=OFF"
+
+dev_bra='master'
+dev_vrs='v3.1.0'
+stb_bra=''
+stb_vrs=''
+
+pc_llibs='-lmbedtls -lmbedx509 -lmbedcrypto'
+
+lst_inc='psa/*.h mbedtls/*.h'
+lst_lib='libmbedx509 libmbedcrypto libmbedtls'
+lst_bin='cert_app crypto_examples key_app_writer
+ ssl_client2 ecdh_curve25519 cert_req
+ pk_sign pk_decrypt rsa_decrypt
+ cert_write load_roots udp_proxy
+ benchmark rsa_sign dh_server
+ dh_genprime ssl_server pk_encrypt
+ rsa_sign_pss zeroize hello
+ dh_client crypt_and_hash ssl_server2
+ req_app ecdsa key_ladder_demo.sh
+ ssl_pthread_server dtls_client
+ pk_verify mpi_demo rsa_verify_pss
+ rsa_genkey ssl_fork_server
+ ssl_mail_client rsa_encrypt
+ generic_sum gen_key ssl_client1
+ query_compile_time_config rsa_verify
+ crl_app strerror selftest key_app
+ pem2der mini_client dtls_server
+ gen_random_ctr_drbg key_ladder_demo
+ psa_constant_names ssl_context_info
+ gen_entropy'
+lst_lic='LICENSE'
+lst_pc='libmbedx509.pc libmbedcrypto.pc libmbedtls.pc'
 
 . xbuilder.sh
 
-CFG="-DENABLE_TESTING=OFF -DUNSAFE_BUILD=OFF -DMBEDTLS_FATAL_WARNINGS=ON -DLINK_WITH_PTHREAD=OFF -DLINK_WITH_TRUSTED_STORAGE=OFF"
-
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
@@ -54,6 +87,7 @@ start
 # include/mbedtls/platform.h
 # include/mbedtls/aria.h
 # include/mbedtls/x509.h
+# include/mbedtls/constant_time.h
 # include/mbedtls/ssl_ciphersuites.h
 # include/mbedtls/oid.h
 # include/mbedtls/threading.h
@@ -112,6 +146,7 @@ start
 # lib/libmbedcrypto.so
 # lib/libmbedcrypto.a
 # lib/libmbedtls.a
+# share/doc/mbedtls/LICENSE
 # bin/cert_app
 # bin/crypto_examples
 # bin/key_app_writer
@@ -122,6 +157,7 @@ start
 # bin/pk_decrypt
 # bin/rsa_decrypt
 # bin/cert_write
+# bin/load_roots
 # bin/udp_proxy
 # bin/benchmark
 # bin/rsa_sign

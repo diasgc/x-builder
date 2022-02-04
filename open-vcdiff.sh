@@ -9,7 +9,8 @@ dsc='An encoder/decoder for the VCDIFF (RFC3284) format'
 lic='Apache-2.0'
 src='https://github.com/google/open-vcdiff.git'
 src_opt='--recursive'
-cfg='cm'
+cfg='cmake'
+
 ls_pcf='vcdenc vcdcom vcddec'
 ls_lib='vcdenc vcdcom vcddec'
 ls_inc='google/output_string.h google/vcencoder.h

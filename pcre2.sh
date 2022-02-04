@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU +++  .   .   .  gcc
-# WIN +++  .   .   .  clang/gcc
 
 lib='pcre2'
 apt='libpcre2-dev'
@@ -13,18 +9,22 @@ src='https://github.com/PhilipHazel/pcre2.git'
 cfg='cmake'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-CFG='-DPCRE2_BUILD_PCRE2_32=ON -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_TESTS=OFF'
+cmake_cfg='-DPCRE2_BUILD_PCRE2_32=ON -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_TESTS=OFF'
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE COPYING AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 
-$host_mingw || CFG+=' -DPCRE2_STATIC_PIC=ON'
+$host_mingw || cmake_cfg+=' -DPCRE2_STATIC_PIC=ON'
 
 start
 
@@ -46,6 +46,10 @@ SUYoTVNWQyBBTkQgSU5TVEFMTF9NU1ZDX1BEQikKICAgICBJTlNUQUxMKEZJTEVTICR7UFJPSkVD
 VF9CSU5BUllfRElSfS9wY3JlMi5wZGIK
 XB64_PATCH
 
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU +++  .   .   .  gcc
+# WIN +++  .   .   .  clang/gcc
 
 # Filelist
 # --------
