@@ -13,10 +13,6 @@ cfg='cmake'
 dep='bzip2 readline editline'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc='pcre.h pcreposix.h pcrecpparg.h pcre_scanner.h pcre_stringpiece.h pcrecpp.h'
 lst_lib='libpcreposix libpcrecpp libpcre'
 lst_bin='pcre_scanner_unittest pcrecpp_unittest pcregrep pcre-config pcretest pcre_stringpiece_unittest'

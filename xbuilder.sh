@@ -3,9 +3,16 @@
 # X-Builder util 0.3.2 2021-diasgc
 # ................................................
 
+
+function trap_sigint {
+  tput cnorm -- normal
+  cd $(dirname $0)
+  echo -e "\n\n${CY1}  Interrupted by user${C0}\n  Log available at ${log_file}\n\n"
+}
+
 # first load .common functions and error trap
 if [ -z ${vsh+x} ];then
-  . .common
+  source .common
   set -o pipefail
   if [ "${1}" == "--debug" ];then
     shift
@@ -13,6 +20,7 @@ if [ -z ${vsh+x} ];then
     debug=true
   fi
   trap err ERR
+  trap trap_sigint SIGINT
 fi
 
 sudo=$(command -v sudo)
@@ -47,6 +55,7 @@ use_llvm_mingw=true
 use_clang=true
 ndk_testtc=false
 skip_pc=false
+skip_dl=false
 
 # default build static, no shared, no executables
 build_shared=false
@@ -292,27 +301,29 @@ start(){
 
   # get source
   if [ ! -d ${dir_src} ];then
-    # test internet connection...
-    wget -q --spider http://google.com
-    [ ! $? -eq 0 ] && doErr 'No Internet Connection. Aborting...'
-    # check whether to custom get source
-    if fn_defined 'source_get'; then
-      source_get
-    elif [ -n "${sty}" ]; then
-      case $sty in
-        git) git_clone $src $lib;;
-        tgz|txz|tlz) wget_tarxx $src $lib;;
-        svn) do_svn $src $lib;;
-        hg) do_hg $src $lib;;
-        *) doErr "unknown sty=$sty for $src";;
-      esac
-    else
-      case $src in
-        *.tar.*|*.tgz) wget_tarxx $src $lib;;
-        *.git|*git.*)   do_git $src $lib;;
-        *svn.*)  do_svn $src $lib;;
-        *) doErr "Unknown source type for $src";;
-      esac
+    if ! $skip_dl; then
+      # test internet connection...
+      wget -q --spider http://google.com
+      [ ! $? -eq 0 ] && doErr 'No Internet Connection. Aborting...'
+      # check whether to custom get source
+      if fn_defined 'source_get'; then
+        source_get
+      elif [ -n "${sty}" ]; then
+        case $sty in
+          git) git_clone $src $lib $src_opt;;
+          tgz|txz|tlz) wget_tarxx $src $lib;;
+          svn) do_svn $src $lib;;
+          hg) do_hg $src $lib;;
+          *) doErr "unknown sty=$sty for $src";;
+        esac
+      else
+        case $src in
+          *.tar.*|*.tgz) wget_tarxx $src $lib;;
+          *.git|*git.*)  git_clone $src $lib $src_opt;;
+          *svn.*)  do_svn $src $lib;;
+          *) doErr "Unknown source type for $src";;
+        esac
+      fi
     fi
     req_src_config=true
   fi
@@ -764,10 +775,10 @@ build_packages_filelist(){
 build_packages_bin(){
   local xb_distdir=$(build_packages_getdistdir)
   if fn_defined 'create_package'; then
-    create_package $xb_distdir
+    create_package ${xb_distdir}
   else
     if fn_defined 'build_make_package'; then
-      build_make_package $xb_distdir
+      build_make_package ${xb_distdir}
     elif [ "$MAKE_EXECUTABLE" = "ninja" ];then
       DESTDIR=${xb_distdir} ninja -C ${dir_build} install
     else
@@ -1053,6 +1064,10 @@ log(){
   echo -ne "$CD$@$C0"
 }
 
+logf(){
+  echo -e "\n$(date +"%T"): $@" >> "${log_file}"
+}
+
 log_vars(){
   while [ -n "$1" ]; do
     echo "$1=${!1}" >>${log_file} 2>&1
@@ -1164,6 +1179,33 @@ do_git(){
   cd ..
 }
 
+prt_git_progress(){
+  tput civis -- invisible
+  printf "%-8s"
+  local s0
+  local s1
+  local n1=0
+  while read -r ln; do
+    if ! [ "${ln%\'...}" == "${ln}" ]; then
+      printf "\e[7D"
+      printf "%-40s\e[40D"
+      s1=${ln#*\'}
+      s1=${s1##*/}
+      s1=${s1%\'...}
+      printf "\e[${n1}D"
+      n1=${#s1}
+      [ $n1 -gt 0 ] && printf " %-${n1}s" $s1
+      printf "%-6s"
+    else
+      s0=$(grep -oP '\d+%' <<< $ln)
+      [ -n "$s0" ] && printf "\e[5D%-5s" $s0
+    fi
+  done
+  [ $n1 -gt 0 ] && printf "\e[${n1}D"
+  printf "\e[6D"
+  tput cnorm -- normal
+}
+
 topct(){
   local sln
   local grp
@@ -1201,9 +1243,10 @@ topct(){
 git_clone(){
   local var="git"
   echo -ne "${CD}${var}"
-  git clone --progress --verbose $1 $2 $src_opt|& tr '\r' '\n' | topct
+  logf git clone --progress --verbose $src $lib $src_opt
+  git clone --progress --verbose $src $lib $src_opt |& tr '\r' '\n' | prt_git_progress
   logok $var
-  [ -d "$2" ] && cd $2 || err
+  [ -d "$lib" ] && cd $lib || err
   $nodev && vrs=$(git describe --abbrev=0 --tags)
   if [ -n "${vrs}" ];then
     do_log ${vrs} git checkout tags/${vrs};
@@ -1265,6 +1308,8 @@ wget_tarxx(){
       ;;
     *.tar.gz|*.tgz) args="-xvz";;
     *.tar.xz) args="-xvJ";;
+    *.tar.bz2) args="-xvj";;
+    *) doErr "unknown compressed file format for $(basename ${src})";;
   esac
 
   [ -d "tmp" ] && rm -rf tmp
@@ -1814,8 +1859,9 @@ menu_get(){
     aptname)       echo "${apt}";;
     var)           shift; echo "${!1}";;
     vrs_remote)    git_remote_version $src;;
+    vrs_tag)       git ls-remote --tags --refs --sort="v:refname" $src | tail -n1 | sed 's/.*\///';;
     vrs_local)     git_remote_version $src;;
-    vrs_latest)    echo "$(github_latest_tgz)";;
+    vrs_latest)    echo "$(get_latest_release ${src})"; exit 0;;
     cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";exit 0;;
     options|opts)  showOpts "$(pwd)/sources/$lib"; exit 0;;
     log)           [ -f "${dir_install}/${lib}.log" ] && nano ${dir_install}/${lib}.log;;
@@ -1833,6 +1879,15 @@ menu_list(){
     env)        $b && loadToolchain && print_vars CC CXX LD AS AR NM RANLIB STRIP ADDR2LINE OBJCOPY OBJDUMP READELF SIZE STRINGS WINDRES GCOV;;
   esac
   return 0
+}
+
+skip_options(){
+  while [ -n "${1}" ] || [ -n "${1##--*}" ]; do
+    case $1 in
+      dl|git|src) skip_dl=true;;
+    esac
+    shift
+  done
 }
 
 set_target(){
@@ -1949,7 +2004,7 @@ while [ $1 ];do
     --tune)     shift; menu_tune $1
       ;;
 
-    --prefix)   shift; dir_install=$1; LIBSDIR=$1;;
+    --prefix)   shift; dir_install=$1;;
     --stable)   git_stable=true;;
     --diff)     shift; create_diff $@; exit 0;;
     --update)   update=true;;
@@ -1972,6 +2027,8 @@ while [ $1 ];do
 
     --patch)    shift; create_patch $@; exit 0;;
 
+    --skip)     shift; skip_options $@;;
+
     --dirbuild) shift; dir_build=$1;;
     --inline)   inline=true;;
     --clone)    only_repo=true;;   
@@ -1981,17 +2038,10 @@ while [ $1 ];do
     --nobanner) banner=false;;
     --nodev)    nodev=true;;
     
-    --wipeall) read -p "Wipe all data? [y|N]" r
-      case $r in y|Y) rm -rf builds sources
-      esac && exit 0
-      ;;
-    * ) if [ "$(type -t extraOpts)" = 'function' ]; then
+    * ) if fn_defined 'extraOpts'; then
           extraOpts $1
         else
-          showBanner
-          usage
-          echo -e "${ind}${CR0}Unknown option $1\n${C0}"
-          exit 1
+          extra_args+=" ${1}"
         fi
         ;;
   esac
@@ -2022,8 +2072,6 @@ if [ -z "$ISRUNNING" ]; then
 fi
 if [ -n "${sudo}" ] && ! ${sudo} -n true 2>/dev/null; then
   echo -ne "${ind}${CY1}Requesting sudo for tool install " && sudo echo -e "\e[1A\e[2K"
-  #echo -ne "${ind}${CY1}Requesting sudo for tool install "
-  #${sudo} echo -e "\033[2K"
 fi
 
 # usage: set_buildtype_key <input> <prefix> <on-val> <off-val>

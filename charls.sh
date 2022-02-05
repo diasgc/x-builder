@@ -10,6 +10,11 @@ eta='15'
 cbk="CHARLS_BUILD_SAMPLES"
 mki='install/strip'
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 lst_inc='charls/*.h'
 lst_lib='libcharls'
 lst_bin=''

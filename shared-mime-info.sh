@@ -14,10 +14,6 @@ dep='libxml2 glib2'
 cfg='meson'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

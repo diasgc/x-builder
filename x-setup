@@ -14,6 +14,7 @@ clear
 #
 
 #
+: "${dir_root:=$(dirname $0)}"
 
 check_install(){
     local v0
@@ -33,8 +34,24 @@ check_install(){
     done
 }
 
+function libcheck {
+    local v
+    local g
+    for fscript in *.sh; do
+        case $fscript in _*|*build*|*setup*|*unpack*) continue;; esac
+        v=$(./${fscript} --get var | 2>/dev/null)
+        printf "${CC0}%-40s" ${fscript}
+        #if [ -n "${v}" ]; then
+            g=$(./${fscript} --get vrs_latest 2>/dev/null)
+            printf "${CH}%-10s${CY}%-10s" ${v} ${g}
+        #fi
+        printf "\n"
+    done
+}
+
 # first-time load common functions
 [ -z ${vsh+x} ] && . .common
+# set cyan theme color
 CH=${CC0}
 # load config
 [ -f ".config" ] && . .config
@@ -55,6 +72,7 @@ case $1 in
         ;;
     --force) force=true;;
     --install) shift; check_install $@; exit 0;;
+    --libcheck) libcheck; exit 0;;
 esac
 
 echo -e "\n${CC1}This Machine:"

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-lvr='1.3.7'
 lib='vorbis'
 apt='libvorbis0a'
 dsc='Ogg Vorbis audio format'
@@ -10,6 +9,11 @@ cfg='ag'
 dep='ogg'
 eta='77'
 
+dev_bra='master'
+dev_vrs='1.3.7'
+stb_bra=''
+stb_vrs=''
+
 lst_inc='vorbis/*.h'
 lst_lib='libvorbisfile libvorbisenc libvorbis'
 lst_bin=''
@@ -18,22 +22,14 @@ lst_pc='vorbisfile.pc vorbisenc.pc vorbis.pc'
 
 . xbuilder.sh
 
-case $cfg in
-  cm|ccm|cmake|ccmake)
-    CFG="-DBUILD_TESTING=OFF"
-    ;;
-  ac|ag|ar|autotools)
-    [ ! -f "$SRCDIR/configure" ] && pushdir $SRCDIR && ./autogen.sh && popdir
-    CFG="--disable-docs --disable-examples --disable-oggtest"
-    ;;
-esac
+cmake_cfg='-DBUILD_TESTING=OFF'
+ac_cfg='--disable-docs --disable-examples --disable-oggtest'
 
-build_patch_config(){
-  case $arch in
-    *86-linux-android) sed -i 's| -mno-ieee-fp||g' $SRCDIR/lib/Makefile;;
-  esac
-  # No docs
-  sed -i 's|SUBDIRS = m4 include vq lib test doc|SUBDIRS = m4 include vq lib test|' $SRCDIR/Makefile
+before_make(){
+  # patch lib/Makefile on x86-android
+  $host_ndk && $host_x86 && sed -i 's| -mno-ieee-fp||g' ${dir_src}/lib/Makefile
+  # Build No Docs
+  sed -i 's|SUBDIRS = m4 include vq lib test doc|SUBDIRS = m4 include vq lib test|' Makefile
 }
 
 start

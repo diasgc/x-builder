@@ -7,6 +7,11 @@ src='https://gitlab.xiph.org/xiph/celt.git'
 cfg='ag'
 dep='ogg'
 eta='60'
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
      
 lst_inc='celt/*.h'
 lst_lib='libcelt0'

@@ -12,19 +12,22 @@ dep='libpng libjpeg'
 cfg='cmake'
 eta='860'
 
-#cshk=''
-#cstk=''
-#cbk=''
-CFG="-DWITH_GTK=OFF -DWITH_1394=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_JPEG=ON -DBUILD_JPEG=OFF -DBUILD_JAVA=OFF -DBUILD_KOTLIN_EXTENSIONS=OFF"
+cmake_cfg="-DWITH_GTK=OFF -DWITH_1394=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_JPEG=ON -DBUILD_JPEG=OFF -DBUILD_JAVA=OFF -DBUILD_KOTLIN_EXTENSIONS=OFF"
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE COPYRIGHT'
+lst_pc=''
 
 . xbuilder.sh
 
-case $host_os in
-    android) CFG+=" -DBUILD_ANDROID_EXAMPLES=OFF -DBUILD_ANDROID_PROJECTS=OFF";;
-esac
+$host_ndk && cmake_cfg+=' -DBUILD_ANDROID_EXAMPLES=OFF -DBUILD_ANDROID_PROJECTS=OFF'
 
 start
 

@@ -9,6 +9,11 @@ cfg='ar'
 dep='libpng'
 eta='10'
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 lst_inc='aribb24/*.h'
 lst_lib='libaribb24'
 lst_bin=''

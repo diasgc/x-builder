@@ -18,6 +18,12 @@ lst_lib='libchromaprint'
 lst_bin=''
 lst_lic='LICENSE.md'
 lst_pc='libchromaprint.pc'
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 # cb0="-DBUILD_TOOLS=OFF"
 # cb1="-DBUILD_TOOLS=OFF" # disable bin: cannot build bin (requires FFMPEG_LIBXXXXX_INCLUDE_DIRS)
 

@@ -11,10 +11,6 @@ src='https://github.com/kcat/openal-soft.git'
 cfg='cmake'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cmake_bin='UTILS'
-
 dev_bra='master'
 dev_vrs=''
 stb_bra=''

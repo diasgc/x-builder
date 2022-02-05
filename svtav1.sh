@@ -11,8 +11,8 @@ src='https://github.com/OpenVisualCloud/SVT-AV1.git'
 cfg='cmake'
 pkg='SvtAv1Enc'
 eta='145'
-cstk='BUILD_STATIC_LIBS'
-cbk="BUILD_APPS"
+cmake_static='BUILD_STATIC_LIBS'
+cmake_bin="BUILD_APPS"
 
 lst_inc='svt-av1/*.h'
 lst_lib='libSvtAv1Dec libSvtAv1Enc'
@@ -20,7 +20,7 @@ lst_bin='SvtAv1DecApp SvtAv1EncApp'
 lst_lic='LICENSE.md LICENSE-BSD2.md PATENTS.md'
 lst_pc='SvtAv1Enc.pc SvtAv1Dec.pc'
 
-CFG="-DBUILD_TESTING=OFF"
+cmake_cfg="-DBUILD_TESTING=OFF"
 
 . xbuilder.sh
 

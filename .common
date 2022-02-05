@@ -25,6 +25,17 @@ CL0="\e[38;5;34m" CL1="\e[38;5;72m" CL2="\e[38;5;114m" CL3="\e[38;5;120m"  CL4="
 # theme colors
 CT0=$CM0 CT1=$CM1 CS0=$CR0 CS1=$CR1 SSB=$C0
 
+function trap_sigint {
+  tput cnorm -- normal
+  cd $(dirname $0)
+  local l
+  [ -f "${log_file}" ] && l="  Log available at ${log_file}\n"
+  echo -e "\n\n${CY1}  Interrupted by user${C0}\n${l}\n"
+  exit 1
+}
+
+trap trap_sigint SIGINT
+
 # Logger
 logtime_start=
 export indent=0
@@ -344,6 +355,15 @@ git_api_tojson(){
     gitlab*) echo -e "$(curl -XGET -H "Content-Type: application/json" "https://${1}/api/v4/projects/${2}%2F${3}" 2>/dev/null)";;
     *) echo;;
   esac
+}
+
+get_latest_release() {
+  local s=$(echo "$1" | sed 's/https:\/\///g; s/\// /g; s/\.git$//')
+  set -- $s
+  #echo -ne "$1: $2/$3"
+  case $1 in
+    github*) echo -e "$(curl --silent "https://api.github.com/repos/${2}/${3}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')";;
+  esac                                # Pluck JSON value
 }
 
 wget_untar(){

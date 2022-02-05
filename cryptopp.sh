@@ -16,6 +16,11 @@ lst_bin=''
 lst_lic='License.txt'
 lst_pc='cryptopp.pc'
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 pc_llib='-lcryptopp'
 
 eta='190'

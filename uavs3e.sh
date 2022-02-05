@@ -11,10 +11,6 @@ src='https://github.com/uavs3/uavs3e.git'
 cfg='cmake'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

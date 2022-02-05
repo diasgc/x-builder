@@ -11,6 +11,11 @@ eta='80'
 cmake_static="BUILD_STATIC_LIBS"
 cmake_cfg="-DUNITTEST=FALSE"
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 lst_inc='codec2/*.h'
 lst_lib='libcodec2'
 lst_bin=''

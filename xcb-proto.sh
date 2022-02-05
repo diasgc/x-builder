@@ -11,10 +11,8 @@ vrs='1.12'
 src='https://github.com/freedesktop/xcb-proto.git'
 cfg='ag'
 eta='0'
+
 #CFG='--enable-devel-docs'
-#cshk=''
-#cstk=''
-#cbk=''
 # XCBPROTO_LIBS XCBPROTO_CFLAGS NEEDED_CFLAGS NEEDED_LIBS XDMCP_CFLAGS XDMCP_LIBS CHECK_CFLAGS CHECK_LIBS
 lst_inc=''
 lst_lib=''

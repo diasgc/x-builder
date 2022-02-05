@@ -11,10 +11,6 @@ src='https://gitlab.freedesktop.org/xorg/util/macros.git'
 cfg='ag'
 eta='0'
 
-#cshk=''
-#cstk=''
-#cbk=''
-
 lst_inc=''
 lst_lib=''
 lst_bin=''

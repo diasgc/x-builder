@@ -9,7 +9,7 @@ dsc='eXtra-fast Essential Video Decoder, MPEG-5 EVC (Essential Video Coding)'
 lic='BSD-3c'
 src='https://github.com/mpeg5/xeve.git'
 cfg='cmake'
-cstk="XEVD_APP_STATIC_BUILD"
+cmake_static="XEVD_APP_STATIC_BUILD"
 
 . xbuilder.sh
 

@@ -17,6 +17,11 @@ lst_bin='list_cpu_features'
 lst_lic='LICENSE'
 lst_pc='cpu_features.pc'
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 start
