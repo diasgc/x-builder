@@ -20,7 +20,6 @@ if [ -z ${vsh+x} ];then
     debug=true
   fi
   trap err ERR
-  trap trap_sigint SIGINT
 fi
 
 sudo=$(command -v sudo)
