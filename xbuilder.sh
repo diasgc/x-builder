@@ -303,7 +303,7 @@ start(){
   if $build_pkgdl; then
     local lnk=$(get_link_pkg ${arch} ${lib})
     if [ -n "${lnk}" ]; then
-      wget_pkg_tgz ${lnk}
+      wget_pkg_tgz ${lnk} ${dir_install}
       end_script
     fi
   fi
@@ -1340,12 +1340,11 @@ wget_tarxx(){
 
 wget_pkg_tgz(){
   local tag="get $(basename ${1})"
-  local args=
   echo -ne "${CD}${tag}${C0}"
   echo -e "\n\n$@\n----------------------------------------\n" >> "${log_file}"
   echo "$(date): $@" >> "${log_file}"
-  [ -d "${dir_install}/tmp" ] && mkdir -p ${dir_install}/tmp
-  wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${dir_install}/tmp >/dev/null 2>&1 || err
+  [ -d "${2}/tmp" ] && mkdir -p ${2}/tmp
+  wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${2}/tmp >/dev/null 2>&1 || err
   echo -e "----------------------------------------\n" >> "${log_file}"
   logok $tag
 }
