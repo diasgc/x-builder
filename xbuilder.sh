@@ -23,6 +23,7 @@ if [ -z ${vsh+x} ];then
 fi
 
 sudo=$(command -v sudo)
+
 # defvar debug=false 
 : "${debug:=false}"
 : "${nodev:=false}"
@@ -42,6 +43,7 @@ sudo=$(command -v sudo)
 : "${API:=24}"
 : "${def_build_sys:=meson}"
 : "${inline:=false}"
+: "${build_pkgdl:=false}"
 
 $req_update_deps && update=true
 pkg_fmt="tgz"
@@ -297,6 +299,15 @@ start(){
 
   local req_src_config=false
   local req_src_patch=false
+
+  if $build_pkgdl; then
+    local lnk=$(get_link_pkg ${arch} ${lib})
+    if [ -n "${lnk}" ]; then
+      wget_pkg_tgz ${lnk}
+      end_script
+    fi
+  fi
+
 
   # get source
   if [ ! -d ${dir_src} ];then
@@ -836,8 +847,9 @@ build_dependencies(){
     if [ ! -f "${pkgfile}" ]; then
       o_csh=$CSH
       o_cbh=$CBH
+      $build_pkgdl && local dl="--dl" || local dl=''
       unset CSH CBH
-      ./${1}.sh ${arch} ${dep_build} || err
+      ./${1}.sh ${arch} ${dep_build} ${dl} || err
       CSH=$o_csh
       CBH=$o_cbh
     fi
@@ -1323,6 +1335,18 @@ wget_tarxx(){
   #  local fname=$(basename $src | sed -E 's/[0-9\.-_].*//')
   #  mv ${fname}* $2
   #fi
+  logok $tag
+}
+
+wget_pkg_tgz(){
+  local tag="get $(basename ${1})"
+  local args=
+  echo -ne "${CD}${tag}${C0}"
+  echo -e "\n\n$@\n----------------------------------------\n" >> "${log_file}"
+  echo "$(date): $@" >> "${log_file}"
+  [ -d "${dir_install}/tmp" ] && mkdir -p ${dir_install}/tmp
+  wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${dir_install}/tmp >/dev/null 2>&1 || err
+  echo -e "----------------------------------------\n" >> "${log_file}"
   logok $tag
 }
 
@@ -2002,6 +2026,8 @@ while [ $1 ];do
     --clang)    use_clang=true;;
     --tune)     shift; menu_tune $1
       ;;
+
+    --download|--dl) build_pkgdl=true;;
 
     --prefix)   shift; dir_install=$1;;
     --stable)   git_stable=true;;

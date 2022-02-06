@@ -666,6 +666,21 @@ wget_pkg_debian(){
   fi
 }
 
+list_pkgs(){
+  local pd="./builds"
+  case $1 in
+    *-android*) wget -q "https://sourceforge.net/projects/packages-${1}/rss?path=/" -O - | grep -Po '<title><!\[CDATA\[.*</title>' | grep -Po '/.*tar.gz' | sed 's|/||'> ${pd}/$1_pkglist.txt;;
+    *) return 1;;
+  esac
+}
+
+get_link_pkg(){
+  local pd="./builds"
+  local fn=$(cat ${pd}/${1}_pkglist.txt | grep "${2}.*${1}.tar.gz")
+  [ -n "${fn}" ] && echo "https://sourceforge.net/projects/packages-${1}/files/${fn}"
+  return 0
+}
+
 # .language
 # .homepage
 # .size

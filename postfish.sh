@@ -9,7 +9,7 @@ dsc='A digital audio post-processing, restoration, filtering and mixdown tool.'
 lic='GPL-2'
 src='https://gitlab.xiph.org/xiph/postfish.git'
 cfg='mk'
-dep='libao fftw'
+dep='libao fftw gtk'
 pkg='postfish'
 eta='60'
 
@@ -48,5 +48,7 @@ set(src main.c mainpanel.c multibar.c readout.c input.c output.c clippanel.c
 	limit.c limitpanel.c mute.c mixpanel.c mix.c freeverb.c reverbpanel.c
 	outpanel.c config.c window.c follower.c linkage.c)
 
+add_executalbe(postfish ${src})
+install(TARGET postfish bin)
 XB_CREATE_CMAKELISTS
 start
