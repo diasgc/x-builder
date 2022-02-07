@@ -1342,11 +1342,11 @@ wget_tarxx(){
 
 wget_pkg_tgz(){
   local tag="$(basename ${1})"
+  tag="pkg:${tag//_${arch}.tag.gz/}"
   echo -ne "${CD}${tag}${C0}"
-  echo -e "\n\n$@\n----------------------------------------\n" >> "${log_file}"
-  echo "$(date): $@" >> "${log_file}"
+  printf "\n\n$(date): wget/untar %-50s to %s" $1 $2 >>${log_file}
   wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${2} >>${log_file} 2>&1 || err
-  echo -e "----------------------------------------\n" >> "${log_file}"
+  echo -e "\n\n" >>${log_file}
   logok $tag
 }
 
