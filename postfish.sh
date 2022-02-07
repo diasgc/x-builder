@@ -9,7 +9,7 @@ dsc='A digital audio post-processing, restoration, filtering and mixdown tool.'
 lic='GPL-2'
 src='https://gitlab.xiph.org/xiph/postfish.git'
 cfg='mk'
-dep='libao fftw gtk'
+dep='libao fftw'
 pkg='postfish'
 eta='60'
 

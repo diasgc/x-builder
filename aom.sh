@@ -21,7 +21,7 @@ lst_lic='LICENSE PATENTS AUTHORS'
 lst_pc='aom.pc'
 
 . xbuilder.sh
-~
+
 cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
 cmake_bin='ENABLE_EXAMPLES'
 cmake_cfg='-DENABLE_TESTS=OFF

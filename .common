@@ -676,7 +676,7 @@ list_pkgs(){
 
 get_link_pkg(){
   local pd="${dir_root}/builds"
-  local fn=$(cat "${pd}/${1}_pkglist.txt" | grep "${2}.*${1}.tar.gz")
+  local fn=$(cat "${pd}/${1}_pkglist.txt" | grep "${2}.*${1}.tar.gz" | tail -n1)
   [ -n "${fn}" ] && echo "https://sourceforge.net/projects/packages-${1}/files/${fn}"
   return 0
 }

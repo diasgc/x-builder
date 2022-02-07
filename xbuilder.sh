@@ -304,8 +304,9 @@ start(){
     local lnk=$(get_link_pkg ${arch} ${lib})
     if [ -n "${lnk}" ]; then
       wget_pkg_tgz ${lnk} ${dir_install}
-      echo
+      $skip_pc || logver "${dir_install_pc}/${pkg}.pc"
       end_script
+      exit 0
     fi
   fi
 
@@ -1340,14 +1341,13 @@ wget_tarxx(){
 }
 
 wget_pkg_tgz(){
-  local tag="get $(basename ${1})"
+  local tag="$(basename ${1})"
   echo -ne "${CD}${tag}${C0}"
   echo -e "\n\n$@\n----------------------------------------\n" >> "${log_file}"
   echo "$(date): $@" >> "${log_file}"
-  wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${2} >/dev/null 2>&1 || err
+  wget -qO- ${1} 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' -xvz -C ${2} >>${log_file} 2>&1 || err
   echo -e "----------------------------------------\n" >> "${log_file}"
   logok $tag
-  exit 0
 }
 
 wget_tar(){
