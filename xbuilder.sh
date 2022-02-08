@@ -156,15 +156,15 @@ main(){
     : "${dsc:=$(echo "$gitjson" | jq .description)}"
   fi
   # show package info
-  [ ! -f "${dir_install_pc}/${pkg}.pc" ] || pkgInfo
+  [ -f "${dir_install_pc}/${pkg}.pc" ] || show_packageinfo
 
   log_file="${dir_install}/${lib}.log"
 }
 
-pkgInfo(){
+show_packageinfo(){
   local dp=
   local vs=
-  local longdesc=$(aptLongDesc)
+  local longdesc=$(package_long_desc)
   [ -z "$(echo $longdesc | xargs 2>/dev/null)" ] && unset longdesc
 
   # Main Description
@@ -211,11 +211,13 @@ pkgInfo(){
   echo -e " ${vs}"
 }
 
-aptLongDesc(){
-  [ -n "$apt" ] && echo -e $(apt-cache show ${apt} 2>/dev/null | \
+package_long_desc(){
+  if [ -n "${apt}" ]; then
+    echo -e $(apt-cache show ${apt} 2>/dev/null | \
     grep -E "Description-..^|^ " | \
     sed $'s/\*/\u2605/g' | \
     sed '/^ *This package contains.*\./d') | fold -s -w120 | sed 's/^/'"${ind}"'/g'
+  fi
   return 0
 }
 
@@ -322,11 +324,11 @@ start(){
         source_get
       elif [ -n "${sty}" ]; then
         case $sty in
-          git) git_clone $src $lib $src_opt;;
+          git)         git_clone $src $lib $src_opt;;
           tgz|txz|tlz) wget_tarxx $src $lib;;
-          svn) do_svn $src $lib;;
-          hg) do_hg $src $lib;;
-          *) doErr "unknown sty=$sty for $src";;
+          svn)         do_svn $src $lib;;
+          hg)          do_hg $src $lib;;
+          *)           doErr "unknown sty=$sty for $src";;
         esac
       else
         case $src in
