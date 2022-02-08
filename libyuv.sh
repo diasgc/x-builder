@@ -26,7 +26,7 @@ lst_pc='libyuv.pc'
 
 LDFLAGS+=" -ljpeg"
 
-build_patch_config(){
+before_make(){
     vrs=$(cat ${log_file} | grep 'Building ver.: .*' | sed 's|Building ver.: ||')
     return 0
 }

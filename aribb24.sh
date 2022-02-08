@@ -22,9 +22,10 @@ lst_pc='aribb24.pc'
 
 . xbuilder.sh
 
-build_patch_config(){
+before_make(){
     # to build shared libs on mingw
-    $host_mingw && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' $SRCDIR/Makefile || echo
+    $host_mingw && sed -i 's/\$(AM_LDFLAGS) \$(LDFLAGS)/& -no-undefined/g' Makefile
+    return 0
 }
 
 start

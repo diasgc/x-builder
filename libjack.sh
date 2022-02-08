@@ -23,10 +23,10 @@ build_clean(){
 build_config(){
   do_log 'config' $dir_src/waf configure $CFG
 }
-build_make(){
+on_make(){
   $dir_src/waf build $CFG
 }
-build_install(){
+on_install(){
   $dir_src/waf install --prefix=${dir_install}
 }
 build_make_package(){

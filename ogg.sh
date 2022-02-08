@@ -21,7 +21,7 @@ lst_pc='ogg.pc'
 
 cmake_config='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
 
-build_patch_config(){
+before_make(){
   # Patch to remove docs (automake)
   [ -n "${ac_bin}" ] && sed -i "s|SUBDIRS = src include doc|SUBDIRS = src include|g" Makefile
   return 0

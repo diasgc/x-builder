@@ -9,18 +9,19 @@ dsc='Image metadata library and tools'
 lic='Other'
 src='https://github.com/Exiv2/exiv2.git'
 cfg='cmake'
-dep='libiconv'
+dep='libiconv expat libpng'
 eta='60'
-mingw_posix=true
 # Options
 xmp="OFF"
 png="OFF"
+mingw_posix=true
 
 extraOpts(){
-  case $1 in
-	--xmp ) $host_mingw || xmp="ON"; dep+=' expat';;
-	--png ) png="ON"; dep+=" libpng";;
-  esac
+	if [ "$1" == "--min" ];then
+		png="ON"
+		xmp="ON"
+		dep="libiconv"
+	fi
 }
 
 lst_inc=''
@@ -30,7 +31,7 @@ lst_lic='COPYING AUTHORS'
 lst_pc=''
 . xbuilder.sh
 
-$host_mingw && CFG+=" -DCMAKE_TOOLCHAIN_FILE=$SRCDIR/cmake/toolschains/ubuntu1804-mingw64.cmake -DEXIV2_ENABLE_WIN_UNICODE=ON"
+$host_mingw && CFG+=" -DCMAKE_TOOLCHAIN_FILE=${dir_src}/cmake/toolschains/ubuntu1804-mingw64.cmake -DEXIV2_ENABLE_WIN_UNICODE=ON"
 ! $build_shared && CFG+=" -DEXIV2_ENABLE_DYNAMIC_RUNTIME=OFF" || CFG+=" -DEXIV2_ENABLE_DYNAMIC_RUNTIME=ON"
 
 CFG+=" -DINSTALL_EXAMPLES=OFF \
@@ -43,9 +44,9 @@ CFG+=" -DINSTALL_EXAMPLES=OFF \
 
 source_patch(){
 	# update mingw toolchain to <xv_x64_mingw> in .config
-	sed -i "s|7.3|${xv_x64_mingw}|g" $SRCDIR/cmake/toolschains/ubuntu1804-mingw64.cmake
+	sed -i "s|7.3|${xv_x64_mingw}|g" ${dir_src}/cmake/toolschains/ubuntu1804-mingw64.cmake
 	# hack for cross compile with mingw on ubuntu
-	sed -i "s|AND NOT APPLE|AND NOT MINGW|" $SRCDIR/cmake/compilerFlags.cmake
+	sed -i "s|AND NOT APPLE|AND NOT MINGW|" ${dir_src}/cmake/compilerFlags.cmake
 }
 
 start

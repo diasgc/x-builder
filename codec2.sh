@@ -26,7 +26,7 @@ lst_pc='codec2.pc'
 
 unset LDFLAGS
 
-build_patch_config(){
+before_make(){
     $host_mingw && {
         sed -i "s|include|# include|" ${dir_build}/cmake/GetDependencies.cmake
         sed -i "s|get_prerequisites|# get_prerequisites|" ${dir_build}/cmake/GetDependencies.cmake

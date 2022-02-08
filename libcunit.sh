@@ -16,13 +16,11 @@ eta='27'
 . xbuilder.sh
 
 source_config(){
-    pushd $SRCDIR
     libtoolize --force --copy
     aclocal
     autoheader
     automake --add-missing --include-deps --copy
     autoconf
-    popd
 }
 
 start

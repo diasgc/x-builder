@@ -19,7 +19,7 @@ lst_pc='glib-2.0.pc gio-2.0.pc gio-windows-2.0.pc gmodule-2.0.pc gmodule-export-
 
 . xbuilder.sh
 
-build_patch_config(){
+before_make(){
     mkf="-C ${dir_build}"
     mki="${mkf} install"
 }

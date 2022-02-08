@@ -19,7 +19,6 @@ nodev=true
 
 
 source_patch(){
-    cd $SRCDIR
     # update cmakelists version to 3.1
     for c in $(find . -name "CMakeLists.txt"); do
         sed -i 's/VERSION 2.8/VERSION 3.1/g' $c

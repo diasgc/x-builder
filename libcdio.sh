@@ -31,7 +31,7 @@ source_patch(){
   doAutoreconf .
 }
 
-build_patch_config(){
+before_make(){
   #no docs, no bins, no help2man
   sed -i 's/^SUBDIRS = doc include lib src test example/SUBDIRS = include lib/' Makefile
 }

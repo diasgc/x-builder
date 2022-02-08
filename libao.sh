@@ -17,7 +17,7 @@ lst_pc='ao.pc'
 
 . xbuilder.sh
 
-build_patch_config(){
+before_make(){
 	#no docs
 	sed -i '/^SUBDIRS/ {s/ doc//}' ${dir_src}/Makefile
 }

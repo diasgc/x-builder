@@ -17,10 +17,9 @@ eta='225'
 CFG="--disable-maintainer-mode"
 
 source_patch(){
-  	pushdir $SRCDIR
 	# Exclude 'doc' from SUBDIRS = .... list in Makefile.am , or build LibTwoLAME fails.
-	sed -i.bak "/^SUBDIRS/s/ doc//" $SRCDIR/Makefile.am
-	doAutoreconf $SRCDIR
+	sed -i.bak "/^SUBDIRS/s/ doc//" Makefile.am
+	doAutoreconf ${dir_src}
 	popdir
 }
 

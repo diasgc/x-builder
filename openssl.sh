@@ -47,7 +47,7 @@ build_config(){
   do_log 'config' $dir_src/Configure $CFG --prefix=${dir_install}
 }
 
-build_make(){
+on_make(){
   sed -i "0,/^install:(.*)install_docs$/{s/ install_docs//}" $dir_src/Makefile
   $MAKE_EXECUTABLE depend && $MAKE_EXECUTABLE -j${HOST_NPROC}
 }

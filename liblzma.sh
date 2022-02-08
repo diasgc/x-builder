@@ -19,11 +19,8 @@ lst_pc='liblzma.pc'
 
 . xbuilder.sh
 
-CFG="--disable-doc"
+ac_config="--disable-doc"
 WFLAGS="-Wno-macro-redefined"
-_source_patch(){
-  doAutogen $SRCDIR --noerr
-}
 
 start
 

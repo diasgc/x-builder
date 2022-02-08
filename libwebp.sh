@@ -1,15 +1,11 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='libwebp'
 apt='webp'
 dsc='Library to encode and decode images in WebP format'
 lic='BSD'
 src='https://chromium.googlesource.com/webm/libwebp.git'
-cfg='ar' # cmake not supporting dual static+shared build
+cfg='ag' # cmake not supporting dual static+shared build
 eta='70'
 
 lst_inc='webp/*.h'
@@ -19,6 +15,12 @@ lst_lic='COPYING PATENTS AUTHORS README'
 lst_pc='libwebp.pc libwebpmux.pc libwebpdemux.pc libwebpdecoder.pc'
 
 . xbuilder.sh && start
+
+# cpu av8 av7 x86 x64
+# NDK +++ +++  .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
+
 
 # Filelist
 # --------

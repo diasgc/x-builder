@@ -23,10 +23,8 @@ lst_lib=''
 CFG="--disable-libsystemd --disable-libudev"
 
 source_config(){
-    pushdir $SRCDIR
     ./bootstrap
     autoreconf -i
-    popdir
 }
 
 start

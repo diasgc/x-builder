@@ -33,17 +33,17 @@ mki="prefix=$INSTALL_DIR install"
 
 source_patch(){
     # clear defaults
-    sed -i "s,OBJS=tree.o,#OBJS=tree.o," $SRCDIR/Makefile
-    sed -i "s,CFLAGS=-ggdb,#CFLAGS=-ggdb," $SRCDIR/Makefile
+    sed -i "s,OBJS=tree.o,#OBJS=tree.o," Makefile
+    sed -i "s,CFLAGS=-ggdb,#CFLAGS=-ggdb," Makefile
 }
 
 build_all(){
-    pushd $SRCDIR >/dev/null
+    pushd ${dir_src} >/dev/null
     do_log 'clean' make clean
     log 'make '
-    LDFLAGS=$LDFLAGS CFLAGS=$CFLAGS OBJS=$OBJS make $CFG -j4 >>"$log_file" || err
+    LDFLAGS=$LDFLAGS CFLAGS=$CFLAGS OBJS=$OBJS make $CFG -j4 >>"${log_file}" || err
     logok
-    do_log 'install' install -s -D -m 700 $SRCDIR/tree $INSTALL_DIR/bin
+    do_log 'install' install -s -D -m 700 ${dir_src}/tree ${dir_install}/bin
     popd >/dev/null 
 }
 

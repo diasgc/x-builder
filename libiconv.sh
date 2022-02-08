@@ -27,7 +27,7 @@ stb_vrs=''
 
 ac_config=" --enable-extra-encodings"
 
-build_patch_config(){
+before_make(){
 	#no docs
 	sed -i '/cd man && $(MAKE)/d' $dir_src/Makefile
 }

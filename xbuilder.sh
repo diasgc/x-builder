@@ -84,7 +84,7 @@ export dir_sources="${ROOTDIR}/sources"
 export dir_src="${dir_sources}/${lib}"
 export dir_pkgdist="${ROOTDIR}/packages"
 
-# decaprated, legacy support only
+# decaprated, backward compat only
 export SRCDIR=${dir_src}
 # to remove after 
 
@@ -491,7 +491,7 @@ start(){
       $ac_nosysroot || CFG+=" --with-sysroot=${SYSROOT}"
       $ac_nopic || CFG+=" --with-pic=1"
       
-      do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} $CSH $CBN "${cfg_args[@]}"
+      do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} ${CSH} ${CBN} "${cfg_args[@]}"
       MAKE_EXECUTABLE=make
       ;;
 
@@ -527,9 +527,6 @@ start(){
 
   if fn_defined 'before_make'; then
     do_log 'preparing' before_make
-  # decapreted, legacy support, to remove
-  elif fn_defined 'build_patch_config'; then
-    do_log 'patch' build_patch_config
   fi
 
   [ -n "${WFLAGS}" ] && CPPFLAGS+=" ${WFLAGS}"
@@ -547,9 +544,6 @@ start(){
 
   if fn_defined 'on_make'; then
     do_log 'make' build_make
-  # decapreted, legacy support, to remove
-  elif fn_defined 'build_make'; then
-    do_log 'make' build_make
   elif ! $skip_make; then
     do_progress 'make' ${MAKE_EXECUTABLE} ${mkf} -j${HOST_NPROC} || err
     unset skip_make
@@ -557,9 +551,6 @@ start(){
   
   if fn_defined 'before_install'; then
     do_log 'preparing' before_install
-  # decapreted, legacy support, to remove
-  elif fn_defined 'patch_install';then
-    patch_install
   fi
 
   # strip libs
@@ -573,9 +564,6 @@ start(){
 
   if fn_defined 'on_install'; then
     do_log 'install' on_install
-  # decapreted, legacy support, to remove
-  elif fn_defined 'build_install'; then
-    do_log 'install' build_install
   else
     cd $dir_build
     do_log 'install' ${MAKE_EXECUTABLE} ${mki}
@@ -585,16 +573,6 @@ start(){
   if ! $skip_pc; then
     if fn_defined 'on_create_pc'; then
       do_log 'pkgconfig' on_create_pc
-    # decapreted, legacy support, to remove
-    elif [ -n "${req_pcforlibs+x}" ];then
-      local pcf
-      for l in $req_pcforlibs; do
-        pcf=$(echo $l | sed 's|^lib||')
-        create_pkgconfig_file $pcf "-l$pcf"
-      done
-    # decapreted, legacy support, to remove
-    elif fn_defined 'build_pkgconfig_file'; then
-      do_log 'pkgconfig' build_pkgconfig_file
     elif [ -n "$pc_llib" ]; then
       do_log 'pkgconfig' create_pkgconfig_file $pkg $pc_llib
     elif [ -n "${pc_llibs}" ]; then

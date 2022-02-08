@@ -19,7 +19,7 @@ lst_pc='libunistring'
 
 . xbuilder.sh
 
-build_patch_config(){
+before_make(){
     #No docs
     sed -i 's/^SUBDIRS = doc /SUBDIRS = /g' Makefile
 }

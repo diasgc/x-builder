@@ -23,9 +23,4 @@ lst_bin=''
 
 . xbuilder.sh
 
-_source_config(){
-    cd $SRCDIR
-    ./bootstrap
-}
-
 start

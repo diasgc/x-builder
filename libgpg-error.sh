@@ -10,7 +10,6 @@ apt='libgpg-error-dev'
 dsc='Error codes used by GnuPG et al.'
 lic='GPL-2.0'
 src='https://github.com/gpg/libgpg-error.git'
-sty='git'
 cfg='ar'
 eta='60'
 
@@ -23,18 +22,18 @@ LDFLAGS+=" -L${SRCDIR}/src"
 case $arch in *android*) CFG+=" --disable-threads";; esac
 
 source_patch(){
-    local p="$SRCDIR/src/syscfg/lock-obj-pub."
+    local p="${dir_src}/src/syscfg/lock-obj-pub."
     cp "${p}arm-unknown-linux-androideabi.h" "${p}aarch64-unknown-linux-android.h"
     cp "${p}arm-unknown-linux-androideabi.h" "${p}i686-unknown-linux-android.h"
     sed -i "s/_priv\[4\]/_priv[8]/; s/0/&,&/g" "${p}aarch64-unknown-linux-android.h"
     cp "${p}aarch64-unknown-linux-android.h" "${p}x86_64-unknown-linux-android.h"
 }
 
-build_patch_config(){
-    cd $SRCDIR
+before_make(){
+    cd ${dir_src}
     # let make fail but generate 'gpg-error.h' so we can patch it after that
     make 2>&1 >/dev/null
-    [ -f "$SRCDIR/src/gpg-error.h" ] && sed -i "/^}}}/d" $SRCDIR/src/gpg-error.h
+    [ -f "${dir_src}/src/gpg-error.h" ] && sed -i "/^}}}/d" ${dir_src}/src/gpg-error.h
 }
 
 start

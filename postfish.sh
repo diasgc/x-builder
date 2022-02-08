@@ -27,7 +27,7 @@ lst_pc=''
 . xbuilder.sh
 
 _source_patch(){
-  sed -i 's|gtk+-2.0 ao|gtk+-2.0 ao fftw|' $SRCDIR/Makefile
+  sed -i 's|gtk+-2.0 ao|gtk+-2.0 ao fftw|' Makefile
 }
 
 <<'XB_CREATE_CMAKELISTS'

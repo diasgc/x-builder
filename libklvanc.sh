@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  +   .   .   .   .   .   .   .   .   .   .  static
-#  +   .   .   .   .   .   .   .   .   .   .  shared
-#  +   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libklvanc'
 apt=''
@@ -17,31 +13,25 @@ CFG="--disable-tests --enable-rpath --disable-dsd --enable-legacy --with-pic=1"
 
 pc_llib="-lklvanc"
 
-lst_inc='libklvanc/cache.h libklvanc/vanc-afd.h libklvanc/vanc.h \
-         libklvanc/vanc-eia_708b.h libklvanc/vanc-sdp.h libklvanc/vanc-eia_608.h \
-         libklvanc/vanc-kl_u64le_counter.h libklvanc/vanc-lines.h \
-         libklvanc/klrestricted_code_path.h libklvanc/vanc-scte_104.h \
-         libklvanc/vanc-smpte_12_2.h libklvanc/vanc-checksum.h \
-         libklvanc/vanc-packets.h libklvanc/pixels.h libklvanc/smpte2038.h \
-         libklvanc/did.h'
+lst_inc='libklvanc/*.h'
 lst_lib='libklvanc'
-lst_bin='klvanc_eia708 klvanc_genscte104 \
-         klvanc_scte104 klvanc_util klvanc_afd \
+lst_bin='klvanc_eia708 klvanc_genscte104
+         klvanc_scte104 klvanc_util klvanc_afd
          klvanc_smpte12_2 klvanc_smpte2038 klvanc_parse'
 lst_pc='libklvanc.pc'
 
 . xbuilder.sh
 
-CFG="--with-sysroot=${SYSROOT} $CFG" 
-
-
 source_patch(){
-    pushdir $SRCDIR
     ./autogen.sh --build
-    popdir
 }
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

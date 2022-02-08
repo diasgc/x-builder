@@ -20,7 +20,7 @@ source_config(){
     autoconf 2>/dev/null
 }
 
-BUILD_DIR="$SRCDIR"
+dir_build=$dir_src
 ac_config="--host=$(echo ${arch} | sed 's/aarch64/arm/;s/android/gnu/')"
 mkf="-f GNUmakefile"
 

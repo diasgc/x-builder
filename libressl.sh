@@ -1,8 +1,4 @@
 #!/bin/bash
-# Aa8 Aa7 A86 A64 L64 W64 La8 La7 Wa8 W86 L86
-#  .   .   .   .   .   .   .   .   .   .   .  static
-#  .   .   .   .   .   .   .   .   .   .   .  shared
-#  .   .   .   .   .   .   .   .   .   .   .  bin
 
 lib='libressl'
 pkg='libssl'
@@ -10,19 +6,35 @@ apt="${pkg}-dev"
 dsc='Secure Sockets Layer and cryptography libraries'
 lic='GPL'
 src='https://github.com/libressl-portable/portable.git'
-sty='git'
-cfg='cm'
+cfg='cmake'
 eta='120'
-cbk="LIBRESSL_APPS"
+
+cmake_bin="LIBRESSL_APPS"
+cmake_config="-DLIBRESSL_TESTS=OFF -DENABLE_NC=ON -DENABLE_EXTRATESTS=OFF"
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
+lst_inc='tls.h openssl/*.h'
+lst_lib='libcrypto libtls libssl'
+lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc='libssl.pc libtls.pc libcrypto.pc openssl.pc'
 
 . xbuilder.sh
-CFG="-DLIBRESSL_TESTS=OFF -DENABLE_NC=ON -DENABLE_EXTRATESTS=OFF"
 
 source_patch(){
-  doAutogen $SRCDIR # do not remove
+  doAutogen ${dir_src} # do not remove
 }
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

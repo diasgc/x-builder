@@ -22,7 +22,7 @@ lst_lic='share/licenses/FLIF/LICENSE_Apache2
     share/licenses/FLIF/LICENSE_LGPL
     share/licenses/FLIF/FLIF-CLA-template.txt'
 
-req_pcforlibs=$lst_lib
+pc_llibs=$lst_lib
 config_dir='src'
 
 . xbuilder.sh

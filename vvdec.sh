@@ -22,7 +22,7 @@ lst_bin=''
 
 $host_arm && CFG="-DVVDEC_ENABLE_X86_SIMD=FALSE -DVVDEC_ENABLE_ARM_SIMD=TRUE"
 
-build_patch_config(){
+before_make(){
   sed -i 's/ -Werror//g' ${BUILD_DIR}/source/Lib/vvdec/CMakeFiles/vvdec.dir/flags.make
 }
 

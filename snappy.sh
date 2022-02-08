@@ -29,7 +29,7 @@ lst_bin=''
 source_patch(){
     # required vqtbl1q_u8 neon intrinsics is not defined in ARMv7
     # this patch disables SNAPPY_HAVE_NEON for arm
-    sed -i "s/vst1q_u8/vqtbl1q_u8" $SRCDIR/CMakeLists.txt
+    sed -i "s/vst1q_u8/vqtbl1q_u8" CMakeLists.txt
 }
 
 start

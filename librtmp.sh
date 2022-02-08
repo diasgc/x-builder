@@ -19,12 +19,12 @@ lst_bin=''
 . xbuilder.sh
 
 export XCFLAGS=$CFLAGS XLDFLAGS=$LDFLAGS INC=$CPPFLAGS
-mkf="prefix=${INSTALL_DIR}"
+mkf="prefix=${dir_install}"
 mki='install'
 mkc='clean'
 
 source_patch(){
-    sed -i 's/^CC=/# &/g;s/^LD=/# &/g;s/^AR=/# &/g' $SRCDIR/Makefile $SRCDIR/librtmp/Makefile
+    sed -i 's/^CC=/# &/g;s/^LD=/# &/g;s/^AR=/# &/g' Makefile librtmp/Makefile
 }
 
 start

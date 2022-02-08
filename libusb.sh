@@ -20,10 +20,4 @@ lst_lib=''
 
 . xbuilder.sh
 
-_source_config(){
-    pushdir $SRCDIR
-    ./bootstrap.sh
-    popdir
-}
-
 start

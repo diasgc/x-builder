@@ -18,7 +18,7 @@ cbk="BUILD_TOOLS"
 
 $host_arm && CFG+=" -DVVENC_ENABLE_X86_SIMD=FALSE -DVVENC_ENABLE_ARM_SIMD=TRUE"
 
-build_patch_config(){
+before_make(){
   sed -i 's/ -Werror//g' ${BUILD_DIR}/source/Lib/vvenc/CMakeFiles/vvenc.dir/flags.make
 }
 

@@ -23,14 +23,14 @@ case $arch in
 esac
 
 source_patch(){
-  sed -i "s|5.3|$xv_x86_mingw|g" $SRCDIR/cmake/CMakeBuild/cmake/toolchains/i686-w64-mingw32-gcc-posix-ubuntu1604.cmake
-  sed -i "s|5.3|$xv_x64_mingw|g" $SRCDIR/cmake/CMakeBuild/cmake/toolchains/x86_64-w64-mingw32-gcc-posix-ubuntu1604.cmake
+  sed -i "s|5.3|$xv_x86_mingw|g" cmake/CMakeBuild/cmake/toolchains/i686-w64-mingw32-gcc-posix-ubuntu1604.cmake
+  sed -i "s|5.3|$xv_x64_mingw|g" cmake/CMakeBuild/cmake/toolchains/x86_64-w64-mingw32-gcc-posix-ubuntu1604.cmake
 }
 
 build_clean(){
   case $arch in
-    i686-w64-mingw32)   export cmake_toolchain_file="$SRCDIR/cmake/CMakeBuild/cmake/toolchains/$arch-gcc-posix-ubuntu1604.cmake" mkf="$mkf toolset=gcc";;
-    x86_64-w64-mingw32) export cmake_toolchain_file="$SRCDIR/cmake/CMakeBuild/cmake/toolchains/$arch-gcc-posix-ubuntu1604.cmake" mkf="all toolset=gcc";;
+    i686-w64-mingw32)   export cmake_toolchain_file="${dir_src}/cmake/CMakeBuild/cmake/toolchains/$arch-gcc-posix-ubuntu1604.cmake" mkf="$mkf toolset=gcc";;
+    x86_64-w64-mingw32) export cmake_toolchain_file="${dir_src}/cmake/CMakeBuild/cmake/toolchains/$arch-gcc-posix-ubuntu1604.cmake" mkf="all toolset=gcc";;
   esac
 }
 

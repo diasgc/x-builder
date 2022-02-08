@@ -14,7 +14,7 @@ lst_bin='dbrunsli cbrunsli'
 lst_lic='LICENSE'
 lst_pc='brunslienc-c.pc brunslidec-c.pc'
 
-req_pcforlibs='libbrunslidec-c libbrunslienc-c'
+pc_llibs='libbrunslidec-c libbrunslienc-c'
 
 cmake_config="-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF"
 

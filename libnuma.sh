@@ -23,10 +23,8 @@ lst_pc='numa.pc'
 $host_mingw && doErr "Non-posix OS cannot use LUMA. Exiting...\n"
 
 source_config(){
-  #pushdir $SRCDIR
   NOCONFIGURE=1 ./autogen.sh
   autoconf -i
-  #popdir
 }
 
 start
