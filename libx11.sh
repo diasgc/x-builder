@@ -12,7 +12,7 @@ vrs='1.7.3'
 src="https://www.x.org/releases/individual/lib/libX11-${vrs}.tar.gz"
 cfg='ac'
 eta='0'
-dep='xorg-macros libxtrans'
+dep='xorg-macros libxtrans xorgproto'
 
 dev_bra='main'
 dev_vrs=''
