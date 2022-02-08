@@ -34,7 +34,7 @@ lst_pc='icu-i18n.pc icu-uc.pc icu-io.pc'
 . xbuilder.sh
 
 dir_build="${dir_src}/${config_dir}/build_${arch}"
-ac_cfg="--with-data-packaging=archive"
+ac_config="--with-data-packaging=archive"
 
 if $host_cross; then
     dir_cross="${dir_src}/${config_dir}/build_${build_arch}"
@@ -43,7 +43,7 @@ if $host_cross; then
         ./libicu.sh lx64 --both --bin
     fi
     arch=$a
-    ac_cfg+=" --with-cross-build=${dir_cross}"
+    ac_config+=" --with-cross-build=${dir_cross}"
 fi
 
 start

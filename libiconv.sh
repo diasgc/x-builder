@@ -18,17 +18,14 @@ lst_bin='iconv'
 lst_lic='COPYING COPYING.LIB AUTHORS'
 lst_pc='libiconv.pc'
 
+dev_bra='master'
+dev_vrs='1.16'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
-CFG=" --enable-extra-encodings"
-
-# don't use git or it will download gnulib
-_source_patch(){
-	str_contains $src ".git" && {
-		$dir_src/gitsub.sh pull; $dir_src/autogen.sh
-	}
-	return 0
-}
+ac_config=" --enable-extra-encodings"
 
 build_patch_config(){
 	#no docs

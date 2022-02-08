@@ -17,8 +17,8 @@ lst_bin='uchardet'
 
 . xbuilder.sh
 
-cmake_cfg="-DUSE_OMP=OFF"
-$host_arm && cmake_cfg+=" -DCHECK_SSE2=OFF" || cmake_cfg+=" -DCHECK_SSE2=ON"
+cmake_config="-DUSE_OMP=OFF"
+$host_arm && cmake_config+=" -DCHECK_SSE2=OFF" || cmake_config+=" -DCHECK_SSE2=ON"
 
 start
 

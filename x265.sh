@@ -32,17 +32,17 @@ multilib=false
 extraOpts(){
     case $1 in
         --multilib) multilib=true;;
-        --12bit) cmake_cfg='-DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON';;
-        --10bit) cmake_cfg='-DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF'
+        --12bit) cmake_config='-DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON';;
+        --10bit) cmake_config='-DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF'
     esac
     return 0
 }
 
 . xbuilder.sh
 
-$build_shared && cmake_cfg="-DENABLE_SHARED=ON" || cmake_cfg="-DENABLE_SHARED=OFF"
-$host_mingw && cmake_cfg+=" -DENABLE_PIC=OFF"
-$host_arm && cmake_cfg+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF" || cmake_cfg+=" -DCMAKE_ASM_NASM_FLAGS=-w-macro-params-legacy"
+$build_shared && cmake_config="-DENABLE_SHARED=ON" || cmake_config="-DENABLE_SHARED=OFF"
+$host_mingw && cmake_config+=" -DENABLE_PIC=OFF"
+$host_arm && cmake_config+=" -DCROSS_COMPILE_ARM=ON -DENABLE_ASSEMBLY=OFF" || cmake_config+=" -DCMAKE_ASM_NASM_FLAGS=-w-macro-params-legacy"
 
 before_make(){
     return 1
@@ -51,19 +51,19 @@ before_make(){
 build_config(){
     cd ${dir_build}
     [ -z "${cmake_toolchain_file}" ] && cmake_create_toolchain ${dir_build}
-    [ -f "${cmake_toolchain_file}" ] && cmake_cfg="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} -DSTATIC_LINK_CRT=ON"
+    [ -f "${cmake_toolchain_file}" ] && cmake_config="-DCMAKE_TOOLCHAIN_FILE=${cmake_toolchain_file} $CFG -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} -DSTATIC_LINK_CRT=ON"
     if $multilib; then
         mkdir -p 10bit 12bit
         cd 12bit
-        do_log '12bit' cmake ../../../source $cmake_cfg -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
+        do_log '12bit' cmake ../../../source $cmake_config -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
         do_progress 'make' make ${mkf} -j${HOST_NPROC}
         cd ../10bit
-        do_log '10bit' cmake ../../../source $cmake_cfg -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
+        do_log '10bit' cmake ../../../source $cmake_config -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
         do_progress 'make' make ${mkf} -j${HOST_NPROC}
         cd ..
         ln -sf 10bit/libx265.a libx265_main10.a
         ln -sf 12bit/libx265.a libx265_main12.a
-        do_log '8bit' cmake ../../source $cmake_cfg -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON $CSH $CBN
+        do_log '8bit' cmake ../../source $cmake_config -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON $CSH $CBN
         do_progress 'make' make ${mkf} -j${HOST_NPROC}
         mv libx265.a libx265_main.a
         ${AR} -M <<-EOF
@@ -76,7 +76,7 @@ build_config(){
 			EOF
         skip_make=true
     else
-        do_log 'cmake' $exec_config ${dir_config} ${cmake_cfg} ${CSH} ${CBN}
+        do_log 'cmake' $exec_config ${dir_config} ${cmake_config} ${CSH} ${CBN}
         case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
     fi
     

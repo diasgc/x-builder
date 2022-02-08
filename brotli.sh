@@ -16,6 +16,11 @@ lst_bin='brotli'
 lst_lic='LICENSE README'
 lst_pc='libbrotlidec.pc libbrotlicommon.pc libbrotlienc.pc'
 
+dev_bra='master'
+dev_vrs='1.0.9'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 start

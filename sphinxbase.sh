@@ -15,7 +15,7 @@ lst_inc='sphinxbase/*.h'
 lst_lib='libsphinxad libsphinxbase'
 lst_bin='sphinx_jsgf2fsg sphinx_fe sphinx_pitch sphinx_lm_convert sphinx_lm_eval sphinx_cepview sphinx_cont_seg'
 
-ac_cfg='--without-python'
+ac_config='--without-python'
 
 . xbuilder.sh
 

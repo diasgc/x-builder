@@ -24,16 +24,16 @@ lst_pc='aom.pc'
 
 cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'
 cmake_bin='ENABLE_EXAMPLES'
-cmake_cfg='-DENABLE_TESTS=OFF
+cmake_config='-DENABLE_TESTS=OFF
      -DENABLE_TOOLS=OFF
      -DENABLE_TESTDATA=OFF
      -DENABLE_DOCS=OFF'
 
-$host_arm && cmake_cfg+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=${AS}"
-$host_arm64 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG="
-$host_arm32 && cmake_cfg+=" -DAOM_NEON_INTRIN_FLAG=-mfpu=neon"
-$host_x86 && cmake_cfg+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'
-$host_mingw && cmake_cfg+=" -DCONFIG_PIC=1"
+$host_arm && cmake_config+=" -DCONFIG_RUNTIME_CPU_DETECT=0 -DAS_EXECUTABLE=${AS}"
+$host_arm64 && cmake_config+=" -DAOM_NEON_INTRIN_FLAG="
+$host_arm32 && cmake_config+=" -DAOM_NEON_INTRIN_FLAG=-mfpu=neon"
+$host_x86 && cmake_config+=' -DCMAKE_C_COMPILER_ARG1=-m32 -DCMAKE_CXX_COMPILER_ARG1=-m32'
+$host_mingw && cmake_config+=" -DCONFIG_PIC=1"
 
 start
 

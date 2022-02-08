@@ -20,7 +20,7 @@ lst_bin='SvtAv1DecApp SvtAv1EncApp'
 lst_lic='LICENSE.md LICENSE-BSD2.md PATENTS.md'
 lst_pc='SvtAv1Enc.pc SvtAv1Dec.pc'
 
-cmake_cfg="-DBUILD_TESTING=OFF"
+cmake_config="-DBUILD_TESTING=OFF"
 
 . xbuilder.sh
 

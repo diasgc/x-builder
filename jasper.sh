@@ -12,7 +12,7 @@ eta='26'
 
 cmake_static="BUILD_STATIC_LIBS"
 cmake_bin="JAS_ENABLE_PROGRAMS"
-cmake_cfg="-DBUILD_TESTING=OFF -DJAS_ENABLE_DOC=OFF"
+cmake_config="-DBUILD_TESTING=OFF -DJAS_ENABLE_DOC=OFF"
 
 dev_bra='master'
 dev_vrs='3.0.0'
@@ -27,7 +27,7 @@ lst_pc='jasper.pc'
 
 . xbuilder.sh
 
-$host_mingw && cmake_cfg="-DWITH_STACK_PROTECTOR=OFF"
+$host_mingw && cmake_config="-DWITH_STACK_PROTECTOR=OFF"
 
 start
 

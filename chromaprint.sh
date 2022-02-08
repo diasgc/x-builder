@@ -29,7 +29,7 @@ stb_vrs=''
 
 . xbuilder.sh
 
-cmake_cfg="-DKISSFFT_SOURCE_DIR=${dir_src}/src/3rdparty/kissfft -DBUILD_TOOLS=OFF -DBUILD_TESTS=OFF"
+cmake_config="-DKISSFFT_SOURCE_DIR=${dir_src}/src/3rdparty/kissfft -DBUILD_TOOLS=OFF -DBUILD_TESTS=OFF"
 
 start
 

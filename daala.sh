@@ -14,7 +14,7 @@ dep='ogg libpng'
 eta='60'
 
 ac_bin="--disable-tools|--enable-tools"
-ac_cfg="--disable-doc \
+ac_config="--disable-doc \
      --disable-examples \
      --disable-player \
      --disable-unit-tests \

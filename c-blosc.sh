@@ -11,7 +11,7 @@ eta='100'
 
 cmake_static='BUILD_STATIC'
 cmake_shared='BUILD_SHARED'
-cmake_cfg='-DBUILD_TESTS=OFF'
+cmake_config='-DBUILD_TESTS=OFF'
 
 lst_inc='blosc-export.h blosc.h'
 lst_lib='libblosc'
@@ -23,7 +23,7 @@ lst_pc='blosc.pc'
 
 
 WFLAGS='-Wno-unused-variable -Wno-unused-but-set-variable'
-$host_arm && cmake_cfg+=" -DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON"
+$host_arm && cmake_config+=" -DDEACTIVATE_SSE2=ON -DDEACTIVATE_AVX2=ON"
 
 start
 

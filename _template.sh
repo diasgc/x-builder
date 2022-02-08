@@ -11,18 +11,6 @@ src='https://github.com/'
 cfg='cmake'
 eta='0'
 
-mki=''
-mkc=''
-mk_clean
-mk_install
-
-# use this instead
-cfg_static=''
-cfg_shared=''
-cfg_bin=''
-
-
-
 dev_bra='master'
 dev_vrs=''
 stb_bra=''

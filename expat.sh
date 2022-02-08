@@ -8,18 +8,23 @@ cfg='ac'
 eta='77'
 config_dir="expat"
 
-ac_bin='--without-examples| '
-ac_cfg='--without-tests --without-docbook --without-xmlwf --disable-fast-install'
+ac_bin='--without-examples|--with-examples'
+ac_config='--without-tests --without-docbook --without-xmlwf --disable-fast-install'
 
 cmake_shared='EXPAT_SHARED_LIBS'
 cmake_bin='EXPAT_BUILD_TOOLS'
-cmake_cfg='-DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF'
+cmake_config='-DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF'
 
 lst_inc='expat_config.h expat.h expat_external.h'
 lst_lib='libexpat'
 lst_bin=''
 lst_lic='expat/COPYING expat/AUTHORS'
 lst_pc='expat.pc'
+
+dev_bra='master'
+dev_vrs='2.4.4'
+stb_bra=''
+stb_vrs=''
 
 . xbuilder.sh
 

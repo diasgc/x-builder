@@ -21,12 +21,12 @@ lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='libharfbuzz.pc libharfbuzz-subset.pc'
 
-ac_cfg='--with-libstdc++=yes'
+ac_config='--with-libstdc++=yes'
 cmake_bin='HB_BUILD_UTILS'
 
 extraOpts(){
 	case $1 in
-		--min)  unset dep; ac_cfg+=' --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no';;
+		--min)  unset dep; ac_config+=' --with-glib=no --with-gobject=no --with-cairo=no --with-fontconfig=no --with-icu=no --with-freetype=no';;
 		--full) dep='freetype fontconfig glib2 libcairo libicu';;
 	esac
 }

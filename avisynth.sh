@@ -7,7 +7,7 @@ src='https://github.com/AviSynth/AviSynthPlus.git'
 cfg='cmake'
 
 cmake_bin="ENABLE_PLUGINS"
-cmake_cfg="-DHEADERS_ONLY=OFF"
+cmake_config="-DHEADERS_ONLY=OFF"
 
 lst_inc='avisynth/*.h'
 lst_lib='libavisynth avisynth/libconvertstacked avisynth/libshibatch avisynth/libtimestretch'

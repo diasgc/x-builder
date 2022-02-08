@@ -9,7 +9,7 @@ src='https://github.com/PhilipHazel/pcre2.git'
 cfg='cmake'
 eta='0'
 
-cmake_cfg='-DPCRE2_BUILD_PCRE2_32=ON -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_TESTS=OFF'
+cmake_config='-DPCRE2_BUILD_PCRE2_32=ON -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_TESTS=OFF'
 
 dev_bra='master'
 dev_vrs=''
@@ -24,7 +24,7 @@ lst_pc=''
 
 . xbuilder.sh
 
-$host_mingw || cmake_cfg+=' -DPCRE2_STATIC_PIC=ON'
+$host_mingw || cmake_config+=' -DPCRE2_STATIC_PIC=ON'
 
 start
 

@@ -9,7 +9,7 @@ pkg='cpu_features'
 pc_llib='-lcpufeatures'
 
 cmake_bin='BUILD_STATIC_LIBS'
-cmake_cfg='-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF'
+cmake_config='-DBUILD_GMOCK=OFF -DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF'
 
 lst_inc='ndk_compat/cpu-features.h cpu_features/*.h'
 lst_lib='libcpu_features libndk_compat'

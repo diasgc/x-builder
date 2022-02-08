@@ -10,9 +10,9 @@ dep='liblzma'
 pkg='libxml-2.0'
 eta='90'
 
-cmake_cfg='-DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_PYTHON=OFF'
+cmake_config='-DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_PYTHON=OFF'
 cmake_bin='LIBXML2_WITH_PROGRAMS'
-ac_cfg='--without-debug --without-python'
+ac_config='--without-debug --without-python'
 
 dev_bra='master'
 dev_vrs='2.9.12'

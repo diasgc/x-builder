@@ -17,7 +17,7 @@ ac_bin='--disable-examples|--enable-examples'
 ac_nohost=true
 ac_nosysroot=true
 ac_nopic=true
-ac_cfg="--disable-docs --disable-install-srcs --disable-install-docs --disable-tools --disable-unit-tests"
+ac_config="--disable-docs --disable-install-srcs --disable-install-docs --disable-tools --disable-unit-tests"
   #--enable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-vp9-temporal-denoising --enable-vp9-postproc \
   #--enable-postproc --enable-onthefly-bitpacking --enable-multi-res-encoding --enable-better-hw-compatibility \
   #--enable-webm-io --enable-libyuv --enable-experimental --enable-pic "
@@ -39,10 +39,10 @@ $build_shared && unset CSH #--enable-shared only supported on ELF, OS/2, and Dar
 
 t2=$(arch_fromid arm64 armv7 x86 x86_64)
 $host_x86 && t3=$(os_fromid android linux win32) || t3=$(os_fromid android linux win64)
-ac_cfg+=" --target=${t2}-${t3}-gcc"
+ac_config+=" --target=${t2}-${t3}-gcc"
 
-$host_arm && ac_cfg+=" --enable-neon"
-$host_arm32 && ac_cfg+=" --disable-neon-asm"
+$host_arm && ac_config+=" --enable-neon"
+$host_arm32 && ac_config+=" --disable-neon-asm"
 AS=${YASM}
 
 start

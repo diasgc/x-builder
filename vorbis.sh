@@ -22,8 +22,8 @@ lst_pc='vorbisfile.pc vorbisenc.pc vorbis.pc'
 
 . xbuilder.sh
 
-cmake_cfg='-DBUILD_TESTING=OFF'
-ac_cfg='--disable-docs --disable-examples --disable-oggtest'
+cmake_config='-DBUILD_TESTING=OFF'
+ac_config='--disable-docs --disable-examples --disable-oggtest'
 
 before_make(){
   # patch lib/Makefile on x86-android

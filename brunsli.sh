@@ -16,7 +16,7 @@ lst_pc='brunslienc-c.pc brunslidec-c.pc'
 
 req_pcforlibs='libbrunslidec-c libbrunslienc-c'
 
-cmake_cfg="-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF"
+cmake_config="-DBUILD_TESTING=OFF -DINSTALL_GTEST=OFF"
 
 . xbuilder.sh
 

@@ -19,8 +19,8 @@ lst_pc='frei0r.pc'
 . xbuilder.sh
 
 unset CSH
-cmake_cfg='-DWITHOUT_GAVL=ON -DWITHOUT_OPENCV=ON -DBUILD_SHARED_LIBS=ON'
-ac_cfg='--enable-shared'
+cmake_config='-DWITHOUT_GAVL=ON -DWITHOUT_OPENCV=ON -DBUILD_SHARED_LIBS=ON'
+ac_config='--enable-shared'
 
 start
 

@@ -1,8 +1,4 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='imlib2'
 dsc='Image loading, rendering, saving library'
@@ -25,8 +21,13 @@ lst_pc=''
 
 eta='20'
 
-CFG='--without-x --without-x-shm-fd --without-svg --without-id3 --without-heif'
+CFG='--with-x=no --without-x-shm-fd --without-svg --without-id3 --without-heif'
 
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc

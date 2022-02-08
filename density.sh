@@ -22,7 +22,7 @@ lst_lic='LICENSE.md'
 lst_pc='density.pc'
 
 cmake_static='BUILD_STATIC_LIBS'
-cmake_cfg="-DBUILD_BENCHMARK=ON"
+cmake_config="-DBUILD_BENCHMARK=ON"
 
 . xbuilder.sh
 

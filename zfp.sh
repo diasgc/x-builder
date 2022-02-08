@@ -8,7 +8,7 @@ src='https://github.com/LLNL/zfp.git'
 cfg='cmake'
 eta='190'
 
-cmake_cfg="-DBUILD_TESTING=OFF -DBUILD_GMOCK=OFF"
+cmake_config="-DBUILD_TESTING=OFF -DBUILD_GMOCK=OFF"
 
 pc_url='http://oldhome.schmorp.de/marc/liblzf.html'
 pc_llib='-llzf'

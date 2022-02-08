@@ -17,7 +17,7 @@ mki='install'
 
 cmake_static=''
 cmake_bin='BUILD_PROGRAMS'
-cmake_cfg="-DENABLE_PACKAGE_CONFIG=ON -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF"
+cmake_config="-DENABLE_PACKAGE_CONFIG=ON -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF"
 
 ac_nosysroot=true
 

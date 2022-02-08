@@ -14,7 +14,7 @@ lst_bin='flac metaflac'
 lst_lic='COPYING.FDL COPYING.GPL COPYING.LGPL COPYING.Xiph AUTHORS'
 lst_pc='flac.pc flac++.pc'
 
-cmake_cfg='-DBUILD_CXXLIBS=ON -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF -DWITH_ASM=ON -DWITH_OGG=ON'
+cmake_config='-DBUILD_CXXLIBS=ON -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF -DINSTALL_MANPAGES=OFF -DWITH_ASM=ON -DWITH_OGG=ON'
 cmake_bin='BUILD_PROGRAMS'
 
 dev_bra='main'
@@ -24,7 +24,7 @@ stb_vrs=''
 
 . xbuilder.sh
 
-$host_arm && ac_cfg=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
+$host_arm && ac_config=" --disable-asm-optimizations --disable-vsx --disable-avx --disable-sse --disable-altivec"
 if [ "$build_tool" == "cmake" ] && $host_mingw; then
   LD=$CC; AS=nasm
 fi

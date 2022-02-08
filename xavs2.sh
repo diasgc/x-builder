@@ -23,8 +23,8 @@ lst_pc='xavs2.pc'
 
 . xbuilder.sh
 
-ac_cfg="--sysroot=${SYSROOT} --enable-lto --enable-strip --enable-pic"
-$host_x86 && AS=nasm || ac_cfg+=' --disable-asm'
+ac_config="--sysroot=${SYSROOT} --enable-lto --enable-strip --enable-pic"
+$host_x86 && AS=nasm || ac_config+=' --disable-asm'
 
 start
 

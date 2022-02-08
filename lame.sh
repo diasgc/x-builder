@@ -32,8 +32,8 @@ lst_pc='lame.pc'
 # update latest version
 vrs=$(svn log ${svn}/tags --limit 1 | grep 'tag' | sed "s/tag \(\) release/\1/")
 
-ac_cfg="--disable-gtktest --disable-decoder --disable-debug"
-$host_mingw && ac_cfg+=" --enable-expopt=full"
+ac_config="--disable-gtktest --disable-decoder --disable-debug"
+$host_mingw && ac_config+=" --enable-expopt=full"
 # make shared executable so
 ! $build_static && $build_bin && CBN="--enable-dynamic-frontends"
 $host_ndk && [ ${API} -lt 26 ] && unset CBN

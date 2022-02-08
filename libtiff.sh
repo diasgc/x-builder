@@ -16,7 +16,7 @@ cmake_static='BUILD_STATIC_LIBS'
 mkc='distclean'
 mki='install/strip'
 
-cmake_cfg="-Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON"
+cmake_config="-Dlzma=ON -Djpeg=ON -Dzstd=ON -Dwebp=ON -Dlerc=ON -Dlibdeflate=ON"
 
 lst_inc='tiffconf.h tiffvers.h tiff.h tiffio.hxx tiffio.h'
 lst_lib='libtiffxx libtiff'
@@ -27,7 +27,7 @@ lst_pc='libtiff-4.pc'
 
 extraOpts(){
     case $1 in
-        --min) unset dep cmake_cfg;;
+        --min) unset dep cmake_config;;
     esac
 }
 

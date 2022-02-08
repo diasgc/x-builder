@@ -30,7 +30,7 @@ lst_pc=''
 . xbuilder.sh
 
 unset CPPFLAGS CSH
-ac_cfg='--with-pic'
+ac_config='--with-pic'
 
 source_patch(){
 	sed -i 's/MINGWPREF=\"i386-mingw32-\"/MINGWPREF=\"x86_64-w64-mingw32-\"/g' configure

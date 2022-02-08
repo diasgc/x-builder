@@ -21,16 +21,16 @@ stb_bra=''
 stb_vrs=''
 
 cmake_static='BUILD_STATIC_LIBS'
-cmake_cfg='-DENABLE_SDL=OFF'
+cmake_config='-DENABLE_SDL=OFF'
 
 . xbuilder.sh
 
 
 if $host_arm; then
-  cmake_cfg+=' -DDISABLE_SSE=ON' 
-  ac_cfg+=" --disable-sse --disable-arm"
+  cmake_config+=' -DDISABLE_SSE=ON' 
+  ac_config+=" --disable-sse --disable-arm"
 else
-  cmake_cfg+=' -DDISABLE_SSE=OFF'
+  cmake_config+=' -DDISABLE_SSE=OFF'
 fi
 
 if [ "$build_tool" == "automake" ] && $host_arm; then

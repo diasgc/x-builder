@@ -14,13 +14,13 @@ eta='30'
 
 . xbuilder.sh
 
-ac_cfg="--disable-asm --enable-pic"
+ac_config="--disable-asm --enable-pic"
 
 case $arch in
-  arm-linux*|aarch64-linux* ) ac_cfg+=" --host=arm-linux-gnu" ;;
-  x86_64-linux* ) ac_cfg+=" --host=x86_64-linux-gnu" ;;
-  i686-linux* ) ac_cfg="--host=i686-linux-gnu $CFG" ;;
-  *-w64-mingw32 ) ac_cfg="--host=${arch} $CFG" ;;
+  arm-linux*|aarch64-linux* ) ac_config+=" --host=arm-linux-gnu" ;;
+  x86_64-linux* ) ac_config+=" --host=x86_64-linux-gnu" ;;
+  i686-linux* ) ac_config="--host=i686-linux-gnu $CFG" ;;
+  *-w64-mingw32 ) ac_config="--host=${arch} $CFG" ;;
 esac
 
 start

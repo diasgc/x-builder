@@ -8,7 +8,7 @@ cfg='cmake'
 
 cmake_shared='BUILD_SHARED'
 cmake_static='BUILD_STATIC'
-cmake_cfg='-DBUILD_TESTING=OFF'
+cmake_config='-DBUILD_TESTING=OFF'
 
 lst_inc='cryptopp/*.h'
 lst_lib='libcryptopp'

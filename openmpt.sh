@@ -13,7 +13,7 @@ dep='ogg vorbis flac sndfile'
 eta='0'
 config_dir="build/autotools"
 
-ac_cfg='--without-mpg123  --without-portaudio --without-portaudiocpp --without-pulseaudio --without-sdl2 --disable-tests'
+ac_config='--without-mpg123  --without-portaudio --without-portaudiocpp --without-pulseaudio --without-sdl2 --disable-tests'
 
 ac_bin='--disable-examples|--enable-examples'
 

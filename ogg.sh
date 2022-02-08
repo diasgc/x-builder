@@ -19,7 +19,7 @@ lst_pc='ogg.pc'
 
 . xbuilder.sh
 
-cmake_cfg='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
+cmake_config='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
 
 build_patch_config(){
   # Patch to remove docs (automake)

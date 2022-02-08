@@ -14,7 +14,7 @@ src='https://github.com/libsdl-org/SDL.git'
 cfg='cmake'
 eta='60'
 cmake_static='SDL_STATIC'
-cmake_cfg="-DRPATH=OFF -DASAN=ON -DASSEMBLY=ON"
+cmake_config="-DRPATH=OFF -DASAN=ON -DASSEMBLY=ON"
 
 lst_inc='SDL2/*.h'
 lst_lib='libSDL2main libSDL2 libhidapi'

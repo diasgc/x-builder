@@ -26,7 +26,7 @@ lst_pc='liblz4.pc'
 
 cmake_static='BUILD_STATIC_LIBS'
 cmake_bin='LZ4_BUILD_CLI'
-$build_bin && cmake_cfg+=' -DLZ4_BUILD_LEGACY_LZ4C=ON'
+$build_bin && cmake_config+=' -DLZ4_BUILD_LEGACY_LZ4C=ON'
 
 meson_cfg='-Ddebug_level=0 -Dbin_examples=false -Dbin_contrib=false -Dbin_tests=false'
 meson_bin='bin_programs'

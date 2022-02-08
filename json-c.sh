@@ -14,6 +14,11 @@ lst_bin=''
 lst_lic='COPYING AUTHORS'
 lst_pc='json-c.pc'
 
+dev_bra='master'
+dev_vrs='0.15.99'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 # CMAKE OPTIONS

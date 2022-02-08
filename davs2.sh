@@ -24,7 +24,7 @@ lst_pc='davs2.pc'
 
 AS=nasm
 $host_ndk && LDFLAGS+=" -L${SYSROOT}/usr/lib -llog"
-$host_arm && ac_cfg+=" --disable-asm"
+$host_arm && ac_config+=" --disable-asm"
 
 start
 

@@ -18,7 +18,7 @@ lst_bin='onig-config'
 lst_lic='COPYING AUTHORS'
 lst_pc='oniguruma.pc'
 
-cmake_cfg='-DINSTALL_DOCUMENTATION=OFF'
+cmake_config='-DINSTALL_DOCUMENTATION=OFF'
 cmake_static='BUILD_STATIC_LIBS'
 
 . xbuilder.sh

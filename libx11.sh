@@ -7,10 +7,12 @@
 lib='libx11'
 dsc='Core X11 protocol client library'
 lic='Other'
-src='https://gitlab.freedesktop.org/xorg/lib/libx11.git'
-cfg='ag'
+vrs='1.7.3'
+#src='https://gitlab.freedesktop.org/xorg/lib/libx11.git'
+src="https://www.x.org/releases/individual/lib/libX11-${vrs}.tar.gz"
+cfg='ac'
 eta='0'
-dep='xorg-macros'
+dep='xorg-macros libxtrans'
 
 dev_bra='main'
 dev_vrs=''

@@ -16,9 +16,14 @@ lst_bin='fc-match fc-cat fc-list fc-conflist fc-query fc-scan fc-pattern fc-vali
 lst_lic='COPYING AUTHORS'
 lst_pc='fontconfig.pc'
 
+dev_bra='master'
+dev_vrs='2.13.96'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
-ac_cfg='--disable-docs'
+ac_config='--disable-docs'
 exec_config="autogen.sh"
 
 #not recomended
@@ -27,7 +32,7 @@ meson_cfg='-Db_pie=true -Db_lto=true -Ddoc=disabled -Dtests=disabled'
 start
 
 # cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
+# NDK +++  .   .   .  clang
 # GNU  .   .   .   .  gcc
 # WIN  .   .   .   .  clang/gcc
 

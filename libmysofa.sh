@@ -27,7 +27,7 @@ lst_pc='libmysofa.pc'
 
 # CMAKE OPTIONS (default): -DADDRESS_SANITIZE=OFF -DCODE_COVERAGE=OFF 
 
-cmake_cfg="-DBUILD_TESTS=OFF"
+cmake_config="-DBUILD_TESTS=OFF"
 
 start
 

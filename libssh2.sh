@@ -9,7 +9,7 @@ cfg='ar' # cmake unsupported dual static shared build
 eta='72'
 mki='install'
 
-cmake_cfg='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
+cmake_config='-DBUILD_TESTING=OFF -DINSTALL_DOCS=OFF'
 cmake_bin='BUILD_EXAMPLES'
 
 dev_bra='main'

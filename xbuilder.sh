@@ -268,8 +268,8 @@ start(){
   [ -f "${log_file}" ] && rm -f ${log_file}
 
   # Create INSTALL_DIR and PKGCONFIG DIR
-  mkdir -p ${dir_install_pc}
-  export PKG_CONFIG_LIBDIR="${dir_install_pc}:${PKG_CONFIG_LIBDIR}"
+  mkdir -p ${dir_install_pc} ${dir_install}/share/pkgconfig
+  export PKG_CONFIG_LIBDIR="${dir_install_pc}:${dir_install}/share/pkgconfig:${PKG_CONFIG_LIBDIR}"
 
   # check build tools
   check_tools $tls
@@ -450,7 +450,7 @@ start(){
         esac
       fi
       
-      [ -n "${cmake_cfg}" ] && CFG="${cmake_cfg} ${CFG}"
+      [ -n "${cmake_config}" ] && CFG="${cmake_config} ${CFG}"
       
       do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CTC} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
@@ -461,7 +461,7 @@ start(){
     automake)
       #[ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
       [ -z "$exec_config" ] && exec_config='configure' # default config executable
-      [ -n "${ac_cfg}" ] && CFG=${ac_cfg}
+      [ -n "${ac_config}" ] && CFG=${ac_config}
       
       if [ -n "${ac_static}" ]; then
           arr=(${ac_static//|/ })

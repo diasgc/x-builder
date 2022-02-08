@@ -9,7 +9,7 @@ cfg='cmake'
 eta='80'
 
 cmake_static="BUILD_STATIC_LIBS"
-cmake_cfg="-DUNITTEST=FALSE"
+cmake_config="-DUNITTEST=FALSE"
 
 dev_bra='master'
 dev_vrs=''

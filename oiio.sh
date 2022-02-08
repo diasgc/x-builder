@@ -24,7 +24,7 @@ lst_bin=''
 lst_lic='LICENSE AUTHORS'
 lst_pc=''
 
-cmake_cfg="-DBoost_ROOT=/home/gcdias/git/boost-ndk/build/out/arm64-v8a"
+cmake_config="-DBoost_ROOT=/home/gcdias/git/boost-ndk/build/out/arm64-v8a"
 
 . xbuilder.sh
 
