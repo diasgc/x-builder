@@ -7,17 +7,12 @@
 lib='freeglut'
 dsc='Free-software/open-source alternative to the OpenGL Utility Toolkit (GLUT) library'
 lic='GLP-2.0'
-src='https://github.com/'
+src='https://github.com/dcnieho/FreeGLUT.git'
 cfg='cmake'
 eta='0'
 config_dir='freeglut/freeglut'
 cmake_static='FREEGLUT_BUILD_STATIC_LIBS'
 cmake_shared='FREEGLUT_BUILD_SHARED_LIBS'
-
-mki=''
-mkc=''
-mk_clean
-mk_install
 
 dev_bra='main'
 dev_vrs=''

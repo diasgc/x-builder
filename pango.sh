@@ -9,17 +9,29 @@ dsc='Pango is a library for layout and rendering of text, with an emphasis on in
 lic='GLP-2.0'
 src='https://gitlab.gnome.org/GNOME/pango.git'
 cfg='meson'
-#dep='pixman freetype2 fribidi harfbuzz'
+#dep='cairo expat fontconfig pixman freetype2 fribidi harfbuzz'
 eta='0'
 CFG='-Dintrospection=disabled'
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='LICENSE AUTHORS'
+lst_pc=''
 
 . xbuilder.sh
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------

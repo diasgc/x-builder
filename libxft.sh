@@ -9,7 +9,7 @@ dsc='FreeType-based font drawing library for X'
 lic='MIT'
 src='https://gitlab.freedesktop.org/xorg/lib/libxft.git'
 cfg='ag'
-dep='fontconfig freetype libbz2 liblzma libpng libuuid libx11 libxau libxcb libxdmcp libxml2 libxrender'
+dep='fontconfig freetype libx11 libxext libxrender'
 eta='0'
 
 lst_inc=''

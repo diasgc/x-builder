@@ -460,40 +460,10 @@ start(){
       #MAKE_EXECUTABLE=cmake
       #mkf='--build . --target install --config Release'
       ;;
-    automake)
-      #[ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
-      [ -z "$exec_config" ] && exec_config='configure' # default config executable
-      [ -n "${ac_config}" ] && CFG=${ac_config}
-      
-      if [ -n "${ac_static}" ]; then
-          arr=(${ac_static//|/ })
-          case ${#arr[@]} in
-            1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
-            2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
-          esac
-      fi
 
-      if [ -n "${ac_shared}" ]; then
-        arr=(${ac_shared//|/ })
-        case ${#arr[@]} in
-          1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
-          2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
-        esac
-      fi
-
-      if [ -n "${ac_bin}" ]; then
-        arr=(${ac_bin//|/ })
-        case ${#arr[@]} in
-          1) $build_bin && CBN="${arr[0]}=1" || CBN="${arr[0]}=0";;
-          2) $build_bin && CBN="${arr[1]}" || CBN="${arr[0]}";;
-        esac
-      fi
-
-      $ac_nohost || $host_cross && CFG+=" --host=${arch}"
-      $ac_nosysroot || CFG+=" --with-sysroot=${SYSROOT}"
-      $ac_nopic || CFG+=" --with-pic=1"
-      
-      do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} ${CSH} ${CBN} "${cfg_args[@]}"
+    automake) # use autotools and configure executable to create makefile
+      ac_configure      
+      do_log 'configure' ${dir_config}/${exec_config} --prefix=${dir_install} ${CFG} ${CSH} ${CBN} ${cfg_args[@]}
       MAKE_EXECUTABLE=make
       ;;
 
@@ -533,11 +503,14 @@ start(){
 
   [ -n "${WFLAGS}" ] && CPPFLAGS+=" ${WFLAGS}"
   
-  static_ldflag='-static'
-  # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
-  # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
-  $host_clang && static_ldflag="-all${static_ldflag}"
+  if [ -z "${static_ldflag}" ];then
+    static_ldflag='-static'
+    # set -all-static flags at make time (see: https://stackoverflow.com/questions/20068947/how-to-static-link-linux-software-that-uses-configure)
+    # $build_static && [[ "$LDFLAGS" != *"-all-static"* ]] && LDFLAGS="-all-static $LDFLAGS"
+    $host_clang && static_ldflag="-all${static_ldflag}"
+  fi
   $build_static && LDFLAGS="${static_ldflag} $LDFLAGS"
+  
 
   log_vars CFLAGS CXXFLAGS WFLAGS CPPFLAGS LDFLAGS LIBS
 
@@ -545,7 +518,7 @@ start(){
   : "${skip_make:=false}"
 
   if fn_defined 'on_make'; then
-    do_log 'make' build_make
+    do_log 'make' on_make
   elif ! $skip_make; then
     do_progress 'make' ${MAKE_EXECUTABLE} ${mkf} -j${HOST_NPROC} || err
     unset skip_make
@@ -1195,7 +1168,7 @@ prt_git_progress(){
     fi
   done
   [ $n1 -gt 0 ] && printf "\e[${n1}D"
-  printf "\e[6D"
+  printf "\e[7D"
   tput cnorm -- normal
 }
 
