@@ -453,8 +453,7 @@ start(){
       fi
       
       [ -n "${cmake_config}" ] && CFG="${cmake_config} ${CFG}"
-      
-      do_log 'cmake' $exec_config ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CTC} ${CFG} ${CSH} ${CBN}
+      do_log 'cmake' ${exec_config} ${dir_config} -DCMAKE_INSTALL_PREFIX=${dir_install} -DCMAKE_BUILD_TYPE=${cmake_build_type} ${CTC} ${CFG} ${CSH} ${CBN}
       case $cfg in ccm|ccmake) tput sc; ccmake ..; tput rc;; esac
       MAKE_EXECUTABLE=make
       #MAKE_EXECUTABLE=cmake
@@ -1282,7 +1281,14 @@ wget_tarxx(){
   mkdir tmp
   wget -qO- $1 2>>${log_file} | tar --transform 's/^dbt2-0.37.50.3/dbt2/' $args -C tmp >/dev/null 2>&1 || err
   cd tmp
-  mv * $2 && mv $2 ..
+  local nf=(*)
+  if [ ${#nf[@]} -gt 2 ]; then
+    [ -d "../${2}" ] && rm -rf "../${2}"
+    mkdir ../${2}
+    mv * ../${2}
+  else
+    mv * $2 && mv $2 ..
+  fi
   cd ..
   rm -rf tmp
   
