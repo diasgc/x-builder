@@ -7,14 +7,9 @@
 lib=''
 dsc=''
 lic='GLP-2.0'
-src='https://github.com/'
-cfg='cmake'
+src=''
+cfg=''
 eta='0'
-
-dev_bra='master'
-dev_vrs=''
-stb_bra=''
-stb_vrs=''
 
 lst_inc=''
 lst_lib=''
@@ -22,7 +17,10 @@ lst_bin=''
 lst_lic='LICENSE AUTHORS'
 lst_pc=''
 
-eta='20'
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 . xbuilder.sh
 

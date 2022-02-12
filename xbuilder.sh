@@ -1366,12 +1366,13 @@ cmakeClean(){
 }
 
 showOpts(){
-  if [ -d "$1" ] && [ -n "$lib" ];then
+  if [ -d "$1" ];then
+    local od=$(pwd)
     local bdir=$(pwd)/builds
-    pushd $1>/dev/null
-    [ -f CMakeLists.txt ] && cmake -LA | awk '{if(f)print} /-- Cache values/{f=1}' >${bdir}/${lib}_cmake.opts && nano "${bdir}/${lib}_cmake.opts"
-    [ -f configure ] && ./configure --help >${bdir}/${lib}_aconf.opts && nano "${bdir}/${lib}_aconf.opts"
-    popdir
+    cd "${1}/${config_dir}"
+    [ -f CMakeLists.txt ] && cmake -LA | awk '{if(f)print} /-- Cache values/{f=1}' >${od}/builds/${lib}_cmake.opts && nano "${od}/builds/${lib}_cmake.opts"
+    [ -f configure ] && ./configure --help >${od}/builds/${lib}_aconf.opts && nano "${od}/builds/${lib}_aconf.opts"
+    cd $od
   else
     echo -e "${ind}${CR0}no configuration file found in ${CR1}$1${CD}\n\n"
   fi
