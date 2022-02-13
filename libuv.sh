@@ -14,6 +14,11 @@ lst_bin=''
 lst_lic='LICENSE LICENSE-docs'
 lst_pc='libuv.pc libuv-static.pc'
 
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 start

@@ -12,7 +12,7 @@ vrs='1.12'
 src='https://github.com/freedesktop/xcb-libxcb.git'
 cfg='ag'
 eta='0'
-dep='xcb-proto xcb-pthread-stubs libxau libxdmcp'
+dep='libxau xcb-proto xcb-pthread-stubs libxdmcp'
 #CFG='--enable-devel-docs'
 
 # XCBPROTO_LIBS XCBPROTO_CFLAGS NEEDED_CFLAGS NEEDED_LIBS XDMCP_CFLAGS XDMCP_LIBS CHECK_CFLAGS CHECK_LIBS

@@ -1,10 +1,5 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK +++  .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  F   .   .   F  clang/gcc
 
-lvr='4.3.5'
 lib='libzmq'
 dsc='ZeroMQ core engine in C++, implements ZMTP/3.1'
 lic='GLP-2.0'
@@ -19,11 +14,21 @@ lst_bin='curve_keyge'
 lst_lic='COPYING COPYING.LESSER AUTHORS'
 lst_pc='libzmq.pc'
 
+dev_bra='master'
+dev_vrs='4.3.5'
+stb_bra=''
+stb_vrs=''
+
 . xbuilder.sh
 
 CFG='--disable-Werror --with-libsodium'
 
 start
+
+# cpu av8 av7 x86 x64
+# NDK +++  .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  F   .   .   F  clang/gcc
 
 # Filelist
 # --------

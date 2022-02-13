@@ -1,26 +1,33 @@
 #!/bin/bash
-# cpu av8 av7 x86 x64
-# NDK  .   .   .   .  clang
-# GNU  .   .   .   .  gcc
-# WIN  .   .   .   .  clang/gcc
 
 lib='xcb-proto'
 dsc='XML-XCB protocol descriptions'
 lic='Other'
-vrs='1.12'
+#vrs='1.12'
 src='https://github.com/freedesktop/xcb-proto.git'
 cfg='ag'
 eta='0'
 
-#CFG='--enable-devel-docs'
-# XCBPROTO_LIBS XCBPROTO_CFLAGS NEEDED_CFLAGS NEEDED_LIBS XDMCP_CFLAGS XDMCP_LIBS CHECK_CFLAGS CHECK_LIBS
 lst_inc=''
 lst_lib=''
 lst_bin=''
+lst_lic='COPYING'
+lst_pc=''
+
+dev_bra='master'
+dev_vrs=''
+stb_bra=''
+stb_vrs=''
 
 . xbuilder.sh
-
+ac_config="--with-python_prefix=${dir_install}"
+export PYTHON_PREFIX=${dir_install}
 start
+
+# cpu av8 av7 x86 x64
+# NDK  .   .   .   .  clang
+# GNU  .   .   .   .  gcc
+# WIN  .   .   .   .  clang/gcc
 
 # Filelist
 # --------
