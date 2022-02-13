@@ -29,7 +29,9 @@ stb_vrs=''
 
 . xbuilder.sh
 
-ac_config="--without-doxygen --disable-nls --without-libiconv-prefix"
+#$host_ndk && dep+=" libbthread"
+
+ac_config="--disable-dvb --disable-bktr --disable-nls --disable-proxy --without-doxygen --with-x=no"
 
 CPPFLAGS="-Wno-string-plus-int -Wno-invalid-source-encoding -Wno-deprecated-declarations -Wno-tautological-pointer-compare"
 
