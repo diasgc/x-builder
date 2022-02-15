@@ -681,53 +681,7 @@ get_link_pkg(){
   return 0
 }
 
-function ac_oldconfig {
-  #[ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
-  [ -z "$exec_config" ] && exec_config='configure' # default config executable
-  [ -n "${ac_config}" ] && CFG=${ac_config}
-  
-  if [ -n "${ac_static}" ]; then
-      arr=(${ac_static//|/ })
-      case ${#arr[@]} in
-        1) $build_static && CSH="${arr[0]}=1" || CSH="${arr[0]}=0";;
-        2) $build_static && CSH="${arr[0]}" || CSH="${arr[1]}";;
-      esac
-  fi
-
-  if [ -n "${ac_shared}" ]; then
-    arr=(${ac_shared//|/ })
-    case ${#arr[@]} in
-      1) $build_shared && CSH+=" ${arr[0]}=1" || CSH+=" ${arr[0]}=0";;
-      2) $build_shared && CSH+=" ${arr[1]}" || CSH+=" ${arr[0]}";;
-    esac
-  fi
-
-  if [ -n "${ac_bin}" ]; then
-    arr=(${ac_bin//|/ })
-    case ${#arr[@]} in
-      1) $build_bin && CBN="${arr[0]}=1" || CBN="${arr[0]}=0";;
-      2) $build_bin && CBN="${arr[1]}" || CBN="${arr[0]}";;
-    esac
-  fi
-  if [ -n "${ac_opts}" ]; then
-    for opt in $(echo ${ac_opts}); do
-      case $opt in
-        --update-config_sub)   cp -f /usr/share/automake*/config.sub ${dir_config};;
-        --update-config_guess) cp -f /usr/share/automake*/config.guess ${dir_config};;
-        --no-sysroot)          ac_nosysroot=true;;
-        --no-pic)              ac_nopic=true;;
-        --no-host)             ac_nohost=true;;
-      esac
-    done
-  fi  
-  if ! $ac_nohost; then
-    $host_cross && CFG+=" --host=${arch}"
-  fi
-  $ac_nosysroot || CFG+=" --with-sysroot=${SYSROOT}"
-  $ac_nopic || CFG+=" --with-pic=1"
-}
-
-function ac_configure {
+ac_configure() {
 
   #[ -z "${mki+x}" ] && mki=$(make_findtarget "install-strip" "install")
   [ -z "$exec_config" ] && exec_config='configure' # default config executable
@@ -785,6 +739,47 @@ function ac_configure {
   fi
 }
 
+version_parse(){
+  local IFS='.|-|_'
+  export arrv=()
+  for f in $1; do
+    if [ ${#arrv[@]} -lt 3 ]; then
+      f=$(echo $f | grep -o '[0-9]*')
+    fi
+    if [ -n "$f" ]; then
+      arrv+=($f)
+    fi
+  done
+  echo "${arrv[@]:0:3}" | sed 's/ /./g'
+}
+
+git_version_local(){
+  if [ -d "${1}/.git" ]; then
+    version_parse "$(git --git-dir="${1}/.git" describe --match=?[0-9]* 2>/dev/null || git --git-dir=.git describe)"
+  fi
+  return 0
+}
+
+git_version_remote(){
+  version_parse "$(git_vremote $1)"
+}
+
+git_vremote(){
+  awk -v vv="$1" -f - << 'EOF'
+BEGIN {
+  FS = "[ /^]+"
+  while ("git ls-remote " vv "| sort -Vk2" | getline) {
+    if (!sha)
+      sha = substr($0, 1, 7)
+    tag = $3
+  }
+  while ("curl -s " vv "/releases/tag/" tag | getline)
+    if ($3 ~ "commits")
+      com = $2
+  printf com ? "%s-%s-g%s\n" : "%s\n", tag, com, sha
+}
+EOF
+}
 
 # .language
 # .homepage

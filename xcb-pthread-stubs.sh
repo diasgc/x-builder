@@ -11,8 +11,7 @@ lic='Other'
 src='https://github.com/freedesktop/xcb-pthread-stubs.git'
 cfg='ag'
 eta='0'
-#CFG='--enable-devel-docs'
-# XCBPROTO_LIBS XCBPROTO_CFLAGS NEEDED_CFLAGS NEEDED_LIBS XDMCP_CFLAGS XDMCP_LIBS CHECK_CFLAGS CHECK_LIBS
+
 lst_inc=''
 lst_lib=''
 lst_bin=''

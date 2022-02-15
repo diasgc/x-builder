@@ -39,10 +39,10 @@ function libcheck {
     local g
     for fscript in *.sh; do
         case $fscript in _*|*build*|*setup*|*unpack*) continue;; esac
-        v=$(./${fscript} --get var | 2>/dev/null)
+        v=$(./${fscript} --get vrs_local | 2>/dev/null)
         printf "${CC0}%-40s" ${fscript}
         #if [ -n "${v}" ]; then
-            g=$(./${fscript} --get vrs_latest 2>/dev/null)
+            g=$(./${fscript} --get vrs_remote 2>/dev/null)
             printf "${CH}%-10s${CY}%-10s" ${v} ${g}
         #fi
         printf "\n"
@@ -271,4 +271,4 @@ echo -e "\n${CC1}${b} Repository tools${C0}"
 check_install git subversion lzip unzip
 
 echo -e "\n${CC1}${b} Other tools${C0}"
-check_install gperf bison texinfo patch jq
+check_install curl gperf bison texinfo patch jq

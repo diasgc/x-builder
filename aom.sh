@@ -20,6 +20,10 @@ lst_bin='aomdec aomenc'
 lst_lic='LICENSE PATENTS AUTHORS'
 lst_pc='aom.pc'
 
+vremote(){
+     git ls-remote -t "$src" | grep -o 'v.*' | tail -n1
+}
+
 . xbuilder.sh
 
 cmake_static='CONFIG_STATIC=0|CONFIG_STATIC=1'

@@ -1841,9 +1841,9 @@ menu_get(){
     libname)       echo "${lib}";;
     aptname)       echo "${apt}";;
     var)           shift; echo "${!1}";;
-    vrs_remote)    git_remote_version $src;;
+    vrs_remote)    fn_defined 'vremote' && version_parse "$(vremote)" || git_version_remote $src;;
     vrs_tag)       git ls-remote --tags --refs --sort="v:refname" $src | tail -n1 | sed 's/.*\///';;
-    vrs_local)     git_remote_version $src;;
+    vrs_local)     git_version_local $dir_src;;
     vrs_latest)    echo "$(get_latest_release ${src})"; exit 0;;
     cmake_include) [ -z "$cmake_path" ] || echo "${dir_install}/${cmake_path}";exit 0;;
     options|opts)  showOpts "$(pwd)/sources/$lib"; exit 0;;

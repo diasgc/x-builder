@@ -7,7 +7,8 @@
 lib='7zip'
 dsc=''
 lic=''
-src='https://www.7-zip.org/a/7z2107-src.tar.xz'
+vrs='2107'
+src="https://www.7-zip.org/a/7z${vrs}-src.tar.xz"
 cfg='make'
 eta='0'
 
