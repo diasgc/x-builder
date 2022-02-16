@@ -909,16 +909,18 @@ cmake_create_toolchainfile(){
     set(ZLIB_VERSION_STRING 1.2.11)
     include(${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
 		EOF
+  mingw_stdlibs='-lwsock32 -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32'
+  #mingw_stdlibs='-static-libgcc -lwsock32 -lws2_32'
   $host_mingw && cat <<-EOF >>${cmake_toolchain_file}
-    set(CMAKE_COMPILER_IS_MINGW ON)
-    set(CMAKE_RC_COMPILER ${CROSS_PREFIX}windres)
-    set(CMAKE_MC_COMPILER ${CROSS_PREFIX}windmc)
-    set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 \${CMAKE_CXX_STANDARD_LIBRARIES}")
-    set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
-    set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
+		set(CMAKE_COMPILER_IS_MINGW ON)
+		set(CMAKE_RC_COMPILER ${CROSS_PREFIX}windres)
+		set(CMAKE_MC_COMPILER ${CROSS_PREFIX}windmc)
+		set(CMAKE_C_STANDARD_LIBRARIES "-static-libstdc ${mingw_stdlibs} \${CMAKE_C_STANDARD_LIBRARIES}")
+		set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libstdc++ ${mingw_stdlibs} \${CMAKE_CXX_STANDARD_LIBRARIES}")
+		set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
+		set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
+		set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 		EOF
-  
 }
 
 cargo_create_toolchain(){
@@ -1974,6 +1976,7 @@ while [ $1 ];do
                 build_dist=true
                 dep_build="--full"
                 ;;
+    --branch)   shift; export bra=$1;;
     --shared)   build_shared=true; build_static=false;;
     --static)   build_static=true; build_shared=false;;
     --both)     build_static=true; build_shared=true;;

@@ -34,6 +34,16 @@ check_install(){
     done
 }
 
+update(){
+    while [ -n "${1}" ]; do
+        case $1 in
+            ndk|NDK)    install_ndk;;
+            llvm-mingw) llvm_mingw_install;;
+        esac
+        shift
+    done
+}
+
 function libcheck {
     local v
     local g
@@ -48,6 +58,48 @@ function libcheck {
         printf "\n"
     done
 }
+
+function install_ndk {
+    # install android-ndk
+    [ -z "$(command -v unzip)" ] && sudo apt install unzip
+    local od=$(pwd)
+    cd ~
+    # get latest version
+    local url=$(wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip" | tail -n1)
+    # download latest version
+    wget $url -qO tmp 2>&1
+    local fname=$(basename $url)
+    unzip tmp
+    rm -f $fname
+    mv ${fname%.*} android-ndk
+    export ANDROID_NDK_HOME="$(pwd)/android-ndk"
+    cd $od
+}
+
+function llvm_mingw_install {
+    # install llvm-mingw
+    local od=$(pwd)
+    if [ -z "${LLVM_MINGW_HOME}" ]; then
+        export LLVM_MINGW_HOME="$HOME/llvm-mingw"
+    fi
+    cd $(dirname ${LLVM_MINGW_HOME})
+    [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
+    export llvm_mingw_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
+    wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"    
+    echo $llvm_mingw_rel >"${LLVM_MINGW_HOME}/version"
+    export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
+    cd $od
+}
+
+
+
+
+
+
+
+
+
+
 
 # first-time load common functions
 [ -z ${vsh+x} ] && . .common
@@ -72,6 +124,17 @@ case $1 in
         ;;
     --force) force=true;;
     --install) shift; check_install $@; exit 0;;
+    --update)  shift
+        while [ -n "${1}" ]; do
+            case $1 in
+                ndk|NDK)    install_ndk;;
+                llvm-mingw) llvm_mingw_install;;
+            esac
+            shift
+        done
+        exec x-setup
+        exit 0
+        ;;
     --libcheck) libcheck; exit 0;;
 esac
 
@@ -131,29 +194,15 @@ bash_clang(){
     sudo chmod +x ${3}
 }
 
+
+
 if [ "${OSTYPE}" != "linux-android" ];then
     echo -e "\n${CC1}Android NDK:"
     if [ -z "${ANDROID_NDK_HOME}" ]; then
         ndk_clang_bin_dir=$(find ~ -name "aarch64-linux-android30-clang")
         if [ -z "${ndk_clang_bin_dir}" ]; then
             echo -e "not found. Install?"; read -p "[Y|n]" pndk
-            case $pndk in y|Y)
-                # install android-ndk
-                [ -z "$(which unzip)" ] && sudo apt install unzip
-                local od=$(pwd)
-                cd ~
-                # get latest version
-                local url=$(wget -qO- https://developer.android.com/ndk/downloads | grep -Po "https://dl.google.com/android/repository/android-ndk-r..*-linux.zip" | tail -n1)
-                # download latest version
-                wget $url -qO tmp 2>&1
-                local fname=$(basename $url)
-                unzip tmp
-                rm -f $fname
-                mv ${fname%.*} android-ndk
-                export ANDROID_NDK_HOME="$(pwd)/android-ndk"
-                cd $od
-                ;;
-            esac
+            case $pndk in y|Y) install_ndk;; esac
         fi
     fi
     if [ -n "${ANDROID_NDK_HOME}" ]; then
@@ -216,19 +265,7 @@ if [ -z "${LLVM_MINGW_HOME}" ]; then
     llvm_mingw_bin_dir=$(find ~ -name "aarch64-w64-mingw32-clang")
     if [ -z "${llvm_mingw_bin_dir}" ]; then
         echo -e "not found. Install?"; read -p "[Y|n]" pndk
-        case $pndk in y|Y)
-            # install llvm-mingw
-            local od=$(pwd)
-            cd ~
-            [ -d "llvm-mingw" ] && rm -rf "llvm-mingw"
-            export llvm_mingw_rel=$(git ls-remote --tags --refs --sort="v:refname" 'https://github.com/mstorsjo/llvm-mingw.git' 2>/dev/null | tail -n1 | sed 's/.*\///')
-            wget_untar "https://github.com/mstorsjo/llvm-mingw/releases/download/${llvm_mingw_rel}/llvm-mingw-${llvm_mingw_rel}-ucrt-ubuntu-18.04-x86_64.tar.xz" "llvm-mingw"
-            export LLVM_MINGW_HOME="$(pwd)/llvm-mingw"
-            echo $llvm_mingw_rel >"${LLVM_MINGW_HOME}/version"
-            export xv_llvm_mingw=$(./llvm-mingw/bin/aarch64-w64-mingw32-clang --version | grep -oP '\d*\.\d*.\d* (?=\()')
-            cd $od
-            ;;
-        esac
+        case $pndk in y|Y) llvm_mingw_install;; esac
     else
         export LLVM_MINGW_HOME=$(dirname $(dirname $llvm_mingw_bin_dir))
     fi
