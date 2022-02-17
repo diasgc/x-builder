@@ -41,9 +41,6 @@ source_config(){
 }
 
 build_config(){
-	#cd ${dir_src}
-    #./bootstrap.sh >>${log_file} # --with-toolset=clang --prefix=${dir_install} --show-libraries --without-icu 
-	#./b2 headers
 	echo "using clang : $arch : $CXX : <linkflags>-L${dir_install_lib} ; " >>${dir_src}/project-config.jam
     CXXFLAGS+=" -std=c++14 -stdlib=libc++"
     local toolset="$(os_fromid clang gnu clang)-$(arch_fromid aarch64 arm i686 x86_64)"

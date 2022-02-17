@@ -342,6 +342,11 @@ start(){
     req_src_config=true
   fi
 
+  if [ -n "${bra}" ]; then
+    cd ${dir_src}
+    do_log "${bra}" git checkout ${bra}
+  fi
+
   cd ${dir_config}
   
   if [ -z "${cfg}" ]; then
@@ -560,8 +565,12 @@ start(){
 
   if fn_defined 'on_pack'; then
     do_log 'pack' on_pack
-  elif $build_package; then 
-    do_log 'pack' build_packages_bin
+  elif $build_package; then
+    if [ -f "${dir_build}/install_manifest.txt" ]; then
+      do_log 'cpack' build_package_cmake
+    else
+      do_log 'pack' build_packages_bin
+    fi
   fi
 
   cd ${dir_src}
@@ -734,6 +743,45 @@ build_packages_filelist(){
     echo -e "\n\n# Filelist\n# --------" >> $scfile
     find ./ -type f | sed 's|^./|# |g' >> $scfile
   fi
+}
+
+build_package_cmake(){
+  local brk=false
+  local flist=
+  until $brk; do
+    read l || brk=true
+    flist="$(echo $l | sed 's|'${dir_install}'/||') $flist"
+  done < ${dir_build}/install_manifest.txt
+  
+  if [ -n "${pc_llib}" ]; then
+    flist="lib/pkgconfig/${pc_llib//-l/lib}.pc ${flist}"
+  elif [ -n "${pc_llibs}" ]; then
+    for ll in $pc_llibs; do
+      flist="lib/pkgconfig/${ll//-l/lib}.pc ${flist}"
+    done
+  fi
+    
+  [ -z "${flist}" ] && return 0
+  pushdir ${dir_install}
+  local v=$(pkg-config ${dir_install_pc}/${pkg}.pc --modversion)
+  v=$(version_parse $v)
+  local fn="${lib}_${v}_${arch}"
+  case ${pkg_fmt} in
+    tbz)
+      fn="${fn}.tar.bz2"
+      tar -cvjSf "${fn}" ${flist}
+      ;;
+    zip)
+      fn="${fn}.zip"
+      zip -r "${fn}" ${flist}
+      ;;
+    *)
+      fn="${fn}.tar.gz"
+      tar -czvf "${fn}" ${flist}
+      ;;
+  esac
+  mv "${fn}" ${dir_pkgdist}
+  popdir
 }
 
 build_packages_bin(){
@@ -909,15 +957,17 @@ cmake_create_toolchainfile(){
     set(ZLIB_VERSION_STRING 1.2.11)
     include(${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
 		EOF
-  mingw_stdlibs='-lwsock32 -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32'
-  #mingw_stdlibs='-static-libgcc -lwsock32 -lws2_32'
+  #mingw_stdlibs='-lwsock32 -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32'
+  mingw_stdlibs='-static-libgcc -static-libstdc++ -lwsock32 -lws2_32'
+  mingw_exelink='-Wl,-Bstatic'
+  #mingw_exelink='-static-libgcc -static-libstdc++ -Wl,-pdb='
   $host_mingw && cat <<-EOF >>${cmake_toolchain_file}
 		set(CMAKE_COMPILER_IS_MINGW ON)
+    set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "${LLVM_MINGW_HOME}/${arch}/include/c++/v1;${LLVM_MINGW_HOME}/lib/clang/*/include;${LLVM_MINGW_HOME}/${arch}/include")
 		set(CMAKE_RC_COMPILER ${CROSS_PREFIX}windres)
 		set(CMAKE_MC_COMPILER ${CROSS_PREFIX}windmc)
-		set(CMAKE_C_STANDARD_LIBRARIES "-static-libstdc ${mingw_stdlibs} \${CMAKE_C_STANDARD_LIBRARIES}")
-		set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libstdc++ ${mingw_stdlibs} \${CMAKE_CXX_STANDARD_LIBRARIES}")
-		set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic")
+		set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ ${mingw_stdlibs} \${CMAKE_CXX_STANDARD_LIBRARIES}")
+		set(CMAKE_EXE_LINKER_FLAGS "\${CMAKE_EXE_LINKER_FLAGS} ${mingw_exelink}")
 		set(CMAKE_FIND_LIBRARY_PREFIXES "lib" "")
 		set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll" ".dll.a" ".lib" ".a")
 		EOF
@@ -1214,9 +1264,14 @@ git_clone(){
   git clone --progress --verbose $src $lib $src_opt |& tr '\r' '\n' | prt_git_progress
   logok $var
   [ -d "$lib" ] && cd $lib || err
-  $nodev && vrs=$(git describe --abbrev=0 --tags)
-  if [ -n "${vrs}" ];then
-    do_log ${vrs} git checkout tags/${vrs};
+  if [ -n "${bra}" ]; then
+    do_log ${bra} git checkout ${bra}
+    unset bra
+  elif [ -n "${vrs}" ]; then
+    do_log ${vrs} git checkout tags/${vrs}
+  fi
+  if [ -n "${sub}" ];then
+    do_log 'sub' git ${sub}
   fi
   cd ..
 }
@@ -1861,6 +1916,8 @@ menu_list(){
     help)       printf "${CC0}%-20s: ${C0}%s\n" '  --list tar' 'list contents of tarball, if available'
                 printf "${CC0}%-20s: ${C0}%s\n" '  --list env' 'list environment variables';;
     tar*)       $b && list_tarball;;
+    branches)   [ -d "${dir_src}/.git" ] && git --git-dir="${dir_src}/.git" branch -a;;
+    tags)       [ -d "${dir_src}/.git" ] && git --git-dir="${dir_src}/.git" tag --list;;
     env)        $b && loadToolchain && print_vars CC CXX LD AS AR NM RANLIB STRIP ADDR2LINE OBJCOPY OBJDUMP READELF SIZE STRINGS WINDRES GCOV;;
   esac
   return 0
@@ -1976,7 +2033,8 @@ while [ $1 ];do
                 build_dist=true
                 dep_build="--full"
                 ;;
-    --branch)   shift; export bra=$1;;
+    --bra|--branch)
+                shift; export bra=$1;;
     --shared)   build_shared=true; build_static=false;;
     --static)   build_static=true; build_shared=false;;
     --both)     build_static=true; build_shared=true;;
